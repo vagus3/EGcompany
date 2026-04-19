@@ -26,7 +26,7 @@ export default async function LobbyPage() {
         {rooms.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">등록된 방이 없습니다.</p>
         ) : (
-          rooms.map((room) => (
+          rooms.map((room: LobbyRoom) => (
             <Link key={room.id} href={`/room/${room.id}`}>
               <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-xl p-6 cursor-pointer transition-all">
                 <div className="flex justify-between items-start mb-3">
