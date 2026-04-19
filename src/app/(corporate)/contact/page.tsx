@@ -1,35 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 const departments = [
   {
     category: "Human Resources",
     name: "HR",
+    slug: "hr",
     email: "hr-internal@eg-company.com",
     phone: "+44 (0) 20 7946 0120",
   },
   {
     category: "Fiscal Control",
     name: "FINANCE",
+    slug: "finance",
     email: "finance-ops@eg-company.com",
     phone: "+44 (0) 20 7946 0855",
   },
   {
     category: "Strategic Intelligence",
     name: "RESEARCH",
+    slug: "research",
     email: "r-and-d@eg-company.com",
     phone: "+44 (0) 20 7946 0991",
   },
   {
     category: "Logistics & Mobility",
     name: "TRANSPORT",
+    slug: "transport",
     email: "logistics-hub@eg-company.com",
     phone: "+44 (0) 20 7946 0443",
   },
   {
     category: "Asset Protection",
     name: "SECURITY",
+    slug: "security",
     email: "hq-security@eg-company.com",
     phone: "+44 (0) 20 7946 0000 (24h)",
   },
@@ -55,13 +61,19 @@ export default function ContactPage() {
 
       {/* Department cards */}
       <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 mb-20">
-        {departments.map(({ category, name, email, phone }) => (
-          <div key={name} className="bg-white p-7">
+        {departments.map(({ category, name, slug, email, phone }) => (
+          <Link
+            key={name}
+            href={`/portals/${slug}`}
+            className="bg-white p-7 block hover:bg-gray-50 transition-colors group"
+          >
             <p className="text-[10px] tracking-widest uppercase text-gray-400 mb-1">{category}</p>
-            <h2 className="text-2xl font-black tracking-tight text-black mb-4">{name}</h2>
+            <h2 className="text-2xl font-black tracking-tight text-black mb-4 group-hover:underline underline-offset-2">
+              {name}
+            </h2>
             <p className="text-sm text-gray-600">{email}</p>
             <p className="text-sm text-gray-600 mt-1">{phone}</p>
-          </div>
+          </Link>
         ))}
         {/* Empty cell to fill last row if odd */}
         {departments.length % 2 !== 0 && <div className="bg-white" />}
