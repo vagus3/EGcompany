@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db/prisma";
 
+type LobbyRoom = {
+  id: string;
+  title: string;
+  description: string | null;
+  difficulty: number;
+  _count: {
+    puzzles: number;
+  };
+};
+
 export default async function LobbyPage() {
-  const rooms = await prisma.room.findMany({
+  const rooms = (await prisma.room.findMany({
     where: { isActive: true },
     include: { _count: { select: { puzzles: true } } },
-  });
+  })) as LobbyRoom[];
 
   return (
     <main className="min-h-screen bg-gray-950 text-white px-8 py-12">
