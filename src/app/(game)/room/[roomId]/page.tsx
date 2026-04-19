@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { connection } from "next/server";
 import RoomClient from "./RoomClient";
 import { notFound } from "next/navigation";
 
@@ -7,12 +8,20 @@ interface PageProps {
 }
 
 export default async function RoomPage({ params }: PageProps) {
+  await connection();
+
   const { roomId } = await params;
 
-  const room = await prisma.room.findUnique({
-    where: { id: roomId },
-    include: { puzzles: { orderBy: { order: "asc" } } },
-  });
+  let room: Awaited<ReturnType<typeof prisma.room.findUnique>>;
+
+  try {
+    room = await prisma.room.findUnique({
+      where: { id: roomId },
+      include: { puzzles: { orderBy: { order: "asc" } } },
+    });
+  } catch {
+    notFound();
+  }
 
   if (!room || !room.isActive) notFound();
 
