@@ -1,0 +1,89 @@
+const rules = [
+  {
+    num: "01",
+    title: "보안 규정 및 SCP 개체 접근 제한",
+    body: "본 시설에서 근무하는 모든 인원은 SCP 개체에 대한 사적인 탐색 행위를 금지합니다. 업무상 필요한 경우에도 반드시 보안팀의 승인 절차를 거쳐야 합니다.",
+  },
+  {
+    num: "02",
+    title: "단말기 이상 징후 보고",
+    body: "근무 중 본인의 단말기에서 이상한 로그, 알 수 없는 접근 기록, 또는 비정상적인 알림이 발생할 경우 즉시 보안팀에 보고 하십시오.",
+  },
+  {
+    num: "03",
+    title: "사내 통신 보안 및 메일 수신",
+    body: "사내 메일 시스템을 통해 발신자를 확인할 수 없는 메시지를 수신할 경우, 절대 링크를 열람하거나 첨부파일을 실행하지 마십시오. 단, 제목에 [긴급] 표시가 있을 경우 업무 지시에 따라 열람합니다.",
+  },
+  {
+    num: "04",
+    title: "시스템 로그 내 개인정보 노출 대응",
+    body: "근무 중 자신의 이름, 사원 코드, 또는 개인 정보가 시스템 로그에 반복적으로 표시될 경우 즉시 자리를 이탈하지 말고 해당 화면을 유지한 채 대기 하십시오. 곧 연구팀이 와서 조치 할 것입니다.",
+  },
+  {
+    num: "05",
+    title: "모니터링 장비 이상 및 전원 차단",
+    body: "시설 내 CCTV, 모니터, 또는 화면에서 자신이 아닌 시점 영상 또는 비정상적인 티가 나는 움직임을 보일 경우 해당 장치 전원 차단기를 내리고 즉시 보안팀을 호출 하십시오.",
+  },
+  {
+    num: "06",
+    title: "심리적 위협 상황 대응",
+    body: "업무 중 누군가 본인을 '보고 있다'는 감각이 들더라도 이는 정상적인 환경 반응일 수 있습니다. 뒤를 확인하지 말 것을 당부하며, 만약 '따가운' 감각을 동반한다면 즉시 자리에서 연구팀을 긴급 호출 하십시오.",
+  },
+  {
+    num: "07",
+    title: "SCP 작업 절차 및 보고 의무",
+    body: "SCP 작업 시에는 정보 파일의 특징과 취급 주의 사항을 따르고, 만약 이행하지 못했다면 즉시 보안팀에 보고 하십시오.",
+  },
+  {
+    num: "08",
+    title: "정보 유출 방지 및 통신 수단 제한",
+    body: "본사의 모든 정보는 외부 민간인에게 유출되지 않도록 하며, 사내에서 개인 메신저 및 연락 수단 사용을 금지합니다. 이를 어기고 유출한 정황이 적발된다면, 즉시 '정화' 처리 될 것입니다.",
+  },
+];
+
+export default function RulesPage() {
+  return (
+    <div className="bg-white">
+      {/* Header */}
+      <section className="max-w-4xl mx-auto px-6 pt-20 pb-16">
+        <h1 className="text-[clamp(2.2rem,4.5vw,3.5rem)] font-black leading-tight tracking-tight text-black mb-6">
+          Employee Conduct
+          <br />& Workplace Safety
+        </h1>
+        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
+          EG 컴퍼니 임직원의 안전과 효율적인 업무 환경 조성을 위한 기본 행동 수칙 및
+          보건 가이드라인입니다. 본 규정은 사내 보안 등급에 따라 엄격히 준수되어야 합니다.
+        </p>
+        <hr className="mt-10 border-gray-200" />
+      </section>
+
+      {/* Rules list */}
+      <section className="max-w-4xl mx-auto px-6 pb-20 space-y-12">
+        {rules.map(({ num, title, body }) => (
+          <div key={num} className="grid grid-cols-[72px_1fr] gap-6">
+            <span className="text-4xl font-black text-gray-200 leading-none pt-1 select-none">{num}</span>
+            <div>
+              <h2 className="text-base font-bold text-black mb-2">{title}</h2>
+              <p className="text-sm text-gray-500 leading-relaxed">{body}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Notice box */}
+      <section className="max-w-4xl mx-auto px-6 pb-24">
+        <div className="border border-gray-300 rounded p-6 flex gap-4">
+          <span className="text-gray-400 mt-0.5">ⓘ</span>
+          <div>
+            <p className="text-xs font-bold text-black mb-2">Notice</p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              위 지침은 모든 임직원의 안전을 보장하기 위한 최소한의 조치입니다. 지침 미준수로
+              발생하는 '존재적 불일치'나 '물리적 소실'에 대해 EG 컴퍼니는 법적 책임을 지지 않습니다.
+              모든 임직원은 본 문서를 숙지했음을 서명으로 갈음합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
