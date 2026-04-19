@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="border-t border-gray-200 py-6 mt-auto">
@@ -5,9 +7,12 @@ export default function Footer() {
         <p className="text-[11px] tracking-widest text-gray-400 uppercase">
           © 2024 EG Company. Corporate Headquarters.
         </p>
-        <p className="text-[11px] tracking-widest text-gray-400 uppercase">
+        <Link
+          href="/company-information"
+          className="text-[11px] tracking-widest text-gray-400 uppercase hover:text-black transition-colors"
+        >
           Company Information
-        </p>
+        </Link>
       </div>
     </footer>
   );
