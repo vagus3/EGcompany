@@ -68,7 +68,7 @@ export default function CompanyInformationPage() {
         <div className="bg-white border border-gray-200 p-10">
           <div className="grid grid-cols-[280px_1fr] gap-10">
             {/* Left: building image */}
-            <div className="aspect-[3/4] bg-gradient-to-b from-gray-700 via-gray-800 to-gray-950 overflow-hidden flex-shrink-0">
+            <div className="aspect-3/4 bg-gradient-linear-to-b from-gray-700 via-gray-800 to-gray-950 overflow-hidden shrink-0">
               {/* public/images/hq-night.jpg 로 교체 가능 */}
               <div className="w-full h-full" />
             </div>

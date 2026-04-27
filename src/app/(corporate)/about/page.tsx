@@ -1,3 +1,5 @@
+import { companyEvolutionData } from "./evolution-data";
+
 export default function AboutPage() {
   return (
     <div className="bg-white">
@@ -18,9 +20,9 @@ export default function AboutPage() {
       <section className="max-w-5xl mx-auto px-6 pb-24 grid grid-cols-[280px_1fr] gap-16 items-start">
         {/* Portrait */}
         <div>
-          <div className="w-full aspect-[4/5] bg-gray-800 overflow-hidden">
+          <div className="w-full aspect-4/5 bg-gray-800 overflow-hidden">
             {/* public/images/director.jpg 로 교체 가능 */}
-            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-gray-900" />
+            <div className="w-full h-full bg-gradient-linear-to-b from-gray-700 to-gray-900" />
           </div>
           <p className="mt-3 text-sm font-semibold text-black">Director E.G.</p>
           <p className="text-xs text-gray-400 uppercase tracking-widest mt-0.5">EG Company 대표이사</p>
@@ -28,12 +30,12 @@ export default function AboutPage() {
 
         {/* Quote */}
         <div className="pt-4">
-          <span className="text-5xl text-gray-300 font-serif leading-none select-none">"</span>
+          <span className="text-5xl text-gray-300 font-serif leading-none select-none">&#34;</span>
           <blockquote className="text-[1.35rem] font-semibold leading-snug text-black mt-2">
-            "정밀함은 순간의 결과가 아니라, 과정입니다.
+            &#34;정밀함은 순간의 결과가 아니라, 과정입니다.
             우리는 드러나지 않는 영역에서 움직이며,
             세상의 핵심 시스템들이 어떤 상황에서도
-            무너지지 않도록 합니다."
+            무너지지 않도록 합니다.&#34;
           </blockquote>
           <div className="mt-8 space-y-4 text-sm text-gray-600 leading-relaxed">
             <p>
@@ -60,28 +62,7 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-xs tracking-[0.3em] uppercase text-gray-400 mb-14">Company Evolution</h2>
           <div className="divide-y divide-gray-300">
-            {[
-              {
-                year: "1984",
-                title: "THE FOUNDATION",
-                desc: "EG Logistics는 유럽 전역을 잇는 주요 물류망을 기반으로, 고가 산업 장비를 전문적으로 운송하는 민간 조직으로 출범했다. 초기에는 신속한 대응 체계와 특수 운송 역량 구축에 집중하며 운영을 시작했다.",
-              },
-              {
-                year: "1996",
-                title: "GLOBAL EXPANSION",
-                desc: "보안 컨설팅과 인프라 관리 분야로 사업을 확장하며, 회사는 'EG Company'로 사명을 변경했다. 이와 함께 북미와 동남아시아에 지역 본부를 설립하며 글로벌 거점 구축에 나섰다.",
-              },
-              {
-                year: "2008",
-                title: "THE DIGITAL PIVOT",
-                desc: "자체 개발한 뉴럴 링크 기반 데이터 관리 시스템을 도입하며, EG Company는 민감한 데이터 흐름을 안전하게 통제하는 분야에서 글로벌 대기업 파트너들을 지원하는 선도 기업으로 자리 잡았다.",
-              },
-              {
-                year: "2024",
-                title: "MODERN LEGACY",
-                desc: "현재 EG Company는 42개국에 강치 15만 명 이상의 인력을 운영하며 글로벌 네트워크를 구축하고 있다. 사업의 중심은 지속 가능한 중공업 분야와 양자 컴퓨팅 환경에도 대응 가능한 보안 체계로 확장되고 있다.",
-              },
-            ].map(({ year, title, desc }) => (
+            {companyEvolutionData.map(({ year, title, desc }) => (
               <div key={year} className="py-10 grid grid-cols-[140px_220px_1fr] gap-8 items-start">
                 <span className="text-4xl font-black text-gray-300">{year}</span>
                 <p className="text-xs tracking-widest uppercase text-gray-500 pt-2">{title}</p>

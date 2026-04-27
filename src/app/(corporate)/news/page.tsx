@@ -17,7 +17,7 @@ export default function NewsPage() {
           {/* Featured article */}
           <article className="mb-12">
             <Link href={`/news/${featured.slug}`} className="group block">
-              <div className="w-full aspect-[16/9] bg-gradient-to-br from-gray-200 to-gray-400 mb-4 overflow-hidden group-hover:opacity-90 transition-opacity" />
+              <div className="w-full aspect-4/3 bg-gradient-linear-to-br from-gray-200 to-gray-400 mb-4 overflow-hidden group-hover:opacity-90 transition-opacity" />
             </Link>
             <div className="flex items-center gap-3 mb-2">
               {featured.category && (
@@ -46,7 +46,7 @@ export default function NewsPage() {
             {rest.map((article) => (
               <article key={article.slug}>
                 <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="w-full aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-400 mb-3 overflow-hidden group-hover:opacity-90 transition-opacity" />
+                  <div className="w-full aspect-4/3 bg-gradient-linear-to-br from-gray-200 to-gray-400 mb-3 overflow-hidden group-hover:opacity-90 transition-opacity" />
                   <p className="text-[11px] text-gray-400 tracking-wider mb-1">{article.dateDisplay}</p>
                   <h3 className="text-base font-bold text-black leading-snug group-hover:underline underline-offset-2">
                     {article.title}

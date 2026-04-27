@@ -13,7 +13,7 @@ function renderBlock(block: Block, idx: number) {
     case "image":
       return (
         <figure key={idx} className="my-6">
-          <div className="w-full aspect-[16/9] bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500" />
+          <div className="w-full aspect-4/3 bg-gradient-linear-to-br from-gray-300 via-gray-400 to-gray-500" />
           {block.caption && (
             <figcaption className="mt-2 text-[10px] tracking-widest uppercase text-gray-400">
               {block.caption}
