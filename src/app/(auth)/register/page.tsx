@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { HTMLInputTypeAttribute } from "react";
 
 const primaryNav = [
   { href: "/about", label: "Manifesto" },
@@ -21,7 +22,7 @@ function Field({
   id: string;
   label: string;
   placeholder: string;
-  type?: React.HTMLInputTypeAttribute;
+  type?: HTMLInputTypeAttribute;
 }) {
   return (
     <label htmlFor={id} className="block">
