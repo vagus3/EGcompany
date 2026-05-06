@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function OnboardPage() {
+export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-white text-black">
       <Header />
@@ -100,7 +100,7 @@ function Header() {
             Sign In
           </Link>
           <Link
-            href="/onboard"
+            href="/register"
             className="rounded-sm bg-black px-4 py-1.5 text-xs font-bold text-white"
           >
             Sign Up
