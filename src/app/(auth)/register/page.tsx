@@ -1,163 +1,213 @@
 import Link from "next/link";
-import type { HTMLInputTypeAttribute } from "react";
 
-const primaryNav = [
-  { href: "/about", label: "Manifesto" },
-  { href: "/information", label: "Collections" },
-  { href: "/news", label: "Archive" },
-];
+export default function OnboardPage() {
+  return (
+    <main className="min-h-screen bg-white text-black">
+      <Header />
 
-const footerNav = [
-  { href: "/information", label: "Privacy" },
-  { href: "/rules", label: "Legal" },
-  { href: "/contact", label: "Contact" },
-];
+      <section className="relative flex justify-center px-6 py-24 overflow-hidden">
 
-function Field({
-  id,
-  label,
-  placeholder,
-  type = "text",
-}: {
-  id: string;
+        <div className="relative z-10 w-full max-w-[672px] pb-4">
+          <h1 className="mb-16 text-[96px] font-black leading-none tracking-[-4.8px]">
+            Sign Up
+          </h1>
+
+          <form className="flex flex-col gap-12">
+            <LargeInput
+              label="Full Name"
+              placeholder="ALEXANDER VANCE"
+              type="text"
+              name="fullName"
+            />
+
+            <LargeInput
+              label="Corporate Email"
+              placeholder="VANCE.A@EG.COM"
+              type="email"
+              name="email"
+            />
+
+            <LargeInput
+              label="Password"
+              placeholder="••••••••"
+              type="password"
+              name="password"
+              password
+            />
+
+            <PolicyBox />
+
+            <div className="flex flex-col gap-8 pt-8">
+              <label className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[1.5px]">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 appearance-none border border-black bg-white checked:bg-black"
+                />
+                I acknowledge and agree to the privacy policy and code of conduct.
+              </label>
+
+              <div className="flex items-center gap-12">
+                <button
+                  type="submit"
+                  className="flex h-[78px] min-w-[116px] flex-col items-center justify-center bg-black px-10 py-6 text-[11px] font-bold uppercase tracking-[2.2px] text-white"
+                >
+                  <span>Join</span>
+                  <span>EG</span>
+                </button>
+
+                <p className="max-w-[480px] text-xs font-semibold uppercase tracking-[1.2px] text-black/40">
+                  By proceeding, you agree to the{" "}
+                  <Link href="/privacy" className="text-black underline">
+                    Privacy Policy
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/terms" className="text-black underline">
+                    Terms
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}
+
+function Header() {
+  return (
+    <header className="h-[61px] border-b border-neutral-200 bg-neutral-50">
+      <div className="mx-auto flex h-[60px] max-w-screen-2xl items-center justify-between px-12">
+        <Link
+          href="/"
+          className="text-xl font-bold tracking-[-1px] text-neutral-900"
+        >
+          EG Company
+        </Link>
+
+        <nav className="flex items-center gap-12 text-sm font-medium tracking-[-0.35px] text-neutral-500">
+          <Link href="/about">About</Link>
+          <Link href="/services">Services</Link>
+          <Link href="/news">News</Link>
+          <Link href="/contact">Contact</Link>
+        </nav>
+
+        <div className="flex items-center gap-6">
+          <Link href="/login" className="text-xs font-medium text-neutral-500">
+            Sign In
+          </Link>
+          <Link
+            href="/onboard"
+            className="rounded-sm bg-black px-4 py-1.5 text-xs font-bold text-white"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+type LargeInputProps = {
   label: string;
   placeholder: string;
-  type?: HTMLInputTypeAttribute;
-}) {
+  type: string;
+  name: string;
+  password?: boolean;
+};
+
+function LargeInput({
+  label,
+  placeholder,
+  type,
+  name,
+  password = false,
+}: LargeInputProps) {
   return (
-    <label htmlFor={id} className="block">
-      <span className="mb-3 block text-[0.78rem] font-semibold uppercase tracking-[0.24em] text-black">
+    <label className="flex flex-col gap-2">
+      <span className="text-[11px] font-bold uppercase leading-4 tracking-[1.65px]">
         {label}
       </span>
+
       <input
-        id={id}
         type={type}
+        name={name}
         placeholder={placeholder}
-        className="w-full border-b border-black/45 bg-transparent pb-5 text-[clamp(2rem,4vw,3.2rem)] font-black uppercase tracking-[-0.04em] text-black outline-none placeholder:text-[#d8d8d8] focus:border-black"
+        className={[
+          "h-[71px] w-full border-0 border-b border-black bg-transparent pb-3",
+          "text-5xl font-black uppercase leading-[58px] tracking-[-2.4px]",
+          "placeholder:text-gray-200",
+          "focus:outline-none",
+          password ? "tracking-[9.6px]" : "",
+        ].join(" ")}
       />
     </label>
   );
 }
 
-export default function RegisterPage() {
+function PolicyBox() {
   return (
-    <main className="min-h-screen bg-[#f7f5f1] text-black">
-      <header className="border-b border-black/20">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-7 sm:px-8 lg:px-12">
-          <Link href="/" className="text-[2.3rem] font-black leading-none tracking-[-0.08em]">
-            EG
-          </Link>
+    <section className="h-48 overflow-y-scroll border border-black bg-gray-50 p-6">
+      <h2 className="mb-4 text-[10px] font-bold uppercase leading-5 tracking-[1px]">
+        개인정보 수집 및 이용 동의
+      </h2>
 
-          <nav className="hidden items-center gap-10 md:flex lg:gap-16">
-            {primaryNav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-[0.85rem] font-semibold uppercase tracking-[0.22em] text-black transition-opacity hover:opacity-60"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <Link
-            href="/login"
-            className="text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-black transition-opacity hover:opacity-60"
-          >
-            Log In
-          </Link>
-        </div>
-      </header>
-
-      <section className="relative overflow-hidden border-b border-black/20">
-        <div className="pointer-events-none absolute right-[-2rem] top-[26%] hidden select-none text-[clamp(12rem,34vw,30rem)] font-black leading-none tracking-[-0.08em] text-black/[0.07] lg:block">
-          JOIN
+      <div className="space-y-4 text-[10px] leading-5 tracking-[1px] text-gray-700">
+        <div>
+          <p className="font-bold">1. 수집 항목</p>
+          <p>닉네임, 이메일 주소, 비밀번호</p>
         </div>
 
-        <div className="mx-auto flex min-h-[calc(100vh-180px)] max-w-[1440px] px-5 py-16 sm:px-8 md:py-24 lg:px-12 lg:py-32">
-          <div className="w-full max-w-[760px] lg:ml-[20%]">
-            <div className="max-w-[520px]">
-              <h1 className="text-[clamp(4.2rem,10vw,7.4rem)] font-black leading-[0.92] tracking-[-0.08em] text-black">
-                Onboard
-              </h1>
-              <p className="mt-6 max-w-[32rem] text-[1.45rem] leading-[1.45] text-black/55 [font-family:Georgia,serif]">
-                Access the corporate monolith. Precision required for all employee
-                entries.
-              </p>
-            </div>
-
-            <form className="mt-16 space-y-12 sm:mt-20 sm:space-y-14">
-              <Field
-                id="full-name"
-                label="Full Name"
-                placeholder="Alexander Vance"
-              />
-
-              <Field
-                id="corporate-email"
-                label="Corporate Email"
-                placeholder="vance.a@eg.com"
-                type="email"
-              />
-
-              <div className="grid gap-12 md:grid-cols-2 md:gap-10">
-                <Field
-                  id="password"
-                  label="Password"
-                  placeholder="........"
-                  type="password"
-                />
-                <Field
-                  id="employee-id"
-                  label="Employee ID"
-                  placeholder="EG-0992-X"
-                />
-              </div>
-
-              <div className="flex flex-col gap-8 pt-5 md:flex-row md:items-end md:gap-8">
-                <button
-                  type="button"
-                  className="inline-flex h-[5rem] w-[11rem] items-center justify-center bg-black px-6 text-center text-[0.95rem] font-semibold uppercase tracking-[0.24em] text-white transition-transform hover:-translate-y-0.5"
-                >
-                  <span className="leading-[1.2]">
-                    Sign
-                    <br />
-                    Up
-                  </span>
-                </button>
-
-                <p className="max-w-[28rem] pb-2 text-[0.86rem] font-semibold uppercase leading-[1.45] tracking-[0.18em] text-black/35">
-                  By proceeding, you adhere to the{" "}
-                  <Link
-                    href="/rules"
-                    className="text-black underline decoration-black underline-offset-4 transition-opacity hover:opacity-60"
-                  >
-                    EG code of conduct.
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </div>
+        <div>
+          <p className="font-bold">2. 수집 및 이용 목적</p>
+          <p>회원 식별 및 로그인 기능 제공</p>
+          <p>서비스 이용 및 콘텐츠 진행 (게임 진행, 결과 저장 등)</p>
+          <p>문의 대응 및 공지 전달</p>
         </div>
-      </section>
 
-      <footer className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-12 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-12">
-        <p className="text-[0.74rem] font-semibold uppercase tracking-[0.28em] text-black">
-          (c) 2024 EG Monolith. All rights reserved.
+        <div>
+          <p className="font-bold">3. 보유 및 이용 기간</p>
+          <p>회원 탈퇴 시까지 보관</p>
+          <p>탈퇴 시 지체 없이 파기</p>
+        </div>
+
+        <div>
+          <p className="font-bold">4. 동의 거부 권리 안내</p>
+          <p>
+            이용자는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가
+            있습니다.
+          </p>
+          <p>
+            단, 동의를 거부할 경우 회원가입 및 서비스 이용이 제한될 수
+            있습니다.
+          </p>
+        </div>
+
+        <div>
+          <p className="font-bold">5. 개인정보 보호 조치</p>
+          <p>비밀번호는 암호화하여 저장됩니다.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-neutral-200 bg-neutral-50 py-12">
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-12">
+        <p className="text-[10px] uppercase leading-[15px] tracking-[1px] text-neutral-500">
+          © 2026 EG Company. All rights reserved.
         </p>
 
-        <div className="flex items-center gap-8 sm:gap-10">
-          {footerNav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-[0.72rem] font-medium uppercase tracking-[0.3em] text-black/45 transition-opacity hover:opacity-70"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </footer>
-    </main>
+        <nav className="flex gap-8 text-[10px] uppercase leading-[15px] tracking-[1px] text-neutral-500">
+          <Link href="/company">Company Information</Link>
+          <Link href="/contact">Contact Us</Link>
+        </nav>
+      </div>
+    </footer>
   );
 }
