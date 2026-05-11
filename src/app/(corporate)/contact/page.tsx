@@ -27,7 +27,7 @@ export default function ContactPage() {
         {departments.map(({ category, name, slug, email, phone }) => (
           <Link
             key={name}
-            href={`/portals/${slug}`}
+            href={slug.toLowerCase() === 'hr' || name.includes('HR') || name === 'Human Resources' ? '/HR' : `/portals/${slug}`}
             className="bg-white p-7 block hover:bg-gray-50 transition-colors group"
           >
             <p className="text-[10px] tracking-widest uppercase text-gray-400 mb-1">{category}</p>
