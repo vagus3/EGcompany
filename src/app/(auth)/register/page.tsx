@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type React from "react";
 
 export default function RegisterPage() {
   return (
@@ -6,9 +7,8 @@ export default function RegisterPage() {
       <Header />
 
       <section className="relative flex justify-center px-6 py-24 overflow-hidden">
-
-        <div className="relative z-10 w-full max-w-[672px] pb-4">
-          <h1 className="mb-16 text-[96px] font-black leading-none tracking-[-4.8px]">
+        <div className="relative z-10 w-full max-w-2xl pb-4">
+          <h1 className="mb-16 text-8xl font-black leading-none tracking-tighter">
             Sign Up
           </h1>
 
@@ -21,7 +21,7 @@ export default function RegisterPage() {
             />
 
             <LargeInput
-              label="Corporate Email"
+              label="Email"
               placeholder="VANCE.A@EG.COM"
               type="email"
               name="email"
@@ -38,33 +38,25 @@ export default function RegisterPage() {
             <PolicyBox />
 
             <div className="flex flex-col gap-8 pt-8">
-              <label className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[1.5px]">
+              <label className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
                 <input
                   type="checkbox"
                   className="h-4 w-4 appearance-none border border-black bg-white checked:bg-black"
                 />
-                I acknowledge and agree to the privacy policy and code of conduct.
+                개인정보 처리방침 및 이용 규칙에 동의합니다.
               </label>
 
               <div className="flex items-center gap-12">
                 <button
                   type="submit"
-                  className="flex h-[78px] min-w-[116px] flex-col items-center justify-center bg-black px-10 py-6 text-[11px] font-bold uppercase tracking-[2.2px] text-white"
+                  className="flex h-20 min-w-28 flex-col items-center justify-center bg-black px-10 py-6 text-xs font-bold uppercase tracking-widest text-white"
                 >
                   <span>Join</span>
                   <span>EG</span>
                 </button>
 
-                <p className="max-w-[480px] text-xs font-semibold uppercase tracking-[1.2px] text-black/40">
-                  By proceeding, you agree to the{" "}
-                  <Link href="/privacy" className="text-black underline">
-                    Privacy Policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/terms" className="text-black underline">
-                    Terms
-                  </Link>
-                  .
+                <p className="max-w-md text-xs font-semibold uppercase tracking-wide text-black/40">
+                계속 진행할 경우 개인정보 처리방침 및 이용약관에 동의하는 것으로 간주됩니다.
                 </p>
               </div>
             </div>
@@ -79,16 +71,16 @@ export default function RegisterPage() {
 
 function Header() {
   return (
-    <header className="h-[61px] border-b border-neutral-200 bg-neutral-50">
-      <div className="mx-auto flex h-[60px] max-w-screen-2xl items-center justify-between px-12">
+    <header className="h-16 border-b border-neutral-200 bg-neutral-50">
+      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-12">
         <Link
           href="/"
-          className="text-xl font-bold tracking-[-1px] text-neutral-900"
+          className="text-xl font-bold tracking-tight text-neutral-900"
         >
           EG Company
         </Link>
 
-        <nav className="flex items-center gap-12 text-sm font-medium tracking-[-0.35px] text-neutral-500">
+        <nav className="flex items-center gap-12 text-sm font-medium tracking-tight text-neutral-500">
           <Link href="/about">About</Link>
           <Link href="/services">Services</Link>
           <Link href="/news">News</Link>
@@ -114,7 +106,7 @@ function Header() {
 type LargeInputProps = {
   label: string;
   placeholder: string;
-  type: string;
+  type: React.HTMLInputTypeAttribute;
   name: string;
   password?: boolean;
 };
@@ -128,7 +120,7 @@ function LargeInput({
 }: LargeInputProps) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-[11px] font-bold uppercase leading-4 tracking-[1.65px]">
+      <span className="text-xs font-bold uppercase leading-4 tracking-widest">
         {label}
       </span>
 
@@ -136,13 +128,9 @@ function LargeInput({
         type={type}
         name={name}
         placeholder={placeholder}
-        className={[
-          "h-[71px] w-full border-0 border-b border-black bg-transparent pb-3",
-          "text-5xl font-black uppercase leading-[58px] tracking-[-2.4px]",
-          "placeholder:text-gray-200",
-          "focus:outline-none",
-          password ? "tracking-[9.6px]" : "",
-        ].join(" ")}
+        className={`h-16 w-full border-0 border-b border-black bg-transparent pb-3 text-5xl font-black uppercase leading-tight tracking-tighter placeholder:text-gray-200 focus:outline-none ${
+          password ? "tracking-widest" : ""
+        }`}
       />
     </label>
   );
@@ -151,11 +139,11 @@ function LargeInput({
 function PolicyBox() {
   return (
     <section className="h-48 overflow-y-scroll border border-black bg-gray-50 p-6">
-      <h2 className="mb-4 text-[10px] font-bold uppercase leading-5 tracking-[1px]">
+      <h2 className="mb-4 text-xs font-bold uppercase leading-5 tracking-wide">
         개인정보 수집 및 이용 동의
       </h2>
 
-      <div className="space-y-4 text-[10px] leading-5 tracking-[1px] text-gray-700">
+      <div className="space-y-4 text-xs leading-5 tracking-wide text-gray-700">
         <div>
           <p className="font-bold">1. 수집 항목</p>
           <p>닉네임, 이메일 주소, 비밀번호</p>
@@ -199,11 +187,11 @@ function Footer() {
   return (
     <footer className="border-t border-neutral-200 bg-neutral-50 py-12">
       <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-12">
-        <p className="text-[10px] uppercase leading-[15px] tracking-[1px] text-neutral-500">
+        <p className="text-xs uppercase leading-4 tracking-wide text-neutral-500">
           © 2026 EG Company. All rights reserved.
         </p>
 
-        <nav className="flex gap-8 text-[10px] uppercase leading-[15px] tracking-[1px] text-neutral-500">
+        <nav className="flex gap-8 text-xs uppercase leading-4 tracking-wide text-neutral-500">
           <Link href="/company">Company Information</Link>
           <Link href="/contact">Contact Us</Link>
         </nav>
