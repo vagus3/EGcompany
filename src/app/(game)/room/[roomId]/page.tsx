@@ -1,13 +1,14 @@
-import { prisma } from "@/lib/db/prisma";
 import { connection } from "next/server";
-import RoomClient from "./RoomClient";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db/prisma";
+import type { RoomWithPuzzles } from "@/types";
+import RoomClient from "./RoomClient";
 
 interface PageProps {
   params: Promise<{ roomId: string }>;
 }
 
-export default async function RoomPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   await connection();
 
   const { roomId } = await params;
@@ -25,5 +26,5 @@ export default async function RoomPage({ params }: PageProps) {
 
   if (!room || !room.isActive) notFound();
 
-  return <RoomClient room={room as any} />;
+  return <RoomClient room={room as unknown as RoomWithPuzzles} />;
 }

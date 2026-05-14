@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "passwordHash" TEXT;
+ALTER TABLE "User" ADD COLUMN "language" TEXT NOT NULL DEFAULT 'ko';
+ALTER TABLE "User" ADD COLUMN "theme" TEXT NOT NULL DEFAULT 'light';

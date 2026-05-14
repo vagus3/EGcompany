@@ -10,7 +10,7 @@ interface PageProps {
   params: Promise<{ dept: string }>;
 }
 
-export default async function PortalPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { dept } = await params;
   const portal = getPortal(dept);
   if (!portal) notFound();

@@ -13,34 +13,7 @@ import {
   TerminalSquare,
   Users,
 } from "lucide-react";
-
-const transmissions = [
-  {
-    level: "INTERNAL // LOGISTICS",
-    time: "16:45:12 ZULU",
-    title: "[업무 요청] SCP 개체 정보 전달 요청",
-    body: "안녕하세요, 수송팀 리더 제이크입니다. 금일 캐나다 지부에서...",
-    active: true,
-  },
-  {
-    level: "URGENT // LEVEL 5",
-    time: "14:22:09 ZULU",
-    title: "SCP-682 CONTAINMENT BREACH: URGENT",
-    body: "Security protocols bypassed. Sector-04 compromised. I...",
-  },
-  {
-    level: "INTERNAL // STAFFING",
-    time: "12:15:33 ZULU",
-    title: "Site-19 Personnel Reassignment",
-    body: "Following the recent incidents in Sector-01, personne...",
-  },
-  {
-    level: "ENCRYPTED // O5-DIRECTIVE",
-    time: "09:02:11 ZULU",
-    title: "Directives from O5-Council",
-    body: "Authorization required for Project [REDACTED] impleme...",
-  },
-];
+import { transmissions } from "@/lib/terminal-data";
 
 const challengeCodes = [
   { label: "BIOHAZARD", icon: Box },
@@ -51,7 +24,7 @@ const challengeCodes = [
   { label: "CLASSIFIED", icon: FileLock2 },
 ];
 
-export default function SecurityTerminalPage() {
+export default function Page() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#101010] text-[#f2f0ec]">
       <header className="grid h-[74px] grid-cols-[350px_1fr_auto] items-center border-b border-[#2b2b2b] bg-[#151515] px-8">
@@ -78,9 +51,7 @@ export default function SecurityTerminalPage() {
               <p className="font-mono text-xs tracking-[0.42em] text-slate-500">
                 ADM. CLEARANCE L5
               </p>
-              <p className="mt-2 font-mono text-sm tracking-[0.16em]">
-                SITE-19 SECTOR-01
-              </p>
+              <p className="mt-2 font-mono text-sm tracking-[0.16em]">SITE-19 SECTOR-01</p>
             </div>
           </section>
 
@@ -183,10 +154,9 @@ export default function SecurityTerminalPage() {
             <article className="border border-[#4b1111] bg-[#1b1111] p-9 text-[21px] leading-[1.7] text-[#d6c8c2]">
               <p>안녕하세요, 수송팀 리더 제이크입니다.</p>
               <p className="mt-6">
-                금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 SCP 개체 수송이
-                예정되어 있습니다. 현재 수송 준비 과정에서 일부 개체의 세부 정보
-                확인이 지연되고 있어, 안전한 수송을 위해 각 개체에 대한 최신 정보를
-                요청드립니다.
+                금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 SCP 개체 수송이 예정되어 있습니다.
+                현재 수송 준비 과정에서 일부 개체의 세부 정보 확인이 지연되고 있어, 안전한 수송을
+                위해 각 개체에 대한 최신 정보를 요청드립니다.
               </p>
               <p className="mt-6">아래 항목을 포함하여 회신 부탁드립니다.</p>
               <ul className="mt-6 space-y-3 font-mono text-lg">
@@ -202,9 +172,9 @@ export default function SecurityTerminalPage() {
                 *** SECURITY ALERT: INTERNAL SYSTEM ANOMALY ***
               </h3>
               <p className="mt-5 text-base leading-7 text-[#d6c8c2]">
-                추가로, 최근 내부 시스템에서 일부 SCP 관련 문서 접근 로그가 비정상적으로
-                기록되는 사례가 보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서
-                열람 시 이상 징후가 발생할 경우 즉시 관리자에게 보고해 주시기 바랍니다.
+                추가로, 최근 내부 시스템에서 일부 SCP 관련 문서 접근 로그가 비정상적으로 기록되는
+                사례가 보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서 열람 시 이상 징후가
+                발생할 경우 즉시 관리자에게 보고해 주시기 바랍니다.
               </p>
             </aside>
 

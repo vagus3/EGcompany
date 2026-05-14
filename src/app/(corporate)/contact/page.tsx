@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { departments } from "./departments-data";
+import { departments } from "@/lib/departments-data";
 
-export default function ContactPage() {
+export default function Page() {
   const [report, setReport] = useState("");
   const [sent, setSent] = useState(false);
 
@@ -16,26 +16,30 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
+    <div className="mx-auto max-w-5xl px-6 py-16">
       {/* Heading */}
-      <h1 className="text-[clamp(3rem,6vw,5rem)] font-black tracking-tight text-black mb-14">
+      <h1 className="mb-14 text-[clamp(3rem,6vw,5rem)] font-black tracking-tight text-black">
         Contact.
       </h1>
 
       {/* Department cards */}
-      <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 mb-20">
+      <div className="mb-20 grid grid-cols-2 gap-px border border-gray-200 bg-gray-200">
         {departments.map(({ category, name, slug, email, phone }) => (
           <Link
             key={name}
-            href={slug.toLowerCase() === 'hr' || name.includes('HR') || name === 'Human Resources' ? '/HR' : `/portals/${slug}`}
-            className="bg-white p-7 block hover:bg-gray-50 transition-colors group"
+            href={
+              slug.toLowerCase() === "hr" || name.includes("HR") || name === "Human Resources"
+                ? "/HR"
+                : `/portals/${slug}`
+            }
+            className="group block bg-white p-7 transition-colors hover:bg-gray-50"
           >
-            <p className="text-[10px] tracking-widest uppercase text-gray-400 mb-1">{category}</p>
-            <h2 className="text-2xl font-black tracking-tight text-black mb-4 group-hover:underline underline-offset-2">
+            <p className="mb-1 text-[10px] tracking-widest text-gray-400 uppercase">{category}</p>
+            <h2 className="mb-4 text-2xl font-black tracking-tight text-black underline-offset-2 group-hover:underline">
               {name}
             </h2>
             <p className="text-sm text-gray-600">{email}</p>
-            <p className="text-sm text-gray-600 mt-1">{phone}</p>
+            <p className="mt-1 text-sm text-gray-600">{phone}</p>
           </Link>
         ))}
         {/* Empty cell to fill last row if odd */}
@@ -44,9 +48,10 @@ export default function ContactPage() {
 
       {/* Report form */}
       <div className="max-w-xl">
-        <h2 className="text-3xl font-black tracking-tight text-black mb-2">Report</h2>
-        <p className="text-sm text-gray-500 leading-relaxed mb-6">
-          무언가 회사 측에 익명의 제보가 필요하거나, 도움이 필요한 사항이 있다면 이곳에 접수 해 주세요.
+        <h2 className="mb-2 text-3xl font-black tracking-tight text-black">Report</h2>
+        <p className="mb-6 text-sm leading-relaxed text-gray-500">
+          무언가 회사 측에 익명의 제보가 필요하거나, 도움이 필요한 사항이 있다면 이곳에 접수 해
+          주세요.
           <br />
           검토 후 인사팀에게 전달됩니다.
         </p>
@@ -55,11 +60,11 @@ export default function ContactPage() {
           onChange={(e) => setReport(e.target.value)}
           placeholder="Enter your report details here..."
           rows={7}
-          className="w-full border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-black resize-none"
+          className="w-full resize-none border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-black placeholder:text-gray-400 focus:border-black focus:outline-none"
         />
         <button
           onClick={handleSend}
-          className="mt-4 bg-black text-white text-xs tracking-widest uppercase px-8 py-3 hover:bg-gray-800 transition-colors"
+          className="mt-4 bg-black px-8 py-3 text-xs tracking-widest text-white uppercase transition-colors hover:bg-gray-800"
         >
           {sent ? "Sent ✓" : "Send Report"}
         </button>

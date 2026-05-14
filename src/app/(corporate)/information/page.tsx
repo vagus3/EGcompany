@@ -1,8 +1,8 @@
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] tracking-widest uppercase text-gray-400 mb-2">{label}</p>
-      <p className="text-base font-semibold text-black border-l-2 border-black pl-3 leading-snug">
+      <p className="mb-2 text-[10px] tracking-widest text-gray-400 uppercase">{label}</p>
+      <p className="border-l-2 border-black pl-3 text-base leading-snug font-semibold text-black">
         {value}
       </p>
     </div>
@@ -11,11 +11,7 @@ function InfoField({ label, value }: { label: string; value: string }) {
 
 function HQMap() {
   return (
-    <svg
-      viewBox="0 0 370 120"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-full h-full"
-    >
+    <svg viewBox="0 0 370 120" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
       {/* Background */}
       <rect width="370" height="120" fill="#f0eeeb" />
 
@@ -47,30 +43,47 @@ function HQMap() {
       <line x1="185" y1="52" x2="185" y2="60" stroke="black" strokeWidth="1.5" />
 
       {/* Label box */}
-      <rect x="153" y="62" width="64" height="16" fill="white" stroke="#bbb" strokeWidth="0.8" rx="2" />
-      <text x="185" y="73" textAnchor="middle" fontSize="6.5" fill="#333" fontFamily="system-ui, sans-serif" letterSpacing="0.5">
+      <rect
+        x="153"
+        y="62"
+        width="64"
+        height="16"
+        fill="white"
+        stroke="#bbb"
+        strokeWidth="0.8"
+        rx="2"
+      />
+      <text
+        x="185"
+        y="73"
+        textAnchor="middle"
+        fontSize="6.5"
+        fill="#333"
+        fontFamily="system-ui, sans-serif"
+        letterSpacing="0.5"
+      >
         HQ TOWER E
       </text>
     </svg>
   );
 }
 
-export default function CompanyInformationPage() {
+export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="mx-auto max-w-4xl px-6 py-16">
         {/* Heading */}
-        <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-black tracking-tight text-black mb-12">
+        <h1 className="mb-12 text-[clamp(2rem,5vw,3.5rem)] font-black tracking-tight text-black">
           Company Information
         </h1>
 
         {/* Card */}
-        <div className="bg-white border border-gray-200 p-10">
+        <div className="border border-gray-200 bg-white p-10">
           <div className="grid grid-cols-[280px_1fr] gap-10">
             {/* Left: building image */}
-            <div className="aspect-3/4 bg-gradient-linear-to-b from-gray-700 via-gray-800 to-gray-950 overflow-hidden shrink-0">
+            <div className="bg-gradient-linear-to-b aspect-3/4 shrink-0 overflow-hidden from-gray-700 via-gray-800 to-gray-950">
               {/* public/images/hq-night.jpg 로 교체 가능 */}
-              <div className="w-full h-full" />
+              <div className="h-full w-full" />
             </div>
 
             {/* Right: info fields */}
@@ -98,12 +111,12 @@ export default function CompanyInformationPage() {
 
               {/* Address */}
               <div>
-                <p className="text-[10px] tracking-widest uppercase text-gray-400 mb-2">Address</p>
-                <p className="text-sm text-black mb-4">
+                <p className="mb-2 text-[10px] tracking-widest text-gray-400 uppercase">Address</p>
+                <p className="mb-4 text-sm text-black">
                   대한민국 서울 종로구 사랑국로 52, 이빌 빌딩 타워 E 44층
                 </p>
                 {/* Map */}
-                <div className="border border-gray-200 overflow-hidden">
+                <div className="overflow-hidden border border-gray-200">
                   <HQMap />
                 </div>
               </div>
