@@ -1,63 +1,65 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: next-auth signIn 연결
-  }
-
+export default function Page() {
   return (
-    <main className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <div className="w-full max-w-sm">
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-8 space-y-6">
+    <section className="bg-white px-6 py-24 md:py-36">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="text-[clamp(4.8rem,12vw,8rem)] leading-none font-black tracking-normal text-black uppercase">
+          Sign In
+        </h1>
+
+        <form className="mt-14 space-y-12">
           <div>
-            <h1 className="text-2xl font-bold text-white">로그인</h1>
-            <p className="text-gray-400 text-sm mt-1">계정에 접속하세요</p>
+            <label
+              htmlFor="email"
+              className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
+            >
+              Corporate Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="VANCE.A@EG.COM"
+              className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-300 mb-1">이메일</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-blue-400"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-300 mb-1">비밀번호</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-blue-400"
-              />
-            </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              placeholder="********"
+              className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+            />
+          </div>
+
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2.5 font-semibold text-sm transition-colors"
+              className="h-24 w-36 bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800"
             >
-              로그인
+              Sign In
             </button>
-          </form>
-
-          <p className="text-center text-sm text-gray-500">
-            계정이 없으신가요?{" "}
-            <Link href="/register" className="text-blue-400 hover:underline">
-              회원가입
-            </Link>
-          </p>
-        </div>
+            <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
+              No account yet?{" "}
+              <Link href="/signup" className="text-black underline underline-offset-4">
+                Request corporate access
+              </Link>
+              .
+            </p>
+          </div>
+        </form>
       </div>
-    </main>
+    </section>
   );
 }

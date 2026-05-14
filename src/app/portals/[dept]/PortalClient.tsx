@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { PortalConfig } from "@/lib/portal-data";
 import EGShieldLogo from "@/components/ui/EGShieldLogo";
 
@@ -50,11 +51,17 @@ function GridOverlay() {
 }
 
 export default function PortalClient({ portal }: { portal: PortalConfig }) {
+  const router = useRouter();
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "denied">("idle");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (portal.isSecurity && code.trim()) {
+      router.push("/portals/security/terminal");
+      return;
+    }
+
     // 정답 처리는 추후 연결
     setStatus("denied");
     setTimeout(() => setStatus("idle"), 1800);
