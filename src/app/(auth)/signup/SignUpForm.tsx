@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
 import { signUpAction, type SignUpState } from "./actions";
 
@@ -11,7 +12,20 @@ const initialState: SignUpState = {
 };
 
 export default function SignUpForm() {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(signUpAction, initialState);
+
+  useEffect(() => {
+    if (!state.ok) {
+      return;
+    }
+
+    window.localStorage.setItem("eg-new-admin-test-required", "true");
+    // 회원가입 완료 후 메인페이지로 이동 (모달 표시를 위해)
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
+  }, [state.ok, router]);
 
   return (
     <form action={formAction} className="mt-14 space-y-12">
