@@ -4,6 +4,8 @@ import { Languages, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { cx } from "@/theme/classes";
+import { useCorporateTheme } from "@/theme/ThemeProvider";
 
 const navLinks = [
   { href: "/about", ko: "회사소개", en: "About Us" },
@@ -16,6 +18,7 @@ type Language = "ko" | "en";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { classes: theme } = useCorporateTheme();
   const [language, setLanguage] = useState<Language>(() => {
     if (typeof window === "undefined") return "ko";
     return window.localStorage.getItem("eg-language") === "en" ? "en" : "ko";
@@ -38,9 +41,14 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
+    <header
+      className={cx(
+        "bg-corporate-surface/95 sticky top-0 z-50 border-b backdrop-blur",
+        theme.border
+      )}
+    >
       <nav className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-6 lg:grid-cols-[1fr_auto_1fr]">
-        <Link href="/" className="text-xl font-black tracking-tight text-black">
+        <Link href="/" className={cx("text-xl font-black tracking-tight", theme.text)}>
           EG Company
         </Link>
 
@@ -53,7 +61,7 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   className={`text-sm font-semibold transition-colors ${
-                    active ? "text-black" : "text-neutral-500 hover:text-black"
+                    active ? theme.text : theme.linkMuted
                   }`}
                 >
                   {language === "ko" ? link.ko : link.en}
@@ -64,7 +72,13 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center justify-end gap-2">
-          <label className="hidden items-center gap-1.5 border border-neutral-200 px-2 py-1.5 text-[11px] font-bold text-neutral-600 sm:flex">
+          <label
+            className={cx(
+              "hidden items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold sm:flex",
+              theme.border,
+              theme.textMuted
+            )}
+          >
             <Languages className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="sr-only">Language</span>
             <select
@@ -81,7 +95,10 @@ export default function Navbar() {
           <button
             type="button"
             onClick={enforceLightMode}
-            className="hidden items-center gap-1.5 px-2 py-1.5 text-[11px] font-bold text-neutral-600 transition-colors hover:text-black sm:flex"
+            className={cx(
+              "hidden items-center gap-1.5 px-2 py-1.5 text-[11px] font-bold sm:flex",
+              theme.linkMuted
+            )}
             aria-label="Enable light mode"
           >
             <Sun className="h-3.5 w-3.5" aria-hidden="true" />
@@ -90,15 +107,15 @@ export default function Navbar() {
 
           <Link
             href="/login"
-            className="hidden px-2 py-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-black sm:inline-flex"
+            className={cx(
+              "hidden px-2 py-1.5 text-sm font-semibold sm:inline-flex",
+              theme.linkMuted
+            )}
           >
             Sign In
           </Link>
 
-          <Link
-            href="/signup"
-            className="bg-black px-4 py-2 text-sm font-black text-white transition-colors hover:bg-neutral-700"
-          >
+          <Link href="/signup" className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}>
             Sign Up
           </Link>
         </div>
