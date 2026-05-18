@@ -25,8 +25,130 @@ html.light-mode {
   color-scheme: light;
 }
 
+html.dark-mode {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
+}
+
+html.system-mode {
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: light) {
+  html.system-mode {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+html.dark-mode .bg-white {
+  background-color: var(--background);
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-white {
+    background-color: var(--background);
+  }
+}
+
+html.dark-mode .bg-white\/95 {
+  background-color: rgb(10 10 10 / 0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-white\/95 {
+    background-color: rgb(10 10 10 / 0.95);
+  }
+}
+
+html.dark-mode .bg-neutral-50 {
+  background-color: #171717;
+}
+
+html.dark-mode .bg-neutral-100 {
+  background-color: #262626;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-neutral-50 {
+    background-color: #171717;
+  }
+
+  html.system-mode .bg-neutral-100 {
+    background-color: #262626;
+  }
+}
+
+html.dark-mode .text-black {
+  color: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .text-black {
+    color: #ededed;
+  }
+}
+
+html.dark-mode .text-neutral-500,
+html.dark-mode .text-gray-500,
+html.dark-mode .text-gray-600,
+html.dark-mode .text-neutral-600 {
+  color: #a3a3a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .text-neutral-500,
+  html.system-mode .text-gray-500,
+  html.system-mode .text-gray-600,
+  html.system-mode .text-neutral-600 {
+    color: #a3a3a3;
+  }
+}
+
+html.dark-mode .border-neutral-200,
+html.dark-mode .border-gray-200,
+html.dark-mode .border-gray-300 {
+  border-color: #262626;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .border-neutral-200,
+  html.system-mode .border-gray-200,
+  html.system-mode .border-gray-300 {
+    border-color: #262626;
+  }
+}
+
+html.dark-mode .theme-signup-button {
+  background-color: #ededed;
+  color: #0a0a0a;
+}
+
+html.dark-mode .theme-signup-button:hover {
+  background-color: #d4d4d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .theme-signup-button {
+    background-color: #ededed;
+    color: #0a0a0a;
+  }
+
+  html.system-mode .theme-signup-button:hover {
+    background-color: #d4d4d4;
+  }
 }
