@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import EGShieldLogo from "@/components/ui/EGShieldLogo";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 const onboardingQuestions = [
   {
@@ -46,7 +47,8 @@ const onboardingQuestions = [
   },
 ];
 
-export default function Page() {
+export default function LoginForm() {
+  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
@@ -58,15 +60,17 @@ export default function Page() {
     [answers]
   );
 
-  // 회원가입 후 모달 자동으로 표시
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const shouldShowModal = window.localStorage.getItem("eg-new-admin-test-required") === "true";
-      if (shouldShowModal) {
-        setModalOpen(true);
-      }
+  function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (window.localStorage.getItem("eg-new-admin-test-required") === "true") {
+      setModalOpen(true);
+      setError("");
+      return;
     }
-  }, []);
+
+    router.push("/portals/security/terminal");
+  }
 
   function handleAnswer(questionNum: string, value: boolean) {
     setAnswers((current) => ({ ...current, [questionNum]: value }));
@@ -86,32 +90,65 @@ export default function Page() {
 
     window.localStorage.removeItem("eg-new-admin-test-required");
     window.localStorage.setItem("eg-new-admin-test-passed", "true");
-    setModalOpen(false);
+    router.push("/portals/security/terminal");
   }
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Hero: logo + title */}
-      <section className="flex w-full flex-col items-center gap-12 pt-28 pb-16">
-        <EGShieldLogo className="h-44 w-44" />
-        <h1 className="text-[clamp(4rem,12vw,9rem)] leading-none font-black tracking-tight text-black uppercase">
-          EG COMPANY
-        </h1>
-      </section>
-
-      {/* Building image */}
-      <section className="mx-auto mb-28 w-full max-w-[87%]">
-        <div className="aspect-16/7 w-full overflow-hidden bg-gray-400">
-          {/* public/images/hq-building.jpg 로 교체 가능 */}
-          <div className="bg-gradient-linear-to-br flex h-full w-full items-center justify-center from-gray-300 via-gray-400 to-gray-500">
-            <span className="text-sm tracking-widest text-gray-200 uppercase select-none">
-              Corporate Headquarters
-            </span>
-          </div>
+    <>
+      <form className="mt-14 space-y-12" onSubmit={handleLogin}>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
+          >
+            Corporate Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="VANCE.A@EG.COM"
+            className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+          />
         </div>
-      </section>
 
-      {/* Administrator Access Protocol Modal */}
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="********"
+            className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+          />
+        </div>
+
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
+          <button
+            type="submit"
+            className="h-24 w-36 bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800"
+          >
+            Sign In
+          </button>
+          <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
+            No account yet?{" "}
+            <Link href="/signup" className="text-black underline underline-offset-4">
+              Request corporate access
+            </Link>
+            .
+          </p>
+        </div>
+      </form>
+
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4 backdrop-blur-sm">
           <div className="w-full max-w-4xl border border-neutral-200 bg-white shadow-2xl">
@@ -213,14 +250,14 @@ export default function Page() {
               </div>
 
               {error && (
-                <div className="mt-6 border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+                <p className="mt-4 border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold text-red-700">
                   {error}
-                </div>
+                </p>
               )}
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
