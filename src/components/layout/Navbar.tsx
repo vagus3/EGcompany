@@ -1,9 +1,32 @@
 "use client";
 
-import { Languages, Sun } from "lucide-react";
+import { Check, ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+// Theme color mappings
+const themeColors = {
+  light: {
+    text: "text-black",
+    border: "border-neutral-200",
+    textMuted: "text-neutral-500",
+    linkMuted: "text-neutral-500 hover:text-black",
+    bg: "bg-white",
+  },
+  dark: {
+    text: "text-white",
+    border: "border-neutral-700",
+    textMuted: "text-neutral-400",
+    linkMuted: "text-neutral-400 hover:text-white",
+    bg: "bg-neutral-900",
+  },
+};
+
+// Utility function to combine classnames
+function cx(...classes: (string | false | undefined)[]): string {
+  return classes.filter(Boolean).join(" ");
+}
 
 const navLinks = [
   { href: "/about", ko: "회사소개", en: "About Us" },
@@ -13,18 +36,68 @@ const navLinks = [
 ];
 
 type Language = "ko" | "en";
+type ThemeMode = "light" | "dark" | "system";
+
+const themeOptions: Array<{
+  icon: typeof Sun;
+  label: string;
+  value: ThemeMode;
+}> = [
+  { value: "light", label: "Light mode", icon: Sun },
+  { value: "dark", label: "Dark mode", icon: Moon },
+  { value: "system", label: "System setting", icon: Monitor },
+];
+
+function applyThemeMode(mode: ThemeMode) {
+  document.documentElement.classList.remove("light-mode", "dark-mode", "system-mode");
+  document.documentElement.classList.add(`${mode}-mode`);
+  window.localStorage.setItem("eg-theme", mode);
+}
 
 export default function Navbar() {
   const pathname = usePathname();
+  const themeMenuRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useState<Language>(() => {
     if (typeof window === "undefined") return "ko";
     return window.localStorage.getItem("eg-language") === "en" ? "en" : "ko";
   });
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    if (typeof window === "undefined") return "light";
+    const savedTheme = window.localStorage.getItem("eg-theme");
+    return savedTheme === "dark" || savedTheme === "system" || savedTheme === "light"
+      ? savedTheme
+      : "light";
+  });
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+
+  const theme = themeMode === "dark" ? themeColors.dark : themeColors.light;
+
+  function enforceLightMode() {
+    handleThemeChange("light");
+  }
 
   useEffect(() => {
     document.documentElement.lang = language;
-    document.documentElement.classList.add("light-mode");
   }, [language]);
+
+  useEffect(() => {
+    applyThemeMode(themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        themeMenuRef.current &&
+        event.target instanceof Node &&
+        !themeMenuRef.current.contains(event.target)
+      ) {
+        setThemeMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
 
   function handleLanguageChange(nextLanguage: Language) {
     setLanguage(nextLanguage);
@@ -32,15 +105,18 @@ export default function Navbar() {
     document.documentElement.lang = nextLanguage;
   }
 
-  function enforceLightMode() {
-    document.documentElement.classList.add("light-mode");
-    window.localStorage.setItem("eg-theme", "light");
+  function handleThemeChange(nextTheme: ThemeMode) {
+    setThemeMode(nextTheme);
+    setThemeMenuOpen(false);
   }
+
+  const activeThemeOption = themeOptions.find((option) => option.value === themeMode);
+  const ActiveThemeIcon = activeThemeOption?.icon ?? Sun;
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
-      <nav className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-6 lg:grid-cols-[1fr_auto_1fr]">
-        <Link href="/" className="text-xl font-black tracking-tight text-black">
+      <nav className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-6 lg:grid-cols-[1fr_auto_1fr] relative">
+        <Link href="/" className={cx("text-xl font-black tracking-tight", theme.text)}>
           EG Company
         </Link>
 
@@ -64,7 +140,13 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center justify-end gap-2">
-          <label className="hidden items-center gap-1.5 border border-neutral-200 px-2 py-1.5 text-[11px] font-bold text-neutral-600 sm:flex">
+          <label
+            className={cx(
+              "hidden items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold sm:flex",
+              theme.border,
+              theme.textMuted
+            )}
+          >
             <Languages className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="sr-only">Language</span>
             <select
@@ -80,17 +162,86 @@ export default function Navbar() {
 
           <button
             type="button"
-            onClick={enforceLightMode}
-            className="hidden items-center gap-1.5 px-2 py-1.5 text-[11px] font-bold text-neutral-600 transition-colors hover:text-black sm:flex"
-            aria-label="Enable light mode"
+            onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+            className="hidden items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold sm:flex"
+            style={{
+              borderColor: theme.border === "border-neutral-200" ? "#e5e7eb" : "#404040",
+              color: theme.textMuted === "text-neutral-500" ? "#6b7280" : "#9ca3af",
+            }}
+            aria-label="Theme selector"
+            aria-expanded={themeMenuOpen}
+            aria-haspopup="menu"
           >
-            <Sun className="h-3.5 w-3.5" aria-hidden="true" />
-            Light
+            <ActiveThemeIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            {activeThemeOption?.label}
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform ${themeMenuOpen ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            />
           </button>
+
+          {themeMenuOpen && (
+            <div
+              ref={themeMenuRef}
+              className={`absolute right-0 top-14 border shadow-lg ${theme.bg}`}
+              style={{
+                borderColor: theme.border === "border-neutral-200" ? "#e5e7eb" : "#404040",
+              }}
+              role="menu"
+            >
+              {themeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleThemeChange(option.value)}
+                  className={`flex w-full items-center gap-3 px-4 py-3 text-[11px] font-bold transition-colors ${
+                    option.value === themeMode
+                      ? theme.text === "text-black"
+                        ? "bg-neutral-100"
+                        : "bg-neutral-800"
+                      : ""
+                  }`}
+                  style={{
+                    backgroundColor:
+                      option.value === themeMode
+                        ? theme.text === "text-black"
+                          ? "#f3f4f6"
+                          : "#1f2937"
+                        : undefined,
+                    color: theme.textMuted === "text-neutral-500" ? "#6b7280" : "#9ca3af",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (option.value !== themeMode) {
+                      e.currentTarget.style.backgroundColor =
+                        theme.text === "text-black" ? "#f9fafb" : "#111827";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor =
+                      option.value === themeMode
+                        ? theme.text === "text-black"
+                          ? "#f3f4f6"
+                          : "#1f2937"
+                        : "";
+                  }}
+                  role="menuitemradio"
+                  aria-checked={option.value === themeMode}
+                >
+                  <option.icon className="h-4 w-4" aria-hidden="true" />
+                  {option.label}
+                  {option.value === themeMode && (
+                    <Check className="ml-auto h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
 
           <Link
             href="/login"
-            className="hidden px-2 py-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-black sm:inline-flex"
+            className={cx(
+              "hidden px-2 py-1.5 text-sm font-semibold sm:inline-flex",
+              theme.linkMuted
+            )}
           >
             Sign In
           </Link>
