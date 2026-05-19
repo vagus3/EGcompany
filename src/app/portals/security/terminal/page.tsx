@@ -27,19 +27,21 @@ const challengeCodes = [
 
 export default function Page() {
   return (
-    <main className={cx("min-h-screen overflow-hidden", terminalTheme.page)}>
+    <main className={cx("min-h-dvh overflow-x-hidden", terminalTheme.page)}>
       <header
         className={cx(
-          "grid h-[74px] grid-cols-[350px_1fr_auto] items-center border-b px-8",
+          "flex min-h-[74px] flex-col gap-4 border-b px-4 py-4 sm:px-6 lg:grid lg:grid-cols-[minmax(240px,350px)_1fr_auto] lg:items-center lg:px-8",
           terminalTheme.border,
           terminalTheme.panel
         )}
       >
-        <h1 className="text-[26px] font-black tracking-[-0.02em]">
+        <h1 className="text-xl font-black tracking-normal sm:text-[26px] sm:tracking-[-0.02em]">
           SITE-19 ADMINISTRATIVE TERMINAL
         </h1>
-        <p className={cx("font-mono text-lg", terminalTheme.accent)}>SYSTEM_STATUS:NOMINAL</p>
-        <div className="flex items-center gap-5">
+        <p className={cx("font-mono text-sm sm:text-lg", terminalTheme.accent)}>
+          SYSTEM_STATUS:NOMINAL
+        </p>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-5">
           <Bell className={cx("h-7 w-7", terminalTheme.textDim)} />
           <TerminalSquare className={cx("h-7 w-7", terminalTheme.textDim)} />
           <button
@@ -53,16 +55,19 @@ export default function Page() {
         </div>
       </header>
 
-      <div className="grid h-[calc(100vh-74px)] grid-cols-[350px_550px_1fr]">
+      <div className="grid min-h-[calc(100dvh-74px)] lg:grid-cols-[280px_minmax(320px,420px)_1fr] xl:grid-cols-[350px_550px_1fr]">
         <aside
           className={cx(
-            "flex min-h-0 flex-col border-r",
+            "flex min-h-0 flex-col border-b lg:border-r lg:border-b-0",
             terminalTheme.border,
             terminalTheme.panelDeep
           )}
         >
           <section
-            className={cx("flex items-center gap-4 border-b px-8 py-9", terminalTheme.border)}
+            className={cx(
+              "flex items-center gap-4 border-b px-4 py-6 sm:px-8 sm:py-9",
+              terminalTheme.border
+            )}
           >
             <div
               className={cx("flex h-14 w-14 items-center justify-center", terminalTheme.accentBg)}
@@ -77,31 +82,41 @@ export default function Page() {
             </div>
           </section>
 
-          <nav className={cx("py-8 font-mono tracking-[0.26em]", terminalTheme.textDim)}>
-            <a className="flex items-center gap-5 px-8 py-5 text-base">
+          <nav
+            className={cx(
+              "grid grid-cols-2 py-4 font-mono tracking-[0.16em] sm:tracking-[0.26em] lg:block lg:py-8",
+              terminalTheme.textDim
+            )}
+          >
+            <a className="flex items-center gap-3 px-4 py-4 text-xs sm:gap-5 sm:px-8 sm:py-5 sm:text-base">
               <span className="text-xl">!</span>
               DIRECTIVES
             </a>
             <a
               className={cx(
-                "border-terminal-accent bg-terminal-accent-strong flex items-center gap-5 border-y px-8 py-5 text-base font-black text-white"
+                "border-terminal-accent bg-terminal-accent-strong flex items-center gap-3 border-y px-4 py-4 text-xs font-black text-white sm:gap-5 sm:px-8 sm:py-5 sm:text-base"
               )}
             >
               <Archive className="h-5 w-5 fill-white" />
               ARCHIVE
             </a>
-            <a className="flex items-center gap-5 px-8 py-5 text-base">
+            <a className="flex items-center gap-3 px-4 py-4 text-xs sm:gap-5 sm:px-8 sm:py-5 sm:text-base">
               <Shield className="h-5 w-5" />
               CONTAINMENT LOGS
             </a>
-            <a className="flex items-center gap-5 px-8 py-5 text-base">
+            <a className="flex items-center gap-3 px-4 py-4 text-xs sm:gap-5 sm:px-8 sm:py-5 sm:text-base">
               <Users className="h-5 w-5" />
               PERSONNEL
             </a>
           </nav>
 
           <div className={cx("mt-auto border-t p-6", terminalTheme.border)}>
-            <button className="mb-6 w-full bg-white px-5 py-4 font-mono text-xs font-black text-black">
+            <button
+              className={cx(
+                "mb-6 w-full px-5 py-4 font-mono text-xs font-black",
+                terminalTheme.inverseButton
+              )}
+            >
               NEW_INCIDENT_LOG
             </button>
             <p
@@ -119,15 +134,21 @@ export default function Page() {
           </div>
         </aside>
 
-        <section className={cx("min-h-0 border-r", terminalTheme.border, terminalTheme.panelDeep)}>
+        <section
+          className={cx(
+            "min-h-0 border-b lg:border-r lg:border-b-0",
+            terminalTheme.border,
+            terminalTheme.panelDeep
+          )}
+        >
           <div
             className={cx(
-              "flex h-[74px] items-center justify-between border-b px-6",
+              "flex min-h-[74px] flex-wrap items-center justify-between gap-3 border-b px-4 py-4 sm:px-6",
               terminalTheme.border,
               terminalTheme.panelMuted
             )}
           >
-            <h2 className="font-mono text-2xl font-black tracking-[0.16em]">
+            <h2 className="font-mono text-lg font-black tracking-[0.08em] sm:text-2xl sm:tracking-[0.16em]">
               INCOMING_TRANSMISSIONS
             </h2>
             <p className={cx("font-mono text-xs font-bold", terminalTheme.accentMuted)}>
@@ -139,7 +160,7 @@ export default function Page() {
               <article
                 key={item.title}
                 className={cx(
-                  "border-b px-7 py-7",
+                  "border-b px-4 py-5 sm:px-7 sm:py-7",
                   terminalTheme.border,
                   item.active
                     ? "bg-terminal-accent-active border-l-4 border-l-white"
@@ -172,8 +193,8 @@ export default function Page() {
         </section>
 
         <section className={cx("min-h-0 overflow-y-auto", terminalTheme.panel)}>
-          <div className={cx("border-b px-11 py-12", terminalTheme.border)}>
-            <div className="mb-4 flex items-center justify-between">
+          <div className={cx("border-b px-4 py-8 sm:px-8 lg:px-11 lg:py-12", terminalTheme.border)}>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
               <p
                 className={cx(
                   "font-mono text-xs font-black tracking-[0.5em]",
@@ -195,10 +216,10 @@ export default function Page() {
                 </button>
               </div>
             </div>
-            <h2 className="text-[40px] font-light tracking-[-0.03em]">
+            <h2 className="text-2xl font-light tracking-normal sm:text-[40px] sm:tracking-[-0.03em]">
               [업무 요청] SCP 개체 정보 전달 요청
             </h2>
-            <div className="mt-8 flex gap-16 font-mono text-sm">
+            <div className="mt-8 flex flex-col gap-4 font-mono text-sm xl:flex-row xl:gap-16">
               <p className={cx("border-terminal-accent border-l-2 pl-5", terminalTheme.textDim)}>
                 FROM:{" "}
                 <span className={cx("ml-5 font-sans", terminalTheme.copyStrong)}>
@@ -214,10 +235,10 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="mx-11 my-11 max-w-[770px]">
+          <div className="mx-4 my-8 max-w-[770px] sm:mx-8 lg:mx-11 lg:my-11">
             <article
               className={cx(
-                "border p-9 text-[21px] leading-[1.7]",
+                "border p-5 text-base leading-[1.7] sm:p-9 sm:text-[21px]",
                 terminalTheme.borderAlert,
                 terminalTheme.accentSoftBg,
                 terminalTheme.copy
@@ -230,7 +251,7 @@ export default function Page() {
                 위해 각 개체에 대한 최신 정보를 요청드립니다.
               </p>
               <p className="mt-6">아래 항목을 포함하여 회신 부탁드립니다.</p>
-              <ul className="mt-6 space-y-3 font-mono text-lg">
+              <ul className="mt-6 space-y-3 font-mono text-sm sm:text-lg">
                 <li>▪ - 개체 등급 (Object Class)</li>
                 <li>▪ - 격리 절차 (Special Containment Procedures)</li>
                 <li>▪ - 주요 특성 및 위험 요소 (Key Traits/Hazards)</li>
@@ -239,9 +260,17 @@ export default function Page() {
             </article>
 
             <aside
-              className={cx("border-terminal-accent mt-8 border-l-4 p-7", terminalTheme.panelSoft)}
+              className={cx(
+                "border-terminal-accent mt-8 border-l-4 p-5 sm:p-7",
+                terminalTheme.panelSoft
+              )}
             >
-              <h3 className={cx("font-mono text-xl font-black", terminalTheme.accentText)}>
+              <h3
+                className={cx(
+                  "font-mono text-base font-black sm:text-xl",
+                  terminalTheme.accentText
+                )}
+              >
                 *** SECURITY ALERT: INTERNAL SYSTEM ANOMALY ***
               </h3>
               <p className={cx("mt-5 text-base leading-7", terminalTheme.copy)}>
@@ -253,7 +282,9 @@ export default function Page() {
 
             <div className="bg-terminal-border my-8 h-px" />
 
-            <section className={cx("border p-8", terminalTheme.border, terminalTheme.panelDeep)}>
+            <section
+              className={cx("border p-5 sm:p-8", terminalTheme.border, terminalTheme.panelDeep)}
+            >
               <div className="mb-8 flex items-center gap-4">
                 <Shield className={cx("h-4 w-4", terminalTheme.accentText)} />
                 <h3 className="font-mono text-sm font-black tracking-[0.45em]">
@@ -263,12 +294,12 @@ export default function Page() {
               <p className={cx("mb-8 text-sm", terminalTheme.textMuted)}>
                 안전한 수송을 위한 보안 승인 코드를 선택하십시오 (4개 선택 필요)
               </p>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
                 {challengeCodes.map(({ label, icon: Icon }) => (
                   <button
                     key={label}
                     className={cx(
-                      "flex aspect-square flex-col items-center justify-center gap-4",
+                      "flex aspect-square min-h-28 flex-col items-center justify-center gap-3 px-2 text-center sm:gap-4",
                       terminalTheme.tile
                     )}
                   >

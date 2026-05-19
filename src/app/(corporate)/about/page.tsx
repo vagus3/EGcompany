@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <section className="mx-auto grid max-w-5xl grid-cols-2 items-start gap-16 px-6 pt-20 pb-24">
+      <section className="mx-auto grid max-w-5xl items-start gap-8 px-4 pt-14 pb-16 sm:px-6 md:grid-cols-2 md:gap-16 md:pt-20 md:pb-24">
         <h1 className="text-[clamp(2.8rem,5vw,4.2rem)] leading-tight font-black tracking-tight text-black">
           Global Infrastructure.
           <br />
@@ -17,10 +17,10 @@ export default function Page() {
       </section>
 
       {/* Director section */}
-      <section className="mx-auto grid max-w-5xl grid-cols-[280px_1fr] items-start gap-16 px-6 pb-24">
+      <section className="mx-auto grid max-w-5xl items-start gap-10 px-4 pb-16 sm:px-6 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] lg:gap-16 lg:pb-24">
         {/* Portrait */}
         <div>
-          <div className="aspect-4/5 w-full overflow-hidden bg-gray-800">
+          <div className="aspect-4/5 w-full max-w-72 overflow-hidden bg-gray-800 md:max-w-none">
             {/* public/images/director.jpg 로 교체 가능 */}
             <div className="bg-gradient-linear-to-b h-full w-full from-gray-700 to-gray-900" />
           </div>
@@ -65,7 +65,10 @@ export default function Page() {
           </h2>
           <div className="divide-y divide-gray-300">
             {companyEvolutionData.map(({ year, title, desc }) => (
-              <div key={year} className="grid grid-cols-[140px_220px_1fr] items-start gap-8 py-10">
+              <div
+                key={year}
+                className="grid items-start gap-3 py-8 sm:grid-cols-[120px_1fr] lg:grid-cols-[140px_220px_1fr] lg:gap-8 lg:py-10"
+              >
                 <span className="text-4xl font-black text-gray-300">{year}</span>
                 <p className="pt-2 text-xs tracking-widest text-gray-500 uppercase">{title}</p>
                 <p className="text-sm leading-relaxed text-gray-600">{desc}</p>

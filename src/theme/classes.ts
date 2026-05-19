@@ -22,7 +22,7 @@ export const corporateTheme = {
 } as const;
 
 export const terminalTheme = {
-  page: "bg-terminal-bg text-terminal-text",
+  page: "terminal-theme-lock bg-terminal-bg text-terminal-text",
   panel: "bg-terminal-panel",
   panelDeep: "bg-terminal-panel-deep",
   panelMuted: "bg-terminal-panel-muted",
@@ -41,4 +41,5 @@ export const terminalTheme = {
   accentSoftBg: "bg-terminal-accent-soft",
   accentText: "text-terminal-accent-text",
   accentMuted: "text-terminal-accent-muted",
+  inverseButton: "bg-terminal-text text-terminal-bg",
 } as const;

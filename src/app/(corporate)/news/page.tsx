@@ -7,8 +7,8 @@ export default function Page() {
   const rest = articles.filter((a) => !a.featured);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14">
-      <div className="grid grid-cols-[1fr_280px] gap-12">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-14">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-12">
         {/* Left: Articles */}
         <div>
           <p className="mb-4 text-[10px] tracking-[0.3em] text-gray-400 uppercase">
@@ -46,7 +46,7 @@ export default function Page() {
           </article>
 
           {/* Smaller articles */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid gap-6 sm:grid-cols-2">
             {rest.map((article) => (
               <article key={article.slug}>
                 <Link href={`/news/${article.slug}`} className="group block">

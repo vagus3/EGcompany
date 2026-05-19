@@ -14,14 +14,14 @@
   --eg-corporate-border: #e5e5e5;
   --eg-corporate-border-strong: #111111;
 
-  --eg-terminal-bg: #101010;
-  --eg-terminal-panel: #151515;
-  --eg-terminal-panel-deep: #0d0e0e;
-  --eg-terminal-panel-muted: #1d1d1d;
-  --eg-terminal-panel-soft: #1f1f1f;
-  --eg-terminal-tile: #2c2c2c;
-  --eg-terminal-tile-hover: #3a3a3a;
-  --eg-terminal-border: #2b2b2b;
+  --eg-terminal-bg: #050505;
+  --eg-terminal-panel: #0b0b0b;
+  --eg-terminal-panel-deep: #030404;
+  --eg-terminal-panel-muted: #111111;
+  --eg-terminal-panel-soft: #141414;
+  --eg-terminal-tile: #181818;
+  --eg-terminal-tile-hover: #252525;
+  --eg-terminal-border: #202020;
   --eg-terminal-border-warm: #604844;
   --eg-terminal-border-alert: #4b1111;
   --eg-terminal-text: #f2f0ec;
