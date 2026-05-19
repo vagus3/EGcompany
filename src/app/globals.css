@@ -71,6 +71,12 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+.terminal-theme-lock {
+  color-scheme: dark;
+  background: var(--eg-terminal-bg);
+  color: var(--eg-terminal-text);
+}
+
 html.dark-mode .bg-white {
   background-color: var(--background);
 }

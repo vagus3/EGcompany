@@ -27,7 +27,9 @@ const challengeCodes = [
 
 export default function Page() {
   return (
-    <main className={cx("min-h-screen overflow-hidden", terminalTheme.page)}>
+    <main
+      className={cx("min-h-screen overflow-hidden", terminalTheme.page, terminalTheme.fixedScheme)}
+    >
       <header
         className={cx(
           "grid h-[74px] grid-cols-[350px_1fr_auto] items-center border-b px-8",
@@ -101,7 +103,12 @@ export default function Page() {
           </nav>
 
           <div className={cx("mt-auto border-t p-6", terminalTheme.border)}>
-            <button className="mb-6 w-full bg-white px-5 py-4 font-mono text-xs font-black text-black">
+            <button
+              className={cx(
+                "mb-6 w-full px-5 py-4 font-mono text-xs font-black",
+                terminalTheme.inverseButton
+              )}
+            >
               NEW_INCIDENT_LOG
             </button>
             <p
