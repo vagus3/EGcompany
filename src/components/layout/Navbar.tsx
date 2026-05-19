@@ -72,10 +72,6 @@ export default function Navbar() {
 
   const theme = themeMode === "dark" ? themeColors.dark : themeColors.light;
 
-  function enforceLightMode() {
-    handleThemeChange("light");
-  }
-
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
@@ -115,7 +111,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
-      <nav className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-6 lg:grid-cols-[1fr_auto_1fr] relative">
+      <nav className="relative mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-6 lg:grid-cols-[1fr_auto_1fr]">
         <Link href="/" className={cx("text-xl font-black tracking-tight", theme.text)}>
           EG Company
         </Link>
@@ -183,7 +179,7 @@ export default function Navbar() {
           {themeMenuOpen && (
             <div
               ref={themeMenuRef}
-              className={`absolute right-0 top-14 border shadow-lg ${theme.bg}`}
+              className={`absolute top-14 right-0 border shadow-lg ${theme.bg}`}
               style={{
                 borderColor: theme.border === "border-neutral-200" ? "#e5e7eb" : "#404040",
               }}

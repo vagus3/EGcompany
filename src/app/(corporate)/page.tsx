@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import EGShieldLogo from "@/components/ui/EGShieldLogo";
 
 const onboardingQuestions = [
   {
     num: "01",
-    question: "발신자를 확인할 수 없는 메일이라도, 긴급 요청이 있으면 즉시 첨부파일을 실행해도 된다.",
+    question:
+      "발신자를 확인할 수 없는 메일이라도, 긴급 요청이 있으면 즉시 첨부파일을 실행해도 된다.",
     options: [
       { text: "O (예)", value: false },
       { text: "X (아니오)", value: true },
@@ -22,7 +23,8 @@ const onboardingQuestions = [
   },
   {
     num: "03",
-    question: "CCTV 화면에서 비정상적인 움직임이 보이면 해당 구역 접근을 중지하고 보안팀에 보고한다.",
+    question:
+      "CCTV 화면에서 비정상적인 움직임이 보이면 해당 구역 접근을 중지하고 보안팀에 보고한다.",
     options: [
       { text: "O (예)", value: true },
       { text: "X (아니오)", value: false },
@@ -47,7 +49,10 @@ const onboardingQuestions = [
 ];
 
 export default function Page() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("eg-new-admin-test-required") === "true";
+  });
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
 
@@ -57,16 +62,6 @@ export default function Page() {
     () => onboardingQuestions.every((question) => answers[question.num] === true),
     [answers]
   );
-
-  // 회원가입 후 모달 자동으로 표시
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const shouldShowModal = window.localStorage.getItem("eg-new-admin-test-required") === "true";
-      if (shouldShowModal) {
-        setModalOpen(true);
-      }
-    }
-  }, []);
 
   function handleAnswer(questionNum: string, value: boolean) {
     setAnswers((current) => ({ ...current, [questionNum]: value }));
@@ -169,7 +164,10 @@ export default function Page() {
 
               <div className="mt-7 divide-y divide-neutral-200 border-y border-neutral-200">
                 {onboardingQuestions.map((question) => (
-                  <div className="grid grid-cols-[56px_1fr_220px] items-center gap-4 py-4" key={question.num}>
+                  <div
+                    className="grid grid-cols-[56px_1fr_220px] items-center gap-4 py-4"
+                    key={question.num}
+                  >
                     <span className="text-lg font-black text-black">{question.num}</span>
                     <p className="text-sm leading-6 text-black">{question.question}</p>
                     <div className="flex justify-end gap-5">
