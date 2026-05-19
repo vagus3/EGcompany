@@ -7,14 +7,20 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String?
-  language     String   @default("ko")
-  theme        String   @default("light")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  email               String   @unique
+  name                String?
+  passwordHash        String?
+  employeeCode        String?  @unique
+  department          String   @default("General")
+  role                String   @default("employee")
+  clearanceLevel      Int      @default(1)
+  notificationEmail   String?
+  notificationEnabled Boolean  @default(true)
+  language            String   @default("ko")
+  theme               String   @default("light")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   progresses Progress[]
   sessions   Session[]
