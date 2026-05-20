@@ -29,11 +29,9 @@ export default function HintBox({ hint, visible, containerWidth = 320 }: HintBox
           className="overflow-hidden rounded-lg border border-yellow-500/30 bg-yellow-900/20 backdrop-blur-sm"
         >
           <div className="p-4">
-            <p className="text-xs font-semibold text-yellow-400 mb-2">💡 힌트</p>
-            <p className="text-sm text-yellow-100 leading-relaxed">{hint}</p>
-            {lineCount > 3 && (
-              <p className="text-xs text-yellow-500/60 mt-2">{lineCount}줄</p>
-            )}
+            <p className="mb-2 text-xs font-semibold text-yellow-400">💡 힌트</p>
+            <p className="text-sm leading-relaxed text-yellow-100">{hint}</p>
+            {lineCount > 3 && <p className="mt-2 text-xs text-yellow-500/60">{lineCount}줄</p>}
           </div>
         </motion.div>
       )}

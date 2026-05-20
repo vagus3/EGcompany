@@ -62,7 +62,7 @@ function renderBlock(block: Block, idx: number) {
       return (
         <div key={idx} className="my-8 border border-gray-200 p-6">
           <p className="mb-6 text-[10px] tracking-widest text-gray-400 uppercase">{block.title}</p>
-          <div className="flex gap-16">
+          <div className="flex flex-wrap gap-8 sm:gap-16">
             {block.metrics.map(({ value, label }) => (
               <div key={label}>
                 <p className="text-4xl font-black tracking-tight text-black">{value}</p>
@@ -85,8 +85,8 @@ export default async function Page({ params }: PageProps) {
   if (!article) notFound();
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <div className="grid grid-cols-[1fr_260px] gap-16">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-16">
         {/* Left: Article */}
         <article>
           {/* Breadcrumb */}

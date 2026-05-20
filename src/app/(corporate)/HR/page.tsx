@@ -5,12 +5,12 @@ export default function Page() {
   return (
     <div className="bg-white font-sans text-zinc-900">
       {/* 1. Hero Section */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:gap-12 md:py-20">
         <div>
           <p className="mb-4 text-sm font-semibold tracking-widest text-zinc-500 uppercase">
             Department / Human Resources
           </p>
-          <h1 className="mb-6 text-6xl leading-tight font-bold">
+          <h1 className="mb-6 text-[clamp(3rem,14vw,3.75rem)] leading-tight font-bold">
             Human
             <br />
             Resources.
@@ -20,15 +20,15 @@ export default function Page() {
             growth, inclusivity, and creating a sustainable workplace environment.
           </p>
         </div>
-        <div className="h-400px relative w-full overflow-hidden bg-zinc-100 grayscale">
+        <div className="relative h-72 w-full overflow-hidden bg-zinc-100 grayscale sm:h-96">
           {/* 실제 이미지 경로로 수정 필요 */}
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-80" />
         </div>
       </section>
 
       {/* 2. Strategic Overview */}
-      <section className="bg-zinc-50 py-24">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="bg-zinc-50 py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="mb-12 text-2xl font-bold">Strategic Overview</h2>
           <div className="grid gap-8 md:grid-cols-3">
             {[
@@ -50,7 +50,7 @@ export default function Page() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="border border-zinc-200 bg-white p-10 transition-shadow hover:shadow-lg"
+                className="border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-lg sm:p-10"
               >
                 <div className="mb-6 text-zinc-400">{item.icon}</div>
                 <h3 className="mb-4 text-xl font-bold">{item.title}</h3>
@@ -62,8 +62,8 @@ export default function Page() {
       </section>
 
       {/* 3. Company Culture & Values */}
-      <section className="mx-auto grid max-w-7xl items-center gap-16 px-6 py-24 md:grid-cols-2">
-        <div className="h-500px relative grayscale">
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:gap-16 md:py-24">
+        <div className="relative h-80 grayscale sm:h-[500px]">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80')] bg-cover bg-center" />
         </div>
         <div>
@@ -80,10 +80,10 @@ export default function Page() {
       </section>
 
       {/* 4. Career Development */}
-      <section className="bg-zinc-900 py-24 text-white">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="bg-zinc-900 py-16 text-white sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="mb-16 text-2xl font-bold">Career Development</h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
             {[
               { role: "Junior Analyst", level: "Entry Level" },
               { role: "Senior Strategist", level: "Mid Level" },
@@ -100,7 +100,7 @@ export default function Page() {
       </section>
 
       {/* 5. Employee Experience */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         <h2 className="mb-16 text-center text-2xl font-bold">Employee Experience</h2>
         <div className="grid gap-12 md:grid-cols-2">
           {[
@@ -117,7 +117,10 @@ export default function Page() {
                 "I love the freedom to innovate our hiring processes and the culture of trust.",
             },
           ].map((testimonial, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-8 bg-zinc-50 p-8 md:flex-row">
+            <div
+              key={idx}
+              className="flex flex-col items-center gap-6 bg-zinc-50 p-6 sm:p-8 md:flex-row md:gap-8"
+            >
               <div className="flex-shrink-linear-0 h-32 w-32 overflow-hidden rounded-full bg-zinc-300 grayscale">
                 <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80')] bg-cover" />
               </div>
@@ -134,8 +137,8 @@ export default function Page() {
       </section>
 
       {/* 6. Footer / Get in Touch */}
-      <section className="border-t border-zinc-200 bg-zinc-50 py-20">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-12 px-6 md:flex-row">
+      <section className="border-t border-zinc-200 bg-zinc-50 py-16 sm:py-20">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-10 px-4 sm:px-6 md:flex-row md:gap-12">
           <div>
             <h2 className="mb-6 text-4xl font-bold">Get in Touch.</h2>
             <div className="space-y-2 text-zinc-500">

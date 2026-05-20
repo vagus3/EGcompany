@@ -97,7 +97,7 @@ export default function Page() {
   return (
     <div className="bg-white">
       {/* Header */}
-      <section className="mx-auto max-w-4xl px-6 pt-20 pb-16">
+      <section className="mx-auto max-w-4xl px-4 pt-14 pb-12 sm:px-6 sm:pt-20 sm:pb-16">
         <h1 className="mb-6 text-[clamp(2.2rem,4.5vw,3.5rem)] leading-tight font-black tracking-tight text-black">
           Employee Conduct
           <br />& Workplace Safety
@@ -110,10 +110,13 @@ export default function Page() {
       </section>
 
       {/* Rules list */}
-      <section className="mx-auto max-w-4xl space-y-12 px-6 pb-20">
+      <section className="mx-auto max-w-4xl space-y-10 px-4 pb-16 sm:space-y-12 sm:px-6 sm:pb-20">
         {rules.map(({ num, title, body }) => (
-          <div key={num} className="grid grid-cols-[72px_1fr] gap-6">
-            <span className="pt-1 text-4xl leading-none font-black text-gray-200 select-none">
+          <div
+            key={num}
+            className="grid grid-cols-[48px_1fr] gap-4 sm:grid-cols-[72px_1fr] sm:gap-6"
+          >
+            <span className="pt-1 text-3xl leading-none font-black text-gray-200 select-none sm:text-4xl">
               {num}
             </span>
             <div>
@@ -125,8 +128,8 @@ export default function Page() {
       </section>
 
       {/* Notice box */}
-      <section className="mx-auto max-w-4xl px-6 pb-24">
-        <div className="flex gap-4 rounded border border-gray-300 p-6">
+      <section className="mx-auto max-w-4xl px-4 pb-20 sm:px-6 sm:pb-24">
+        <div className="flex gap-4 rounded border border-gray-300 p-5 sm:p-6">
           <span className="mt-0.5 text-gray-400">ⓘ</span>
           <div>
             <p className="mb-2 text-xs font-bold text-black">Notice</p>
@@ -151,14 +154,16 @@ export default function Page() {
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             {/* Header */}
-            <div className="flex items-start justify-between border-b border-gray-200 p-6">
+            <div className="flex items-start justify-between gap-4 border-b border-gray-200 p-5 sm:p-6">
               <div className="flex items-start gap-3">
                 <div className="mt-1 flex h-10 w-10 items-center justify-center rounded border-2 border-gray-800">
                   <span className="text-lg">🔒</span>
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-gray-500">EG COMPANY</p>
-                  <h2 className="text-xl font-bold text-black">Administrator Access Protocol</h2>
+                  <h2 className="text-lg font-bold text-black sm:text-xl">
+                    Administrator Access Protocol
+                  </h2>
                 </div>
               </div>
               <button
@@ -170,7 +175,7 @@ export default function Page() {
             </div>
 
             {/* Content */}
-            <div className="p-8">
+            <div className="p-5 sm:p-8">
               <div className="mb-8">
                 <h3 className="mb-2 text-lg font-bold text-black">신규 관리자 규칙 숙지 테스트</h3>
                 <p className="mb-4 text-sm text-gray-600">
@@ -207,7 +212,7 @@ export default function Page() {
                 <div className="space-y-6">
                   <div className="rounded-lg bg-gray-50 p-6">
                     <div className="flex gap-4">
-                      <span className="min-w-fit text-4xl leading-none font-black text-gray-300">
+                      <span className="min-w-fit text-3xl leading-none font-black text-gray-300 sm:text-4xl">
                         {testQuestions[currentQuestion].num}
                       </span>
                       <div className="flex-1">

@@ -28,7 +28,7 @@ export default function SignUpForm() {
   }, [state.ok, router]);
 
   return (
-    <form action={formAction} className="mt-14 space-y-12">
+    <form action={formAction} className="mt-10 space-y-10 sm:mt-14 sm:space-y-12">
       <input type="hidden" name="language" value="ko" />
       <input type="hidden" name="theme" value="light" />
 
@@ -45,8 +45,8 @@ export default function SignUpForm() {
           type="text"
           autoComplete="name"
           required
-          placeholder="Alexander Vance"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
+          placeholder="ALEXANDER VANCE"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 
@@ -63,8 +63,8 @@ export default function SignUpForm() {
           type="email"
           autoComplete="email"
           required
-          placeholder="vance.a@eg.com"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
+          placeholder="VANCE.A@EG.COM"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 
@@ -83,11 +83,11 @@ export default function SignUpForm() {
           required
           minLength={8}
           placeholder="********"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2.4rem,6vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 
-      <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-8 text-left">
+      <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-5 text-left sm:p-8">
         <h2 className="text-[12px] font-black tracking-[0.24em] text-black uppercase">
           EG Code of Conduct
         </h2>
@@ -105,12 +105,12 @@ export default function SignUpForm() {
         </div>
       </div>
 
-      <label className="flex items-center gap-5 text-[12px] font-black tracking-[0.22em] text-black uppercase">
+      <label className="flex items-start gap-4 text-[12px] font-black tracking-[0.22em] text-black uppercase sm:items-center sm:gap-5">
         <input
           name="conduct"
           type="checkbox"
           required
-          className="h-5 w-5 appearance-none border border-black bg-white checked:bg-black"
+          className="mt-0.5 h-5 w-5 shrink-0 appearance-none border border-black bg-white checked:bg-black sm:mt-0"
         />
         I acknowledge and agree to the privacy policy and code of conduct.
       </label>
@@ -119,7 +119,7 @@ export default function SignUpForm() {
         <button
           type="submit"
           disabled={pending}
-          className="h-24 w-36 bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400"
+          className="h-20 w-full bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400 sm:h-24 sm:w-36"
         >
           {pending ? "Saving" : "Sign Up"}
         </button>

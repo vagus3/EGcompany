@@ -16,14 +16,14 @@ export default function Page() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
       {/* Heading */}
       <h1 className="mb-14 text-[clamp(3rem,6vw,5rem)] font-black tracking-tight text-black">
         Contact.
       </h1>
 
       {/* Department cards */}
-      <div className="mb-20 grid grid-cols-2 gap-px border border-gray-200 bg-gray-200">
+      <div className="mb-14 grid gap-px border border-gray-200 bg-gray-200 sm:mb-20 sm:grid-cols-2">
         {departments.map(({ category, name, slug, email, phone }) => (
           <Link
             key={name}
@@ -32,10 +32,10 @@ export default function Page() {
                 ? "/HR"
                 : `/portals/${slug}`
             }
-            className="group block bg-white p-7 transition-colors hover:bg-gray-50"
+            className="group block bg-white p-5 transition-colors hover:bg-gray-50 sm:p-7"
           >
             <p className="mb-1 text-[10px] tracking-widest text-gray-400 uppercase">{category}</p>
-            <h2 className="mb-4 text-2xl font-black tracking-tight text-black underline-offset-2 group-hover:underline">
+            <h2 className="mb-4 text-xl font-black tracking-tight text-black underline-offset-2 group-hover:underline sm:text-2xl">
               {name}
             </h2>
             <p className="text-sm text-gray-600">{email}</p>
@@ -43,7 +43,7 @@ export default function Page() {
           </Link>
         ))}
         {/* Empty cell to fill last row if odd */}
-        {departments.length % 2 !== 0 && <div className="bg-white" />}
+        {departments.length % 2 !== 0 && <div className="hidden bg-white sm:block" />}
       </div>
 
       {/* Report form */}
