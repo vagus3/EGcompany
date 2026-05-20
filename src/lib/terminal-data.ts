@@ -37,8 +37,14 @@ export interface TerminalProgress {
 export interface TerminalObjectEntry {
   id: string;
   label: string;
+  symbol: string;
   classCode: string;
+  title: string;
+  safetyLevel: number;
   note: string;
+  description: string[];
+  containment: string[];
+  status: string;
 }
 
 export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v1";
@@ -47,52 +53,124 @@ export const pinChallengeAnswer = ["OBSERVE", "TRACE", "KEY", "LOCK"] as const;
 
 export const terminalObjects: TerminalObjectEntry[] = [
   {
-    id: "OBSERVE",
-    label: "OBSERVE",
+    id: "WESEN-096",
+    label: "WESEN-096",
+    symbol: "FALSE",
+    title: "The Unseen Witness",
+    safetyLevel: 4,
     classCode: "VISUAL-02",
     note: "관찰 대상. 직접 응시 기록이 반복됩니다.",
+    description: [
+      "WESEN-096은 직접적인 시선 접촉 기록에 반응하는 관찰형 개체다.",
+      "기록자는 대상이 시야에서 사라진 후에도 관찰이 계속되는 느낌을 보고했다.",
+    ],
+    containment: ["직접 응시 금지", "시각 자료는 저해상도 사본으로만 열람"],
+    status: "시각 접촉 기록 3건 보류 중",
   },
   {
-    id: "TRACE",
-    label: "TRACE",
-    classCode: "EVIDENCE-11",
-    note: "이동 경로와 접근 로그를 역추적합니다.",
+    id: "WESEN-783",
+    label: "WESEN-783",
+    symbol: "OBSERVE",
+    title: "The Static Observer",
+    safetyLevel: 2,
+    classCode: "OBSERVE-04",
+    note: "고정 카메라와 관찰 로그에만 반응합니다.",
+    description: [
+      "WESEN-783은 감시 장비가 켜져 있을 때만 위치가 확정되는 관찰형 개체다.",
+      "관찰이 중단되면 이전 프레임과 현재 프레임 사이의 기록이 비어 있게 된다.",
+    ],
+    containment: ["감시 장비 2대 이상 동시 운용", "관찰 로그 30초 이상 공백 금지"],
+    status: "카메라 02-B 동기화 필요",
   },
   {
-    id: "KEY",
-    label: "KEY",
+    id: "WESEN-1744",
+    label: "WESEN-1744",
+    symbol: "KEY",
+    title: "The Borrowed Key",
+    safetyLevel: 1,
     classCode: "ACCESS-03",
     note: "잠금 해제 권한과 인증 흔적을 보관합니다.",
+    description: [
+      "WESEN-1744는 금속 재질의 고전식 열쇠 형태의 개체이다. 외형은 단순하지만, 존재하지 않는 잠금장치에도 대응하는 특성을 가진다.",
+      "이 개체는 사용자가 인식하고 있는 '열려야 하는 대상'에 반응하여 해당 대상의 잠금 상태를 해제한다.",
+    ],
+    containment: ["실제 자물쇠가 없어도 작동하며, 디지털 시스템에도 적용된다.", "사용 시, 열리는 대상은 항상 하나로 고정되지 않는다."],
+    status: "현재 EG Log 03-27 창고에 보관 중",
   },
   {
-    id: "LOCK",
-    label: "LOCK",
+    id: "WESEN-0491",
+    label: "WESEN-0491",
+    symbol: "LOCK",
+    title: "The Sealed Door",
+    safetyLevel: 3,
     classCode: "SEAL-09",
     note: "격리 절차 중단을 방지하는 잠금 장치입니다.",
+    description: [
+      "WESEN-0491은 열 수 없는 문처럼 보이지만, 잠금의 원인이 문이 아니라 접근자에게 있는 개체다.",
+      "허가되지 않은 접근자는 같은 복도를 반복해서 통과하게 된다.",
+    ],
+    containment: ["승인된 관리자 카드 없이 접근 금지", "물리적 개방 시도 금지"],
+    status: "잠금 루프 안정",
   },
   {
-    id: "OPEN",
-    label: "OPEN",
+    id: "WESEN-106",
+    label: "WESEN-106",
+    symbol: "OPEN",
+    title: "The Open Place",
+    safetyLevel: 2,
     classCode: "BREACH-04",
     note: "개방 상태가 감지되면 즉시 보고해야 합니다.",
+    description: [
+      "WESEN-106은 닫힌 공간을 열린 장소로 오인하게 만드는 인지형 개체다.",
+      "대상 주변의 표지판과 방향 감각이 동시에 불안정해진다.",
+    ],
+    containment: ["출입문 2중 잠금 유지", "개방 상태 보고 자동화"],
+    status: "개방 감지 없음",
   },
   {
-    id: "FALSE",
-    label: "FALSE",
-    classCode: "SIGNAL-00",
-    note: "허위 신호가 실제 기록처럼 보일 수 있습니다.",
+    id: "WESEN-392",
+    label: "WESEN-392",
+    symbol: "TRACE",
+    classCode: "TRACE-11",
+    title: "The Red Trail",
+    safetyLevel: 3,
+    note: "이동 경로와 접근 로그를 역추적합니다.",
+    description: [
+      "WESEN-392는 접근자의 경로 뒤에만 나타나는 잔류 기록형 개체다.",
+      "실제 이동하지 않은 경로도 로그에는 남을 수 있다.",
+    ],
+    containment: ["접근 로그 실시간 비교", "동일 경로 2회 반복 금지"],
+    status: "추적 로그 검증 대기",
   },
   {
-    id: "ARCHIVE",
-    label: "ARCHIVE",
+    id: "WESEN-9428",
+    label: "WESEN-9428",
+    symbol: "ARCHIVE",
     classCode: "DOC-19",
+    title: "The Missing Index",
+    safetyLevel: 2,
     note: "보관 문서와 승인 이력을 열람합니다.",
+    description: [
+      "WESEN-9428은 존재하지 않는 문서 색인을 생성하는 기록형 개체다.",
+      "색인된 문서 중 일부는 실제 문서보다 먼저 발견된다.",
+    ],
+    containment: ["색인 자동 동기화 중지", "수동 승인 후 열람"],
+    status: "문서 8건 격리",
   },
   {
-    id: "CHANNEL",
-    label: "CHANNEL",
+    id: "WESEN-0101",
+    label: "WESEN-0101",
+    symbol: "CHANNEL",
     classCode: "COMMS-07",
+    title: "The Return Channel",
+    safetyLevel: 5,
     note: "내부 송신 채널과 긴급 메일 큐입니다.",
+    description: [
+      "WESEN-0101은 발신자가 사라진 뒤에도 답장을 계속 생성하는 통신형 개체다.",
+      "회신 내용은 수신자가 아직 알지 못하는 정보를 포함할 수 있다.",
+    ],
+    containment: ["자동 회신 차단", "긴급 큐 격리"],
+    status: "송신 채널 안정",
   },
 ];
 
@@ -101,16 +179,16 @@ export const terminalMails: TerminalMail[] = [
     id: "transport-request",
     level: "INTERNAL // LOGISTICS",
     time: "16:45:12 ZULU",
-    title: "[업무 요청] SCP 개체 정보 전달 요청",
+    title: "[업무요청] WESEN 개체 정보 전달 요청",
     sender: "제이크 (수송팀 리더)",
-    to: "ADMIN_L5@SITE-19.TERMINAL",
-    preview: "캐나다 지부에서 샌프란시스코 지부로 예정된 수송 정보를 요청합니다.",
+    to: "셀리아이아",
+    preview: "수송 예정 WESEN 개체 정보를 전달 요청드립니다.",
     tags: ["TRANSPORT", "REQUEST"],
     unlockedStage: "pin-select",
     challengeType: "pin-select",
     body: [
       "안녕하세요, 수송팀 리더 제이크입니다.",
-      "금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 SCP 개체 수송이 예정되어 있습니다. 현재 수송 준비 과정에서 일부 개체의 세부 정보 확인이 지연되고 있어, 안전한 수송을 위해 각 개체에 대한 최신 정보를 요청드립니다.",
+      "금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 WESEN 개체 수송이 예정되어 있습니다. 현재 수송 준비 과정에서 일부 개체의 세부 정보 확인이 지연되고 있어, 안전한 수송을 위해 각 개체에 대한 최신 정보를 요청드립니다.",
       "아래 항목을 포함하여 회신 부탁드립니다.",
       "개체 등급, 격리 절차, 주요 특성 및 위험 요소, 수송 시 유의점",
     ],
