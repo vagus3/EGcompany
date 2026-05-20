@@ -77,6 +77,40 @@ body {
   color: var(--eg-terminal-text);
 }
 
+.terminal-noise {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(176 0 0 / 0.08) 1px, transparent 1px);
+  background-size:
+    7px 7px,
+    13px 13px;
+  animation: terminal-noise-shift 0.28s steps(2, end) infinite;
+}
+
+.terminal-scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.08) 0,
+    rgb(255 255 255 / 0.08) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+
+@keyframes terminal-noise-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(3px, -2px, 0);
+  }
+
+  100% {
+    transform: translate3d(-2px, 2px, 0);
+  }
+}
+
 html.dark-mode .bg-white {
   background-color: var(--background);
 }
