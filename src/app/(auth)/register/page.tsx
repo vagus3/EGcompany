@@ -15,7 +15,7 @@ export default function RegisterPage() {
           <form className="flex flex-col gap-10 sm:gap-12">
             <LargeInput
               label="Full Name"
-              placeholder="ALEXANDER VANCE"
+              placeholder="Alexander Vance"
               type="text"
               name="fullName"
             />
