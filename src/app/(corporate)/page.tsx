@@ -87,16 +87,16 @@ export default function Page() {
   return (
     <div className="flex flex-col items-center">
       {/* Hero: logo + title */}
-      <section className="flex w-full flex-col items-center gap-12 pt-28 pb-16">
-        <EGShieldLogo className="h-44 w-44" />
-        <h1 className="text-[clamp(4rem,12vw,9rem)] leading-none font-black tracking-tight text-black uppercase">
+      <section className="flex w-full flex-col items-center gap-8 px-4 pt-20 pb-12 sm:gap-12 sm:pt-28 sm:pb-16">
+        <EGShieldLogo className="h-32 w-32 sm:h-44 sm:w-44" />
+        <h1 className="text-center text-[clamp(3rem,18vw,9rem)] leading-none font-black tracking-tight text-black uppercase">
           EG COMPANY
         </h1>
       </section>
 
       {/* Building image */}
-      <section className="mx-auto mb-28 w-full max-w-[87%]">
-        <div className="aspect-16/7 w-full overflow-hidden bg-gray-400">
+      <section className="mx-auto mb-20 w-full max-w-[92%] sm:mb-28 sm:max-w-[87%]">
+        <div className="aspect-[4/3] w-full overflow-hidden bg-gray-400 sm:aspect-16/7">
           {/* public/images/hq-building.jpg 로 교체 가능 */}
           <div className="bg-gradient-linear-to-br flex h-full w-full items-center justify-center from-gray-300 via-gray-400 to-gray-500">
             <span className="text-sm tracking-widest text-gray-200 uppercase select-none">
@@ -109,8 +109,8 @@ export default function Page() {
       {/* Administrator Access Protocol Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-4xl border border-neutral-200 bg-white shadow-2xl">
-            <div className="flex items-start justify-between border-b border-neutral-200 px-8 py-6">
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto border border-neutral-200 bg-white shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-5 sm:px-8 sm:py-6">
               <div className="flex gap-4">
                 <div className="flex h-10 w-10 items-center justify-center border border-neutral-500 text-neutral-700">
                   ⛨
@@ -132,10 +132,12 @@ export default function Page() {
               </button>
             </div>
 
-            <div className="px-8 py-7">
-              <div className="grid grid-cols-[1fr_160px] gap-8">
+            <div className="px-5 py-6 sm:px-8 sm:py-7">
+              <div className="grid gap-6 md:grid-cols-[1fr_160px] md:gap-8">
                 <div>
-                  <h3 className="text-2xl font-black text-black">신규 가입자 관리자 테스트</h3>
+                  <h3 className="text-xl font-black text-black sm:text-2xl">
+                    신규 가입자 관리자 테스트
+                  </h3>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-500">
                     본 테스트는 신규 가입자의 사내 보안 정책 이해도를 확인하기 위한 필수 과정입니다.
                     모든 문항을 선택한 뒤 제출하면 통과 여부에 따라 관리자 페이지 접근이 처리됩니다.
@@ -165,12 +167,12 @@ export default function Page() {
               <div className="mt-7 divide-y divide-neutral-200 border-y border-neutral-200">
                 {onboardingQuestions.map((question) => (
                   <div
-                    className="grid grid-cols-[56px_1fr_220px] items-center gap-4 py-4"
+                    className="grid gap-3 py-4 sm:grid-cols-[48px_1fr] lg:grid-cols-[56px_1fr_220px] lg:items-center lg:gap-4"
                     key={question.num}
                   >
                     <span className="text-lg font-black text-black">{question.num}</span>
                     <p className="text-sm leading-6 text-black">{question.question}</p>
-                    <div className="flex justify-end gap-5">
+                    <div className="flex flex-wrap gap-4 lg:justify-end lg:gap-5">
                       {question.options.map((option) => (
                         <label
                           className="flex items-center gap-2 text-[11px] font-bold text-neutral-600"
@@ -191,7 +193,7 @@ export default function Page() {
                 ))}
               </div>
 
-              <div className="mt-6 grid grid-cols-[1fr_auto] items-center gap-6">
+              <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-6">
                 <div className="flex gap-3 border border-yellow-200 bg-yellow-50 p-4">
                   <span className="text-yellow-700">⚠</span>
                   <p className="text-xs leading-5 text-neutral-700">
@@ -201,7 +203,7 @@ export default function Page() {
                 </div>
 
                 <button
-                  className="h-12 bg-black px-8 text-[12px] font-black tracking-[0.18em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+                  className="h-12 w-full bg-black px-8 text-[12px] font-black tracking-[0.18em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 md:w-auto"
                   disabled={!allAnswered}
                   onClick={handleSubmitTest}
                   type="button"

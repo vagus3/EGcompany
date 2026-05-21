@@ -27,22 +27,12 @@ function SceneLights({ config }: { config: SceneConfig }) {
 
 export default function GameScene({ config, children }: GameSceneProps) {
   return (
-    <Canvas
-      shadows
-      className="w-full h-full"
-      gl={{ antialias: true }}
-    >
-      <PerspectiveCamera
-        makeDefault
-        position={config.camera.position}
-        fov={config.camera.fov}
-      />
+    <Canvas shadows className="h-full w-full" gl={{ antialias: true }}>
+      <PerspectiveCamera makeDefault position={config.camera.position} fov={config.camera.fov} />
       <color attach="background" args={[config.background]} />
       <SceneLights config={config} />
       <OrbitControls enablePan={false} maxPolarAngle={Math.PI / 2} />
-      <Suspense fallback={null}>
-        {children}
-      </Suspense>
+      <Suspense fallback={null}>{children}</Suspense>
     </Canvas>
   );
 }

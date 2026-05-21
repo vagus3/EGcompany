@@ -27,7 +27,14 @@ export default function PuzzleObject({ puzzle, solved }: PuzzleObjectProps) {
   function handleClick() {
     if (solved || !meshRef.current) return;
     // GSAP으로 클릭 피드백 애니메이션
-    gsap.to(meshRef.current.scale, { x: 1.3, y: 1.3, z: 1.3, duration: 0.15, yoyo: true, repeat: 1 });
+    gsap.to(meshRef.current.scale, {
+      x: 1.3,
+      y: 1.3,
+      z: 1.3,
+      duration: 0.15,
+      yoyo: true,
+      repeat: 1,
+    });
     setCurrentPuzzle(puzzle);
   }
 
@@ -38,8 +45,14 @@ export default function PuzzleObject({ puzzle, solved }: PuzzleObjectProps) {
       rotation={rotation}
       scale={hovered && !solved ? [scale[0] * 1.1, scale[1] * 1.1, scale[2] * 1.1] : scale}
       onClick={handleClick}
-      onPointerOver={() => { setHovered(true); document.body.style.cursor = "pointer"; }}
-      onPointerOut={() => { setHovered(false); document.body.style.cursor = "auto"; }}
+      onPointerOver={() => {
+        setHovered(true);
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+        document.body.style.cursor = "auto";
+      }}
       castShadow
     >
       <boxGeometry args={[1, 1, 1]} />

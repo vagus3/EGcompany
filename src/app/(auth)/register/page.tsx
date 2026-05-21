@@ -6,11 +6,13 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-white text-black">
       <Header />
 
-      <section className="relative flex justify-center overflow-hidden px-6 py-24">
+      <section className="relative flex justify-center overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
         <div className="relative z-10 w-full max-w-2xl pb-4">
-          <h1 className="mb-16 text-8xl leading-none font-black tracking-tighter">Sign Up</h1>
+          <h1 className="mb-10 text-[clamp(3.5rem,18vw,6rem)] leading-none font-black tracking-tighter sm:mb-16">
+            Sign Up
+          </h1>
 
-          <form className="flex flex-col gap-12">
+          <form className="flex flex-col gap-10 sm:gap-12">
             <LargeInput
               label="Full Name"
               placeholder="Alexander Vance"
@@ -18,7 +20,7 @@ export default function RegisterPage() {
               name="fullName"
             />
 
-            <LargeInput label="Email" placeholder="vance.a@eg.com" type="email" name="email" />
+            <LargeInput label="Email" placeholder="VANCE.A@EG.COM" type="email" name="email" />
 
             <LargeInput
               label="Password"
@@ -31,18 +33,18 @@ export default function RegisterPage() {
             <PolicyBox />
 
             <div className="flex flex-col gap-8 pt-8">
-              <label className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
+              <label className="flex items-start gap-4 text-xs font-bold tracking-widest uppercase sm:items-center">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 appearance-none border border-black bg-white checked:bg-black"
+                  className="mt-0.5 h-4 w-4 shrink-0 appearance-none border border-black bg-white checked:bg-black sm:mt-0"
                 />
                 개인정보 처리방침 및 이용 규칙에 동의합니다.
               </label>
 
-              <div className="flex items-center gap-12">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-12">
                 <button
                   type="submit"
-                  className="flex h-20 min-w-28 flex-col items-center justify-center bg-black px-10 py-6 text-xs font-bold tracking-widest text-white uppercase"
+                  className="flex h-20 w-full flex-col items-center justify-center bg-black px-10 py-6 text-xs font-bold tracking-widest text-white uppercase sm:w-auto sm:min-w-28"
                 >
                   <span>Join</span>
                   <span>EG</span>
@@ -64,13 +66,13 @@ export default function RegisterPage() {
 
 function Header() {
   return (
-    <header className="h-16 border-b border-neutral-200 bg-neutral-50">
-      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-12">
+    <header className="border-b border-neutral-200 bg-neutral-50">
+      <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 px-4 py-4 sm:px-6 lg:h-16 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-0">
         <Link href="/" className="text-xl font-bold tracking-tight text-neutral-900">
           EG Company
         </Link>
 
-        <nav className="flex items-center gap-12 text-sm font-medium tracking-tight text-neutral-500">
+        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium tracking-tight text-neutral-500 lg:gap-12">
           <Link href="/about">About</Link>
           <Link href="/services">Services</Link>
           <Link href="/news">News</Link>
@@ -110,7 +112,7 @@ function LargeInput({ label, placeholder, type, name, password = false }: LargeI
         type={type}
         name={name}
         placeholder={placeholder}
-        className={`h-16 w-full border-0 border-b border-black bg-transparent pb-3 text-5xl leading-tight font-black tracking-tighter placeholder:text-gray-200 focus:outline-none ${
+        className={`h-14 w-full border-0 border-b border-black bg-transparent pb-3 text-[clamp(2rem,12vw,3rem)] leading-tight font-black tracking-tighter placeholder:text-gray-200 focus:outline-none sm:h-16 ${
           password ? "tracking-widest" : ""
         }`}
       />
@@ -120,7 +122,7 @@ function LargeInput({ label, placeholder, type, name, password = false }: LargeI
 
 function PolicyBox() {
   return (
-    <section className="h-48 overflow-y-scroll border border-black bg-gray-50 p-6">
+    <section className="h-48 overflow-y-scroll border border-black bg-gray-50 p-5 sm:p-6">
       <h2 className="mb-4 text-xs leading-5 font-bold tracking-wide uppercase">
         개인정보 수집 및 이용 동의
       </h2>
@@ -162,12 +164,12 @@ function PolicyBox() {
 function Footer() {
   return (
     <footer className="border-t border-neutral-200 bg-neutral-50 py-12">
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-12">
+      <div className="mx-auto flex max-w-screen-2xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-12">
         <p className="text-xs leading-4 tracking-wide text-neutral-500 uppercase">
           © 2026 EG Company. All rights reserved.
         </p>
 
-        <nav className="flex gap-8 text-xs leading-4 tracking-wide text-neutral-500 uppercase">
+        <nav className="flex flex-wrap gap-6 text-xs leading-4 tracking-wide text-neutral-500 uppercase sm:gap-8">
           <Link href="/company">Company Information</Link>
           <Link href="/contact">Contact Us</Link>
         </nav>

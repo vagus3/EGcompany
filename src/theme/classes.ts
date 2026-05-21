@@ -22,8 +22,7 @@ export const corporateTheme = {
 } as const;
 
 export const terminalTheme = {
-  page: "bg-terminal-bg text-terminal-text",
-  fixedScheme: "terminal-theme-lock",
+  page: "terminal-theme-lock bg-terminal-bg text-terminal-text",
   panel: "bg-terminal-panel",
   panelDeep: "bg-terminal-panel-deep",
   panelMuted: "bg-terminal-panel-muted",
