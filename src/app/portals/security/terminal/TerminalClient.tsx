@@ -240,7 +240,7 @@ export default function TerminalClient() {
     <main
       className={cx(
         "min-h-screen overflow-x-hidden bg-[#080808] text-[13px] text-terminal-text",
-        terminalTheme.fixedScheme
+        terminalTheme.page
       )}
     >
       <header className="flex min-h-[52px] items-center justify-between border-b border-terminal-border bg-[#151515] px-5">
