@@ -17,6 +17,9 @@ const navLinks = [
 type Language = "ko" | "en";
 type ThemeMode = "light" | "dark" | "system";
 
+const languageChangeEvent = "eg-language-change";
+const themeChangeEvent = "eg-theme-change";
+
 const themeOptions: Array<{
   icon: typeof Sun;
   label: string;
@@ -27,27 +30,65 @@ const themeOptions: Array<{
   { value: "system", label: "System setting", icon: Monitor },
 ];
 
-function applyThemeMode(mode: ThemeMode) {
+function isThemeMode(value: string | null): value is ThemeMode {
+  return value === "dark" || value === "system" || value === "light";
+}
+
+function getLanguageSnapshot(): Language {
+  return window.localStorage.getItem("eg-language") === "en" ? "en" : "ko";
+}
+
+function getServerLanguageSnapshot(): Language {
+  return "ko";
+}
+
+function getThemeSnapshot(): ThemeMode {
+  const savedTheme = window.localStorage.getItem("eg-theme");
+  return isThemeMode(savedTheme) ? savedTheme : "light";
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return "light";
+}
+
+function subscribeToLanguage(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(languageChangeEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(languageChangeEvent, onStoreChange);
+  };
+}
+
+function subscribeToTheme(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(themeChangeEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(themeChangeEvent, onStoreChange);
+  };
+}
+
+function applyThemeMode(mode: ThemeMode, persist = true) {
   document.documentElement.classList.remove("light-mode", "dark-mode", "system-mode");
   document.documentElement.classList.add(`${mode}-mode`);
-  window.localStorage.setItem("eg-theme", mode);
+  if (persist) {
+    window.localStorage.setItem("eg-theme", mode);
+  }
 }
 
 export default function Navbar() {
   const pathname = usePathname();
   const { classes: theme } = useCorporateTheme();
   const themeMenuRef = useRef<HTMLDivElement>(null);
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window === "undefined") return "ko";
-    return window.localStorage.getItem("eg-language") === "en" ? "en" : "ko";
-  });
-  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "light";
-    const savedTheme = window.localStorage.getItem("eg-theme");
-    return savedTheme === "dark" || savedTheme === "system" || savedTheme === "light"
-      ? savedTheme
-      : "light";
-  });
+  const language = useSyncExternalStore(
+    subscribeToLanguage,
+    getLanguageSnapshot,
+    getServerLanguageSnapshot
+  );
+  const themeMode = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -55,7 +96,7 @@ export default function Navbar() {
   }, [language]);
 
   useEffect(() => {
-    applyThemeMode(themeMode);
+    applyThemeMode(themeMode, false);
   }, [themeMode]);
 
   useEffect(() => {
@@ -74,13 +115,14 @@ export default function Navbar() {
   }, []);
 
   function handleLanguageChange(nextLanguage: Language) {
-    setLanguage(nextLanguage);
     window.localStorage.setItem("eg-language", nextLanguage);
+    window.dispatchEvent(new Event(languageChangeEvent));
     document.documentElement.lang = nextLanguage;
   }
 
   function handleThemeChange(nextTheme: ThemeMode) {
-    setThemeMode(nextTheme);
+    applyThemeMode(nextTheme);
+    window.dispatchEvent(new Event(themeChangeEvent));
     setThemeMenuOpen(false);
   }
 
