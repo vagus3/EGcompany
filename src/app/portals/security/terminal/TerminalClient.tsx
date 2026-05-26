@@ -243,7 +243,7 @@ export default function TerminalClient() {
       symbols.every((symbol) => answer.has(symbol as (typeof pinChallengeAnswer)[number]));
 
     if (!isCorrect) {
-      setPinError("아카이브 오른쪽 하단에서 아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
+      setPinError("아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
       setSelectedObjectIds([]);
       return;
     }
@@ -323,13 +323,6 @@ export default function TerminalClient() {
             />
             <ArchiveDetail
               entry={selectedArchive}
-              pinSelectionEnabled={
-                progress.currentStage === "pin-select" && !completed.has(challengeIds.pin)
-              }
-              selectedObjectIds={selectedObjectIds}
-              pinError={pinError}
-              onToggleObject={toggleObjectSelection}
-              onSubmitPin={submitPinChallenge}
             />
           </>
         ) : activeSection === "containment" ? (
@@ -352,7 +345,8 @@ export default function TerminalClient() {
               pinError={pinError}
               command={command}
               commandError={commandError}
-              onArchiveJump={() => setActiveSection("archive")}
+              onToggleObject={toggleObjectSelection}
+              onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}
               onSubmitCommand={submitCommand}
               onCubeComplete={() => unlockStage("corrupted-command", challengeIds.cube)}
@@ -665,7 +659,8 @@ function MessengerDetail({
   pinError,
   command,
   commandError,
-  onArchiveJump,
+  onToggleObject,
+  onSubmitPin,
   onCommandChange,
   onSubmitCommand,
   onCubeComplete,
@@ -677,7 +672,8 @@ function MessengerDetail({
   pinError: string;
   command: string;
   commandError: string;
-  onArchiveJump: () => void;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
+  onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
   onCubeComplete: () => void;
@@ -721,7 +717,8 @@ function MessengerDetail({
           pinError,
           command,
           commandError,
-          onArchiveJump,
+          onToggleObject,
+          onSubmitPin,
           onCommandChange,
           onSubmitCommand,
           onCubeComplete,
@@ -782,7 +779,8 @@ function renderMailChallenge({
   pinError,
   command,
   commandError,
-  onArchiveJump,
+  onToggleObject,
+  onSubmitPin,
   onCommandChange,
   onSubmitCommand,
   onCubeComplete,
@@ -794,7 +792,8 @@ function renderMailChallenge({
   pinError: string;
   command: string;
   commandError: string;
-  onArchiveJump: () => void;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
+  onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
   onCubeComplete: () => void;
@@ -809,47 +808,50 @@ function renderMailChallenge({
               SECURITY_CHALLENGE
             </p>
             <p className="mt-1 text-xs text-terminal-text-dim">
-              안전한 수송을 위한 보안 승인 코드를 선택하십시오.
+              안전한 수송을 위한 보안 승인 아이콘 4개를 선택하십시오.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onArchiveJump}
-            className="border border-terminal-border px-3 py-2 font-mono text-[10px] font-black tracking-[0.18em] text-terminal-accent-muted"
-          >
-            OPEN_ARCHIVE
-          </button>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {selectedObjectIds.length > 0 ? (
-            selectedObjectIds.map((id) => {
-              const entry = terminalObjects.find((object) => object.id === id);
-              if (!entry) return null;
+          {terminalObjects.map((entry) => {
+            const selected = selectedObjectIds.includes(entry.id);
+            const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
 
-              return (
-                <div
-                  key={entry.id}
-                  className="grid aspect-[1.45] place-items-center border border-terminal-accent bg-terminal-accent-soft text-terminal-accent-text"
-                >
-                  <ObjectSymbolIcon symbol={entry.symbol} className="h-5 w-5" />
-                </div>
-              );
-            })
-          ) : (
-            <div className="col-span-4 border border-dashed border-terminal-border bg-black/20 px-4 py-6 text-center font-mono text-[10px] tracking-[0.14em] text-terminal-text-dim">
-              NO_SYMBOLS_SELECTED
-            </div>
-          )}
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onToggleObject(entry)}
+                disabled={disabled}
+                title={`${entry.label} / ${entry.symbol}`}
+                className={cx(
+                  "grid aspect-[1.45] place-items-center border transition-colors",
+                  selected
+                    ? "border-terminal-accent bg-terminal-accent-soft text-terminal-accent-text"
+                    : "border-[#202020] bg-[#2a2a2a] text-terminal-text-dim hover:border-terminal-accent-muted hover:text-white",
+                  disabled && "cursor-not-allowed opacity-35 hover:border-[#202020] hover:text-terminal-text-dim"
+                )}
+                aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
+                aria-pressed={selected}
+              >
+                <ObjectSymbolIcon symbol={entry.symbol} className="h-5 w-5" />
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-4">
           <p className="font-mono text-[10px] tracking-[0.16em] text-terminal-text-dim">
             SELECTED: {selectedObjectIds.length}/4
           </p>
-          <p className="font-mono text-[10px] tracking-[0.16em] text-terminal-accent-muted">
-            VERIFY_IN_ARCHIVE
-          </p>
+          <button
+            type="button"
+            onClick={onSubmitPin}
+            className="bg-terminal-accent-strong px-5 py-3 font-mono text-[10px] font-black tracking-[0.2em] text-white transition-colors hover:bg-terminal-accent-active"
+          >
+            VERIFY
+          </button>
         </div>
         {pinError && <p className="mt-4 font-mono text-xs text-terminal-accent-text">{pinError}</p>}
         {completed.has(challengeIds.pin) && <CompletedPanel label="PIN_SEQUENCE_CONFIRMED" />}
@@ -950,21 +952,7 @@ function ArchiveList({
   );
 }
 
-function ArchiveDetail({
-  entry,
-  pinSelectionEnabled,
-  selectedObjectIds,
-  pinError,
-  onToggleObject,
-  onSubmitPin,
-}: {
-  entry: TerminalObjectEntry;
-  pinSelectionEnabled: boolean;
-  selectedObjectIds: string[];
-  pinError: string;
-  onToggleObject: (entry: TerminalObjectEntry) => void;
-  onSubmitPin: () => void;
-}) {
+function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
   return (
     <section className="min-h-0 overflow-y-auto bg-[#0f0f0f] px-6 py-7 lg:px-8">
       <div className="border border-terminal-border border-l-4 border-l-terminal-accent bg-[#151515] px-8 py-7">
@@ -1012,86 +1000,9 @@ function ArchiveDetail({
             <MetaRow label="ACCESS_ANOMALY" value="CONFIRMED" danger />
             <div className="mt-6 h-1 bg-terminal-accent" />
           </div>
-          {pinSelectionEnabled && (
-            <ArchiveSymbolSelector
-              selectedObjectIds={selectedObjectIds}
-              pinError={pinError}
-              onToggleObject={onToggleObject}
-              onSubmitPin={onSubmitPin}
-            />
-          )}
         </aside>
       </div>
     </section>
-  );
-}
-
-function ArchiveSymbolSelector({
-  selectedObjectIds,
-  pinError,
-  onToggleObject,
-  onSubmitPin,
-}: {
-  selectedObjectIds: string[];
-  pinError: string;
-  onToggleObject: (entry: TerminalObjectEntry) => void;
-  onSubmitPin: () => void;
-}) {
-  const selectionFull = selectedObjectIds.length >= pinChallengeAnswer.length;
-
-  return (
-    <div className="mt-8 border border-terminal-border bg-black/25 p-3 font-mono">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[9px] font-black tracking-[0.18em] text-terminal-accent-muted">
-            PIN_SYMBOL_SELECT
-          </p>
-          <p className="mt-1 text-[9px] tracking-[0.12em] text-terminal-text-dim">
-            SELECT {pinChallengeAnswer.length} ICONS
-          </p>
-        </div>
-        <p className="text-[10px] font-black text-terminal-accent-text">
-          {selectedObjectIds.length}/{pinChallengeAnswer.length}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-4 gap-2">
-        {terminalObjects.map((object) => {
-          const selected = selectedObjectIds.includes(object.id);
-          const disabled = !selected && selectionFull;
-
-          return (
-            <button
-              key={object.id}
-              type="button"
-              onClick={() => onToggleObject(object)}
-              disabled={disabled}
-              title={`${object.label} / ${object.symbol}`}
-              className={cx(
-                "grid aspect-square place-items-center border transition-colors",
-                selected
-                  ? "border-terminal-accent bg-terminal-accent-soft text-terminal-accent-text"
-                  : "border-terminal-border bg-terminal-tile text-terminal-text-dim hover:border-terminal-accent-muted hover:text-white",
-                disabled && "cursor-not-allowed opacity-35 hover:border-terminal-border hover:text-terminal-text-dim"
-              )}
-              aria-label={`${selected ? "Deselect" : "Select"} ${object.label} ${object.symbol}`}
-              aria-pressed={selected}
-            >
-              <ObjectSymbolIcon symbol={object.symbol} className="h-5 w-5" />
-            </button>
-          );
-        })}
-      </div>
-
-      <button
-        type="button"
-        onClick={onSubmitPin}
-        className="mt-3 w-full bg-terminal-accent-strong px-4 py-3 text-[10px] font-black tracking-[0.2em] text-white transition-colors hover:bg-terminal-accent-active"
-      >
-        VERIFY
-      </button>
-      {pinError && <p className="mt-3 text-[10px] leading-5 text-terminal-accent-text">{pinError}</p>}
-    </div>
   );
 }
 
