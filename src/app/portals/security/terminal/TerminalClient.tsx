@@ -55,11 +55,6 @@ const corruptedFragments = [
   { raw: "FAL%E", restored: "FALSE", answer: "S" },
 ];
 
-const endingFlowMock = {
-  durationMs: 6500,
-  surveyUrl: "https://forms.gle/eg-play-survey-mock",
-};
-
 const containmentLogs = [
   {
     badge: "DECLASSIFIED",
@@ -352,6 +347,9 @@ export default function TerminalClient() {
             : activeSection === "messenger"
               ? "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
               : "lg:grid-cols-[230px_minmax(0,1fr)]"
+            : activeSection === "messenger"
+              ? "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
+              : "lg:grid-cols-[230px_minmax(0,1fr)]"
         )}
       >
         <TerminalSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
@@ -366,6 +364,10 @@ export default function TerminalClient() {
               entry={selectedArchive}
             />
           </>
+        ) : activeSection === "containment" ? (
+          <ContainmentLogsPage />
+        ) : activeSection === "person" ? (
+          <PersonnelPage />
         ) : activeSection === "containment" ? (
           <ContainmentLogsPage />
         ) : activeSection === "person" ? (
@@ -639,135 +641,6 @@ function PersonnelCard({
         CALL NUM: {person.callNum}
       </p>
     </article>
-  );
-}
-
-function MockEndingVideo({
-  durationMs,
-  onEnded,
-}: {
-  durationMs: number;
-  onEnded: () => void;
-}) {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const progress = Math.min(100, (elapsedMs / durationMs) * 100);
-
-  useEffect(() => {
-    const startedAt = window.performance.now();
-    const interval = window.setInterval(() => {
-      setElapsedMs(window.performance.now() - startedAt);
-    }, 120);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  return (
-    <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_0_48%,rgb(255_255_255_/_0.055)_50%,transparent_52%),repeating-linear-gradient(0deg,rgb(255_255_255_/_0.045)_0_1px,transparent_1px_5px)] bg-[length:100%_7px,100%_5px] opacity-50" />
-      <div className="absolute inset-0 terminal-noise opacity-35" />
-      <div className="absolute inset-x-0 top-[6%] h-px bg-cyan-300/60 shadow-[0_0_14px_rgba(34,211,238,0.9)]" />
-      <div className="absolute inset-x-0 bottom-[6%] h-px bg-red-400/50 shadow-[0_0_16px_rgba(248,113,113,0.8)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_42%,rgb(0_0_0_/_0.72)_78%)]" />
-
-      <div className="relative z-10 grid min-h-screen place-items-center px-6">
-        <div className="flex items-center gap-8 text-center text-[clamp(2rem,4vw,4.2rem)] font-black tracking-[0.32em] text-white/90">
-          <span
-            className="text-terminal-accent-text"
-            style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}
-          >
-            &gt;_
-          </span>
-          <span style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}>
-            절대 뒤를 돌아보지 마.
-          </span>
-        </div>
-      </div>
-
-      <div className="absolute right-6 bottom-6 left-6 z-20 flex items-center gap-4">
-        <div className="h-px flex-1 bg-white/20">
-          <div className="h-px bg-terminal-accent-text" style={{ width: `${progress}%` }} />
-        </div>
-        <button
-          type="button"
-          onClick={onEnded}
-          className="border border-white/20 px-3 py-2 text-[10px] font-black tracking-[0.24em] text-white/50 transition hover:border-terminal-accent hover:text-white"
-        >
-          SKIP MOCK
-        </button>
-      </div>
-    </main>
-  );
-}
-
-function SurveyQrPage({ surveyUrl, onReset }: { surveyUrl: string; onReset: () => void }) {
-  return (
-    <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
-      <div className="mx-auto flex max-w-5xl flex-col items-center">
-        <section className="w-full max-w-3xl border border-terminal-accent/55 bg-black px-6 py-10 text-center shadow-[0_0_40px_rgba(176,0,0,0.18)] sm:px-12 sm:py-14">
-          <p className="font-mono text-[clamp(1.1rem,2vw,1.65rem)] tracking-[0.18em] text-terminal-accent-text">
-            UNKNOWN SYSTEM
-          </p>
-          <p className="mt-8 text-[clamp(1.7rem,4vw,3.15rem)] leading-[1.45] font-semibold tracking-normal text-neutral-400">
-            회원가입 시에 입력한 이메일로
-            <br />
-            사원증이 발송 되었습니다.
-          </p>
-        </section>
-
-        <section className="mt-20 w-full max-w-[520px] bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
-          <MockQrCode value={surveyUrl} />
-          <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
-            &gt;_ 플레이 후기 설문조사 폼
-          </p>
-          <p className="mt-5 break-all font-mono text-[10px] font-bold tracking-[0.12em] text-neutral-400">
-            {surveyUrl}
-          </p>
-        </section>
-
-        <button
-          type="button"
-          onClick={onReset}
-          className="mt-10 border border-white/15 px-5 py-3 font-mono text-[10px] font-black tracking-[0.22em] text-white/35 transition hover:border-terminal-accent hover:text-white"
-        >
-          RESET TERMINAL
-        </button>
-      </div>
-    </main>
-  );
-}
-
-function MockQrCode({ value }: { value: string }) {
-  const size = 29;
-  const cells = Array.from({ length: size * size }, (_, index) => {
-    const x = index % size;
-    const y = Math.floor(index / size);
-    const inTopLeft = x < 7 && y < 7;
-    const inTopRight = x >= size - 7 && y < 7;
-    const inBottomLeft = x < 7 && y >= size - 7;
-    const inFinder = inTopLeft || inTopRight || inBottomLeft;
-
-    if (inFinder) {
-      const localX = inTopRight ? x - (size - 7) : x;
-      const localY = inBottomLeft ? y - (size - 7) : y;
-      const border = localX === 0 || localX === 6 || localY === 0 || localY === 6;
-      const center = localX >= 2 && localX <= 4 && localY >= 2 && localY <= 4;
-      return border || center;
-    }
-
-    const code = value.charCodeAt((x * 7 + y * 11) % value.length);
-    return (x * 3 + y * 5 + code) % 7 < 3;
-  });
-
-  return (
-    <div
-      className="mx-auto grid aspect-square w-full max-w-[270px] gap-[2px] bg-white p-2"
-      style={{ gridTemplateColumns: "repeat(29, minmax(0, 1fr))" }}
-      aria-label="Mock survey QR code"
-    >
-      {cells.map((active, index) => (
-        <span key={index} className={active ? "bg-black" : "bg-white"} />
-      ))}
-    </div>
   );
 }
 
