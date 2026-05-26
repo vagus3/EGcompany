@@ -62,6 +62,7 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<boolean[]>([]);
+  const progressCount = Math.min(answers.length + 1, testQuestions.length);
 
   const handleSignatureClick = () => {
     setIsModalOpen(true);
@@ -70,15 +71,19 @@ export default function Page() {
   };
 
   const handleAnswer = (value: boolean) => {
+    if (answers.length >= testQuestions.length) {
+      return;
+    }
+
     const newAnswers = [...answers, value];
     setAnswers(newAnswers);
 
     if (newAnswers.length < testQuestions.length) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      setCurrentQuestion(testQuestions.length);
       window.localStorage.removeItem("eg-new-admin-test-required");
       window.localStorage.setItem("eg-new-admin-test-passed", "true");
-
       setTimeout(() => {
         setIsModalOpen(false);
         setCurrentQuestion(0);
@@ -188,7 +193,7 @@ export default function Page() {
                 <div className="mb-3 flex items-center justify-between">
                   <span className="text-sm font-semibold text-black">PROGRESS</span>
                   <span className="text-sm font-bold text-black">
-                    {answers.length + 1} / {testQuestions.length}
+                    {progressCount} / {testQuestions.length}
                   </span>
                 </div>
                 <div className="flex gap-2">
