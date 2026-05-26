@@ -3,7 +3,7 @@
 import { Check, ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/theme/classes";
 import { useCorporateTheme } from "@/theme/ThemeProvider";
 
