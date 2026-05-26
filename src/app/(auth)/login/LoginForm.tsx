@@ -2,7 +2,30 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+
+import { loginAction, type LoginState } from "./actions";
+
+const initialState: LoginState = {
+  ok: false,
+  message: "",
+};
+
+const adminTestRequiredKey = "eg-new-admin-test-required";
+
+function getAdminTestRequiredSnapshot() {
+  return window.localStorage.getItem(adminTestRequiredKey) === "true";
+}
+
+function getServerAdminTestRequiredSnapshot() {
+  return false;
+}
+
+function subscribeToAdminTest(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+
+  return () => window.removeEventListener("storage", onStoreChange);
+}
 
 const onboardingQuestions = [
   {
@@ -51,7 +74,13 @@ const onboardingQuestions = [
 
 export default function LoginForm() {
   const router = useRouter();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [state, formAction, pending] = useActionState(loginAction, initialState);
+  const adminTestRequired = useSyncExternalStore(
+    subscribeToAdminTest,
+    getAdminTestRequiredSnapshot,
+    getServerAdminTestRequiredSnapshot
+  );
+  const [testDismissed, setTestDismissed] = useState(false);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
 
@@ -62,17 +91,17 @@ export default function LoginForm() {
     [answers]
   );
 
-  function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (window.localStorage.getItem("eg-new-admin-test-required") === "true") {
-      setModalOpen(true);
-      setError("");
+  useEffect(() => {
+    if (!state.ok) {
       return;
     }
 
-    router.push("/portals/security/terminal");
-  }
+    if (!adminTestRequired) {
+      router.push("/portals/security/terminal");
+    }
+  }, [adminTestRequired, router, state.ok]);
+
+  const modalOpen = state.ok && adminTestRequired && !testDismissed;
 
   function handleAnswer(questionNum: string, value: boolean) {
     setAnswers((current) => ({ ...current, [questionNum]: value }));
@@ -90,14 +119,14 @@ export default function LoginForm() {
       return;
     }
 
-    window.localStorage.removeItem("eg-new-admin-test-required");
+    window.localStorage.removeItem(adminTestRequiredKey);
     window.localStorage.setItem("eg-new-admin-test-passed", "true");
     router.push("/portals/security/terminal");
   }
 
   return (
     <>
-      <form className="mt-10 space-y-10 sm:mt-14 sm:space-y-12" onSubmit={handleLogin}>
+      <form className="mt-10 space-y-10 sm:mt-14 sm:space-y-12" action={formAction}>
         <div>
           <label
             htmlFor="email"
@@ -137,9 +166,10 @@ export default function LoginForm() {
         <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
           <button
             type="submit"
+            disabled={pending}
             className="h-20 w-full bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 sm:h-24 sm:w-36"
           >
-            Sign In
+            {pending ? "Checking" : "Sign In"}
           </button>
           <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
             No account yet?{" "}
@@ -149,6 +179,16 @@ export default function LoginForm() {
             .
           </p>
         </div>
+        {state.message && (
+          <p
+            className={`border px-5 py-4 text-[12px] font-black tracking-[0.18em] uppercase ${
+              state.ok ? "border-black bg-black text-white" : "border-red-300 bg-red-50 text-red-700"
+            }`}
+            role="status"
+          >
+            {state.message}
+          </p>
+        )}
       </form>
 
       {modalOpen && (
@@ -170,7 +210,7 @@ export default function LoginForm() {
               </div>
               <button
                 className="text-xl leading-none text-neutral-400 transition-colors hover:text-black"
-                onClick={() => setModalOpen(false)}
+                onClick={() => setTestDismissed(true)}
                 type="button"
                 aria-label="Close administrator access test"
               >
