@@ -81,13 +81,9 @@ export default function Page() {
     if (newAnswers.length < testQuestions.length) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-<<<<<<< HEAD
       setCurrentQuestion(testQuestions.length);
-=======
       window.localStorage.removeItem("eg-new-admin-test-required");
       window.localStorage.setItem("eg-new-admin-test-passed", "true");
-
->>>>>>> 117ce82ac9397f9a691be6761b0f97b4a7e0034f
       setTimeout(() => {
         setIsModalOpen(false);
         setCurrentQuestion(0);

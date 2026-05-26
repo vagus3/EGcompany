@@ -42,6 +42,30 @@ const archiveItems = [
   { id: "WESEN-0101", icon: TerminalSquare },
 ];
 
+const transmissions = [
+  {
+    level: "INTERNAL // LOGISTICS",
+    time: "16:45:12 ZULU",
+    title: "[업무요청] WESEN 개체 정보 전달 요청",
+    body: "수송 예정 WESEN 개체 정보를 전달 요청드립니다.",
+    active: true,
+  },
+  {
+    level: "URGENT // LEVEL 5",
+    time: "16:51:03 ZULU",
+    title: "[긴급] 승인되지 않은 정육면체 문서 접근",
+    body: "정육면체는 마주보는 면 관계가 중요합니다.",
+    active: false,
+  },
+  {
+    level: "ENCRYPTED // SOURCE UNKNOWN",
+    time: "16:57:44 ZULU",
+    title: "[발신 출처 불명] 언어 해석 실패",
+    body: "특수문자로 치환된 빈칸을 복구해 명령어를 입력하십시오.",
+    active: false,
+  },
+];
+
 export default function Page() {
   const [activeSection, setActiveSection] = useState<"messenger" | "archive">("messenger");
   const isArchiveOpen = activeSection === "archive";
