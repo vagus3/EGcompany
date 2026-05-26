@@ -1,22 +1,28 @@
+"use client";
+
 import Link from "next/link";
+import { cx } from "@/theme/classes";
+import { useCorporateTheme } from "@/theme/ThemeProvider";
 
 export default function Footer() {
+  const { classes: theme } = useCorporateTheme();
+
   return (
-    <footer className="mt-auto border-t border-gray-200 py-10">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[11px] tracking-widest text-gray-400 uppercase">
+    <footer className={cx("mt-auto border-t py-10", theme.border)}>
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p className={cx("text-[11px] tracking-widest uppercase", theme.textSubtle)}>
           © 2024 EG Company. Corporate Headquarters.
         </p>
-        <div className="flex items-center gap-10">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 sm:gap-x-10">
           <Link
             href="/information"
-            className="text-[11px] uppercase tracking-widest text-gray-400 transition-colors hover:text-black"
+            className={cx("text-[11px] tracking-widest uppercase", theme.linkMuted)}
           >
             Company Information
           </Link>
           <Link
             href="/contact"
-            className="text-[11px] uppercase tracking-widest text-gray-400 transition-colors hover:text-black"
+            className={cx("text-[11px] tracking-widest uppercase", theme.linkMuted)}
           >
             Contact Us
           </Link>

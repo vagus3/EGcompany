@@ -8,7 +8,10 @@ export async function GET(request: NextRequest) {
   const roomId = searchParams.get("roomId");
 
   if (!userId) {
-    return NextResponse.json<ApiResponse<null>>({ success: false, error: "userId 필요" }, { status: 400 });
+    return NextResponse.json<ApiResponse<null>>(
+      { success: false, error: "userId 필요" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -16,7 +19,10 @@ export async function GET(request: NextRequest) {
     const progress = await prisma.progress.findMany({ where });
     return NextResponse.json<ApiResponse<typeof progress>>({ success: true, data: progress });
   } catch (error) {
-    return NextResponse.json<ApiResponse<null>>({ success: false, error: "진행 상황 조회 실패" }, { status: 500 });
+    return NextResponse.json<ApiResponse<null>>(
+      { success: false, error: "진행 상황 조회 실패" },
+      { status: 500 }
+    );
   }
 }
 
@@ -37,6 +43,9 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json<ApiResponse<typeof progress>>({ success: true, data: progress });
   } catch (error) {
-    return NextResponse.json<ApiResponse<null>>({ success: false, error: "진행 상황 저장 실패" }, { status: 500 });
+    return NextResponse.json<ApiResponse<null>>(
+      { success: false, error: "진행 상황 저장 실패" },
+      { status: 500 }
+    );
   }
 }

@@ -37,44 +37,45 @@ export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalPro
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
-          className="bg-gray-900 border border-gray-700 rounded-xl p-8 max-w-md w-full mx-4"
+          className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-gray-700 bg-gray-900 p-5 sm:p-8"
         >
-          <h2 className="text-2xl font-bold text-white mb-2">{puzzle.title}</h2>
-          <p className="text-gray-300 mb-6">{puzzle.data.question}</p>
+          <h2 className="mb-2 text-xl font-bold text-white sm:text-2xl">{puzzle.title}</h2>
+          <p className="mb-6 text-sm text-gray-300 sm:text-base">{puzzle.data.question}</p>
 
           {solved ? (
-            <div className="text-center text-green-400 text-xl font-bold py-4">
-              퍼즐 해결! 🎉
-            </div>
+            <div className="py-4 text-center text-xl font-bold text-green-400">퍼즐 해결! 🎉</div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
                 value={answer}
-                onChange={(e) => { setAnswer(e.target.value); setError(""); }}
+                onChange={(e) => {
+                  setAnswer(e.target.value);
+                  setError("");
+                }}
                 placeholder="정답을 입력하세요"
-                className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
               />
-              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {error && <p className="text-sm text-red-400">{error}</p>}
 
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 font-semibold transition-colors"
+                  className="flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
                 >
                   확인
                 </button>
                 <button
                   type="button"
                   onClick={toggleHint}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg px-4 py-3 transition-colors"
+                  className="rounded-lg bg-yellow-600 px-4 py-3 text-white transition-colors hover:bg-yellow-700"
                 >
                   힌트
                 </button>

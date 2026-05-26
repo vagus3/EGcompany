@@ -27,7 +27,7 @@ export default async function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 px-8 py-12 text-white">
+    <main className="min-h-screen bg-gray-950 px-4 py-10 text-white sm:px-8 sm:py-12">
       <h1 className="mb-2 text-center text-4xl font-bold">이스케이프룸</h1>
       <p className="mb-12 text-center text-gray-400">방을 선택하여 퍼즐을 풀어보세요</p>
 

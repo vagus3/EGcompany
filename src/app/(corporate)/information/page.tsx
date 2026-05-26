@@ -71,15 +71,15 @@ function HQMap() {
 export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-4xl px-6 py-16">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
         {/* Heading */}
         <h1 className="mb-12 text-[clamp(2rem,5vw,3.5rem)] font-black tracking-tight text-black">
           Company Information
         </h1>
 
         {/* Card */}
-        <div className="border border-gray-200 bg-white p-10">
-          <div className="grid grid-cols-[280px_1fr] gap-10">
+        <div className="border border-gray-200 bg-white p-5 sm:p-8 lg:p-10">
+          <div className="grid gap-8 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] lg:gap-10">
             {/* Left: building image */}
             <div className="bg-gradient-linear-to-b aspect-3/4 shrink-0 overflow-hidden from-gray-700 via-gray-800 to-gray-950">
               {/* public/images/hq-night.jpg 로 교체 가능 */}
@@ -89,7 +89,7 @@ export default function Page() {
             {/* Right: info fields */}
             <div className="space-y-7">
               {/* Row 1 */}
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <InfoField label="Company Name" value="EG Company" />
                 <InfoField label="CEO" value="Director E.G." />
               </div>
@@ -98,7 +98,7 @@ export default function Page() {
               <InfoField label="Business Registration Number" value="123-45-67890" />
 
               {/* Row 3 */}
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <InfoField label="Phone" value="02-123-4567" />
                 <InfoField label="Fax" value="02-123-4568" />
               </div>

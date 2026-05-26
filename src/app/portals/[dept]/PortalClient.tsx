@@ -23,7 +23,7 @@ function TerminalInput({
       <span className={`${sq} -top-[3px] -left-[3px]`} />
       <span className={`${sq} -top-[3px] -right-[3px]`} />
       <span className={`${sq} -bottom-[3px] -left-[3px]`} />
-      <span className={`${sq} -bottom-[3px] -right-[3px]`} />
+      <span className={`${sq} -right-[3px] -bottom-[3px]`} />
 
       <input
         type="text"
@@ -31,7 +31,7 @@ function TerminalInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         spellCheck={false}
-        className="w-full border border-white/25 bg-white/5 px-6 py-4 text-white/50 tracking-[0.28em] text-center font-mono text-sm uppercase placeholder:text-white/20 focus:outline-none focus:border-white/50 focus:bg-white/8 focus:text-white/80 transition-colors"
+        className="w-full border border-white/25 bg-white/5 px-4 py-4 text-center font-mono text-xs tracking-[0.18em] text-white/50 uppercase transition-colors placeholder:text-white/20 focus:border-white/50 focus:bg-white/8 focus:text-white/80 focus:outline-none sm:px-6 sm:text-sm sm:tracking-[0.28em]"
       />
     </div>
   );
@@ -41,7 +41,7 @@ function TerminalInput({
 function GridOverlay() {
   return (
     <div
-      className="absolute inset-0 pointer-events-none opacity-[0.04]"
+      className="pointer-events-none absolute inset-0 opacity-[0.04]"
       style={{
         backgroundImage:
           "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",

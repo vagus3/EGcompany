@@ -1,6 +1,7 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
+import { randomBytes } from "node:crypto";
 import { z } from "zod";
 
 import { hashPassword } from "@/lib/auth/password";
@@ -21,6 +22,53 @@ const signUpSchema = z.object({
     error: "You must acknowledge the code of conduct.",
   }),
 });
+
+function createEmployeeCode() {
+  return `EG-${randomBytes(4).toString("hex").toUpperCase()}`;
+}
+
+async function createUserWithEmployeeCode({
+  email,
+  language,
+  name,
+  password,
+  theme,
+}: {
+  email: string;
+  language: "ko" | "en";
+  name: string;
+  password: string;
+  theme: "light";
+}) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await prisma.user.create({
+        data: {
+          email,
+          name,
+          employeeCode: createEmployeeCode(),
+          notificationEmail: email,
+          language,
+          theme,
+          passwordHash: await hashPassword(password),
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002" &&
+        Array.isArray(error.meta?.target) &&
+        error.meta.target.includes("employeeCode")
+      ) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new Error("Could not allocate a unique employee code.");
+}
 
 export async function signUpAction(
   _previousState: SignUpState,
@@ -54,15 +102,7 @@ export async function signUpAction(
       return { ok: false, message: "A user with this email already exists." };
     }
 
-    await prisma.user.create({
-      data: {
-        email,
-        name,
-        language,
-        theme,
-        passwordHash: await hashPassword(password),
-      },
-    });
+    await createUserWithEmployeeCode({ email, language, name, password, theme });
 
     return { ok: true, message: "Registration complete. User information was saved." };
   } catch (error) {

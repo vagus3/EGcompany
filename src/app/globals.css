@@ -1,32 +1,186 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "../theme/tokens.css";
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-corporate-bg: var(--eg-corporate-bg);
+  --color-corporate-surface: var(--eg-corporate-surface);
+  --color-corporate-surface-muted: var(--eg-corporate-surface-muted);
+  --color-corporate-surface-subtle: var(--eg-corporate-surface-subtle);
+  --color-corporate-text: var(--eg-corporate-text);
+  --color-corporate-text-muted: var(--eg-corporate-text-muted);
+  --color-corporate-text-subtle: var(--eg-corporate-text-subtle);
+  --color-corporate-border: var(--eg-corporate-border);
+  --color-corporate-border-strong: var(--eg-corporate-border-strong);
 
-html.light-mode {
-  --background: #ffffff;
-  --foreground: #171717;
-  color-scheme: light;
+  --color-terminal-bg: var(--eg-terminal-bg);
+  --color-terminal-panel: var(--eg-terminal-panel);
+  --color-terminal-panel-deep: var(--eg-terminal-panel-deep);
+  --color-terminal-panel-muted: var(--eg-terminal-panel-muted);
+  --color-terminal-panel-soft: var(--eg-terminal-panel-soft);
+  --color-terminal-tile: var(--eg-terminal-tile);
+  --color-terminal-tile-hover: var(--eg-terminal-tile-hover);
+  --color-terminal-border: var(--eg-terminal-border);
+  --color-terminal-border-warm: var(--eg-terminal-border-warm);
+  --color-terminal-border-alert: var(--eg-terminal-border-alert);
+  --color-terminal-text: var(--eg-terminal-text);
+  --color-terminal-text-muted: var(--eg-terminal-text-muted);
+  --color-terminal-text-dim: var(--eg-terminal-text-dim);
+  --color-terminal-copy: var(--eg-terminal-copy);
+  --color-terminal-copy-strong: var(--eg-terminal-copy-strong);
+  --color-terminal-accent: var(--eg-terminal-accent);
+  --color-terminal-accent-strong: var(--eg-terminal-accent-strong);
+  --color-terminal-accent-active: var(--eg-terminal-accent-active);
+  --color-terminal-accent-soft: var(--eg-terminal-accent-soft);
+  --color-terminal-accent-text: var(--eg-terminal-accent-text);
+  --color-terminal-accent-muted: var(--eg-terminal-accent-muted);
+
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.terminal-theme-lock {
+  color-scheme: dark;
+  background: var(--eg-terminal-bg);
+  color: var(--eg-terminal-text);
+}
+
+.terminal-noise {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(176 0 0 / 0.08) 1px, transparent 1px);
+  background-size:
+    7px 7px,
+    13px 13px;
+  animation: terminal-noise-shift 0.28s steps(2, end) infinite;
+}
+
+.terminal-scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.08) 0,
+    rgb(255 255 255 / 0.08) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+
+@keyframes terminal-noise-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(3px, -2px, 0);
+  }
+
+  100% {
+    transform: translate3d(-2px, 2px, 0);
+  }
+}
+
+html.dark-mode .bg-white {
+  background-color: var(--background);
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-white {
+    background-color: var(--background);
+  }
+}
+
+html.dark-mode .bg-white\/95 {
+  background-color: rgb(10 10 10 / 0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-white\/95 {
+    background-color: rgb(10 10 10 / 0.95);
+  }
+}
+
+html.dark-mode .bg-neutral-50 {
+  background-color: #171717;
+}
+
+html.dark-mode .bg-neutral-100 {
+  background-color: #262626;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .bg-neutral-50 {
+    background-color: #171717;
+  }
+
+  html.system-mode .bg-neutral-100 {
+    background-color: #262626;
+  }
+}
+
+html.dark-mode .text-black {
+  color: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .text-black {
+    color: #ededed;
+  }
+}
+
+html.dark-mode .text-neutral-500,
+html.dark-mode .text-gray-500,
+html.dark-mode .text-gray-600,
+html.dark-mode .text-neutral-600 {
+  color: #a3a3a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .text-neutral-500,
+  html.system-mode .text-gray-500,
+  html.system-mode .text-gray-600,
+  html.system-mode .text-neutral-600 {
+    color: #a3a3a3;
+  }
+}
+
+html.dark-mode .border-neutral-200,
+html.dark-mode .border-gray-200,
+html.dark-mode .border-gray-300 {
+  border-color: #262626;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .border-neutral-200,
+  html.system-mode .border-gray-200,
+  html.system-mode .border-gray-300 {
+    border-color: #262626;
+  }
+}
+
+html.dark-mode .theme-signup-button {
+  background-color: #ededed;
+  color: #0a0a0a;
+}
+
+html.dark-mode .theme-signup-button:hover {
+  background-color: #d4d4d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .theme-signup-button {
+    background-color: #ededed;
+    color: #0a0a0a;
+  }
+
+  html.system-mode .theme-signup-button:hover {
+    background-color: #d4d4d4;
+  }
 }

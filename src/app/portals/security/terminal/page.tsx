@@ -21,7 +21,6 @@ import {
   TriangleAlert,
   Users,
 } from "lucide-react";
-import { transmissions } from "@/lib/terminal-data";
 
 const challengeCodes = [
   { label: "BIOHAZARD", icon: Box },
