@@ -42,3 +42,39 @@ html.light-mode {
   --foreground: var(--eg-corporate-text);
   color-scheme: light;
 }
+
+html.dark-mode {
+  color-scheme: dark;
+
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  --eg-corporate-bg: #0a0a0a;
+  --eg-corporate-surface: #111111;
+  --eg-corporate-surface-muted: #171717;
+  --eg-corporate-surface-subtle: #262626;
+  --eg-corporate-text: #ededed;
+  --eg-corporate-text-muted: #a3a3a3;
+  --eg-corporate-text-subtle: #737373;
+  --eg-corporate-border: #262626;
+  --eg-corporate-border-strong: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode {
+    color-scheme: dark;
+
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    --eg-corporate-bg: #0a0a0a;
+    --eg-corporate-surface: #111111;
+    --eg-corporate-surface-muted: #171717;
+    --eg-corporate-surface-subtle: #262626;
+    --eg-corporate-text: #ededed;
+    --eg-corporate-text-muted: #a3a3a3;
+    --eg-corporate-text-subtle: #737373;
+    --eg-corporate-border: #262626;
+    --eg-corporate-border-strong: #ededed;
+  }
+}
