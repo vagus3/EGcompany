@@ -54,6 +54,52 @@ const corruptedFragments = [
   { raw: "FAL%E", restored: "FALSE", answer: "S" },
 ];
 
+const containmentLogs = [
+  {
+    badge: "DECLASSIFIED",
+    badgeClassName: "border-terminal-accent text-terminal-accent",
+    timestamp: "1987-11-04T03:14:00Z",
+    title: "[LOG-1341] Access Granted",
+    summary: "WESEN-1744 사용. 안치실 열람 및 수용 목적. 연구팀 동원.",
+    author: "HR",
+    locked: false,
+  },
+  {
+    badge: "RESTRICTED",
+    badgeClassName: "border-[#d09a00] text-[#d09a00]",
+    timestamp: "1987-12-12T14:22:10Z",
+    title: "[LOG-5682] ANOMALY",
+    summary:
+      "이상 행동 편차가 최초로 기록됨. 주 격리 용기의 구조적 무결성이 일시적으로 손상됨. 보안팀 증원 요청.",
+    author: "RESEARCH",
+    locked: false,
+  },
+  {
+    badge: "ENCRYPTED",
+    badgeClassName: "border-[#ff4056] text-[#ff4056]",
+    timestamp: "1988-03-01T09:05:44Z",
+    title: "[LOG-4541] Access Granted",
+    summary: "보안팀 타 부서 지원 허가. 연구실로 이동. 보호 처리 완료.",
+    author: "SECURITY",
+    locked: true,
+  },
+];
+
+const personnel = {
+  leader: { name: "DANIEL K. WEBER", callNum: "09-459273", role: "LEADER", icon: Shield },
+  senior: [
+    { name: "LEE SO-YEON", callNum: "09-905316", role: "SENIOR STAFF", icon: IdCard },
+    { name: "MARCUS HALE", callNum: "09-274859", role: "SENIOR STAFF", icon: Shield },
+    { name: "PARK MIN-HO", callNum: "09-618042", role: "SENIOR STAFF", icon: Lock },
+  ],
+  junior: [
+    { name: "KIM DO-YUN", callNum: "09-483721", role: "JUNIOR STAFF" },
+    { name: "HAN JI-WOO", callNum: "09-739165", role: "JUNIOR STAFF" },
+    { name: "(PLAYER)", callNum: "09-152984", role: "JUNIOR STAFF", highlighted: true },
+    { name: "ELENA KOVAC", callNum: "09-867203", role: "JUNIOR STAFF" },
+  ],
+};
+
 function getMailForStage(stage: TerminalStage) {
   return terminalMails.find((mail) => mail.unlockedStage === stage) ?? terminalMails[0];
 }
@@ -262,7 +308,9 @@ export default function TerminalClient() {
           "grid min-h-[calc(100vh-52px)]",
           activeSection === "archive"
             ? "lg:grid-cols-[230px_154px_minmax(0,1fr)]"
-            : "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
+            : activeSection === "messenger"
+              ? "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
+              : "lg:grid-cols-[230px_minmax(0,1fr)]"
         )}
       >
         <TerminalSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
@@ -284,6 +332,10 @@ export default function TerminalClient() {
               onSubmitPin={submitPinChallenge}
             />
           </>
+        ) : activeSection === "containment" ? (
+          <ContainmentLogsPage />
+        ) : activeSection === "person" ? (
+          <PersonnelPage />
         ) : (
           <>
             <MessengerList
@@ -387,6 +439,171 @@ function TerminalSidebar({
         </p>
       </div>
     </aside>
+  );
+}
+
+function ContainmentLogsPage() {
+  return (
+    <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-12 sm:px-10 lg:px-18 lg:py-16">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-[clamp(2.2rem,5vw,4.4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
+          Secure Containment Logs
+        </h2>
+        <div className="mt-10 h-px bg-terminal-border" />
+
+        <div className="mt-12 space-y-5">
+          {containmentLogs.map((log) => (
+            <article
+              key={log.title}
+              className="grid gap-5 border border-terminal-border border-l-4 bg-[#111] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6"
+            >
+              <div>
+                <div className="flex flex-wrap items-center gap-4 font-mono">
+                  <span
+                    className={cx(
+                      "border px-3 py-1 text-[10px] font-black tracking-[0.12em]",
+                      log.badgeClassName
+                    )}
+                  >
+                    {log.badge}
+                  </span>
+                  <span className="text-xs font-black tracking-[0.12em] text-terminal-text-dim">
+                    TS: {log.timestamp}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-[clamp(1.35rem,3vw,2.2rem)] leading-none font-black tracking-[-0.04em] text-white">
+                  {log.title}
+                </h3>
+                <p className="mt-4 max-w-4xl text-sm leading-7 text-terminal-text-muted sm:text-base">
+                  {log.locked ? (
+                    <>
+                      보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
+                      <Redaction width="w-44" /> <Redaction width="w-12" />{" "}
+                      <Redaction width="w-36" /> 및 보호 처리 완료.
+                    </>
+                  ) : (
+                    log.summary
+                  )}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-[1fr_auto] items-center gap-4 sm:min-w-38">
+                <div className="text-right font-mono">
+                  <p className="text-xs font-black text-terminal-text-dim">AUTHOR</p>
+                  <p className="mt-2 text-sm font-black text-white">{log.author}</p>
+                </div>
+                <button
+                  type="button"
+                  className="grid h-11 w-11 place-items-center border border-terminal-border bg-[#151515] text-terminal-text-dim"
+                  aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
+                >
+                  {log.locked ? <Lock className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PersonnelPage() {
+  return (
+    <section className="min-h-0 overflow-y-auto bg-[#080808] px-4 py-12 sm:px-8 lg:px-16 lg:py-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-6 border-b border-terminal-border pb-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <h2 className="text-[clamp(2rem,4.5vw,4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
+              Personnel Security Part
+            </h2>
+            <p className="mt-5 font-mono text-sm font-black tracking-[0.22em] text-terminal-text-dim uppercase">
+              Sector-01 / Response Unit Alpha
+            </p>
+          </div>
+          <div className="font-mono text-sm tracking-[0.12em] lg:text-right">
+            <p className="font-black text-terminal-accent">ACCESS: GRANTED</p>
+            <p className="mt-3 text-terminal-text-dim">TS: 2024.11.23_14:22:09</p>
+          </div>
+        </div>
+
+        <div className="relative mx-auto mt-14 max-w-6xl pb-8">
+          <div className="mx-auto max-w-lg">
+            <PersonnelCard person={personnel.leader} leader />
+          </div>
+
+          <div className="mx-auto hidden h-20 w-px bg-terminal-border md:block" />
+          <div className="mx-auto hidden h-px max-w-4xl bg-terminal-border md:block" />
+          <div className="mx-auto hidden max-w-4xl grid-cols-3 md:grid">
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+          </div>
+
+          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-3">
+            {personnel.senior.map((person) => (
+              <PersonnelCard key={person.name} person={person} />
+            ))}
+          </div>
+
+          <div className="mx-auto hidden h-16 w-px bg-terminal-border md:block" />
+          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-4">
+            {personnel.junior.map((person) => (
+              <PersonnelCard key={person.name} person={person} muted />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Redaction({ width }: { width: string }) {
+  return <span className={cx("mx-1 inline-block h-4 bg-terminal-text-dim align-middle", width)} />;
+}
+
+function PersonnelCard({
+  person,
+  leader = false,
+  muted = false,
+}: {
+  person: {
+    name: string;
+    callNum: string;
+    role: string;
+    highlighted?: boolean;
+    icon?: typeof Shield;
+  };
+  leader?: boolean;
+  muted?: boolean;
+}) {
+  const Icon = person.icon;
+
+  return (
+    <article
+      className={cx(
+        "relative border bg-[#121212] px-6 py-6",
+        leader && "border-t-4 border-t-terminal-accent",
+        person.highlighted
+          ? "border-terminal-accent bg-[#151515]"
+          : muted
+            ? "border-[#2a2a2a] bg-[#050505]"
+            : "border-terminal-border"
+      )}
+    >
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <p className="font-mono text-[10px] font-black tracking-[0.18em] text-terminal-text-dim uppercase">
+          {person.role}
+        </p>
+        {Icon && <Icon className="h-4 w-4 text-terminal-text-dim" />}
+      </div>
+      <h3 className="text-[clamp(1.25rem,2vw,1.85rem)] leading-none font-black tracking-[-0.04em] text-white">
+        {person.name}
+      </h3>
+      <p className="mt-5 font-mono text-sm font-black tracking-[0.18em] text-terminal-text-dim">
+        CALL NUM: {person.callNum}
+      </p>
+    </article>
   );
 }
 
