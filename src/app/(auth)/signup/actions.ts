@@ -5,6 +5,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 
 import { hashPassword } from "@/lib/auth/password";
+import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
 
 export type SignUpState = {
@@ -102,7 +103,8 @@ export async function signUpAction(
       return { ok: false, message: "A user with this email already exists." };
     }
 
-    await createUserWithEmployeeCode({ email, language, name, password, theme });
+    const user = await createUserWithEmployeeCode({ email, language, name, password, theme });
+    await createSession(user.id);
 
     return { ok: true, message: "Registration complete. User information was saved." };
   } catch (error) {
