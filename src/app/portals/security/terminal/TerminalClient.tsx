@@ -20,6 +20,7 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
   initialTerminalProgress,
   pinChallengeAnswer,
@@ -38,6 +39,11 @@ import PretextEndingChallenge from "./PretextEndingChallenge";
 type OverlayState = "found" | "command-warning" | null;
 type Section = "messenger" | "archive" | "containment" | "person";
 type TerminalEndFlow = "idle" | "mock-video" | "survey-qr";
+type EmployeeCardDelivery =
+  | { status: "idle" }
+  | { status: "sending" }
+  | { email?: string; rank?: string; status: "sent" }
+  | { message: string; status: "failed" };
 
 const challengeIds = {
   pin: "pin-select",
@@ -185,7 +191,11 @@ export default function TerminalClient() {
   const [commandError, setCommandError] = useState("");
   const [overlay, setOverlay] = useState<OverlayState>(null);
   const [endFlow, setEndFlow] = useState<TerminalEndFlow>("idle");
+  const [employeeCardDelivery, setEmployeeCardDelivery] = useState<EmployeeCardDelivery>({
+    status: "idle",
+  });
   const timersRef = useRef<number[]>([]);
+  const deliveryRequestedRef = useRef(false);
 
   const selectedMail = useMemo(
     () => terminalMails.find((mail) => mail.id === progress.selectedMailId) ?? terminalMails[0],
@@ -290,7 +300,52 @@ export default function TerminalClient() {
     setCommandError("");
     setOverlay(null);
     setEndFlow("idle");
+    setEmployeeCardDelivery({ status: "idle" });
+    deliveryRequestedRef.current = false;
     window.localStorage.removeItem(TERMINAL_PROGRESS_STORAGE_KEY);
+  }
+
+  function getHintPromptCount() {
+    const storedCount = window.localStorage.getItem(HINT_PROMPT_COUNT_STORAGE_KEY);
+    const count = Number(storedCount);
+    return Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
+  }
+
+  async function sendEmployeeCard() {
+    if (deliveryRequestedRef.current) return;
+
+    deliveryRequestedRef.current = true;
+    setEmployeeCardDelivery({ status: "sending" });
+
+    try {
+      const response = await fetch("/api/terminal/completion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hintPromptCount: getHintPromptCount() }),
+      });
+      const result = (await response.json()) as {
+        email?: string;
+        error?: string;
+        rank?: string;
+        success?: boolean;
+      };
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error ?? "사원증 발송 요청에 실패했습니다.");
+      }
+
+      setEmployeeCardDelivery({ email: result.email, rank: result.rank, status: "sent" });
+    } catch (error) {
+      setEmployeeCardDelivery({
+        message: error instanceof Error ? error.message : "사원증 발송 요청에 실패했습니다.",
+        status: "failed",
+      });
+    }
+  }
+
+  async function finishEndingVideo() {
+    setEndFlow("survey-qr");
+    await sendEmployeeCard();
   }
 
   function completeEndingFlow() {
@@ -305,7 +360,9 @@ export default function TerminalClient() {
         : [...current.completedChallengeIds, challengeIds.pretext],
     }));
     setEndFlow("mock-video");
-    queueTimer(() => setEndFlow("survey-qr"), endingFlowMock.durationMs);
+    queueTimer(() => {
+      void finishEndingVideo();
+    }, endingFlowMock.durationMs);
   }
 
   const visibleEndFlow =
@@ -317,13 +374,21 @@ export default function TerminalClient() {
     return (
       <MockEndingVideo
         durationMs={endingFlowMock.durationMs}
-        onEnded={() => setEndFlow("survey-qr")}
+        onEnded={() => {
+          void finishEndingVideo();
+        }}
       />
     );
   }
 
   if (visibleEndFlow === "survey-qr") {
-    return <SurveyQrPage surveyUrl={endingFlowMock.surveyUrl} onReset={resetProgress} />;
+    return (
+      <SurveyQrPage
+        delivery={employeeCardDelivery}
+        surveyUrl={endingFlowMock.surveyUrl}
+        onReset={resetProgress}
+      />
+    );
   }
 
   return (
@@ -699,7 +764,24 @@ function MockEndingVideo({
   );
 }
 
-function SurveyQrPage({ surveyUrl, onReset }: { surveyUrl: string; onReset: () => void }) {
+function SurveyQrPage({
+  delivery,
+  surveyUrl,
+  onReset,
+}: {
+  delivery: EmployeeCardDelivery;
+  surveyUrl: string;
+  onReset: () => void;
+}) {
+  const deliveryMessage =
+    delivery.status === "failed"
+      ? delivery.message
+      : delivery.status === "sent"
+        ? `${delivery.email ?? "등록된 이메일"}로 ${delivery.rank ?? "?"} 등급 사원증이 발송 되었습니다.`
+        : delivery.status === "sending"
+          ? "등록된 이메일로 사원증을 발송하는 중입니다."
+          : "영상 종료 후 사원증 발송이 예약됩니다.";
+
   return (
     <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-5xl flex-col items-center">
@@ -711,6 +793,14 @@ function SurveyQrPage({ surveyUrl, onReset }: { surveyUrl: string; onReset: () =
             회원가입 시에 입력한 이메일로
             <br />
             사원증이 발송 되었습니다.
+          </p>
+          <p
+            className={cx(
+              "mt-6 font-mono text-xs font-black tracking-[0.16em]",
+              delivery.status === "failed" ? "text-terminal-accent-text" : "text-terminal-text-dim"
+            )}
+          >
+            {deliveryMessage}
           </p>
         </section>
 
