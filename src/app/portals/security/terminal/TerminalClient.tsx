@@ -20,6 +20,8 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
+import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
   initialTerminalProgress,
   pinChallengeAnswer,
@@ -38,6 +40,17 @@ import PretextEndingChallenge from "./PretextEndingChallenge";
 type OverlayState = "found" | "command-warning" | null;
 type Section = "messenger" | "archive" | "containment" | "person";
 type TerminalEndFlow = "idle" | "mock-video" | "survey-qr";
+type EmployeeCardDelivery =
+  | { status: "idle" }
+  | { status: "sending" }
+  | { email?: string; rank?: string; status: "sent" }
+  | { message: string; status: "failed" };
+type TerminalEndFlow = "idle" | "mock-video" | "survey-qr";
+type EmployeeCardDelivery =
+  | { status: "idle" }
+  | { status: "sending" }
+  | { email?: string; rank?: string; status: "sent" }
+  | { message: string; status: "failed" };
 
 const challengeIds = {
   pin: "pin-select",
@@ -54,6 +67,57 @@ const corruptedFragments = [
   { raw: "OP#N", restored: "OPEN", answer: "E" },
   { raw: "FAL%E", restored: "FALSE", answer: "S" },
 ];
+
+const endingFlowMock = {
+  durationMs: 6500,
+  surveyUrl: "https://forms.gle/eg-play-survey-mock",
+};
+
+const containmentLogs = [
+  {
+    badge: "DECLASSIFIED",
+    badgeClassName: "border-terminal-accent text-terminal-accent",
+    timestamp: "1987-11-04T03:14:00Z",
+    title: "[LOG-1341] Access Granted",
+    summary: "WESEN-1744 사용. 안치실 열람 및 수용 목적. 연구팀 동원.",
+    author: "HR",
+    locked: false,
+  },
+  {
+    badge: "RESTRICTED",
+    badgeClassName: "border-[#d09a00] text-[#d09a00]",
+    timestamp: "1987-12-12T14:22:10Z",
+    title: "[LOG-5682] ANOMALY",
+    summary:
+      "이상 행동 편차가 최초로 기록됨. 주 격리 용기의 구조적 무결성이 일시적으로 손상됨. 보안팀 증원 요청.",
+    author: "RESEARCH",
+    locked: false,
+  },
+  {
+    badge: "ENCRYPTED",
+    badgeClassName: "border-[#ff4056] text-[#ff4056]",
+    timestamp: "1988-03-01T09:05:44Z",
+    title: "[LOG-4541] Access Granted",
+    summary: "보안팀 타 부서 지원 허가. 연구실로 이동. 보호 처리 완료.",
+    author: "SECURITY",
+    locked: true,
+  },
+];
+
+const personnel = {
+  leader: { name: "DANIEL K. WEBER", callNum: "09-459273", role: "LEADER", icon: Shield },
+  senior: [
+    { name: "LEE SO-YEON", callNum: "09-905316", role: "SENIOR STAFF", icon: IdCard },
+    { name: "MARCUS HALE", callNum: "09-274859", role: "SENIOR STAFF", icon: Shield },
+    { name: "PARK MIN-HO", callNum: "09-618042", role: "SENIOR STAFF", icon: Lock },
+  ],
+  junior: [
+    { name: "KIM DO-YUN", callNum: "09-483721", role: "JUNIOR STAFF" },
+    { name: "HAN JI-WOO", callNum: "09-739165", role: "JUNIOR STAFF" },
+    { name: "(PLAYER)", callNum: "09-152984", role: "JUNIOR STAFF", highlighted: true },
+    { name: "ELENA KOVAC", callNum: "09-867203", role: "JUNIOR STAFF" },
+  ],
+};
 
 const endingFlowMock = {
   durationMs: 6500,
@@ -185,7 +249,16 @@ export default function TerminalClient() {
   const [commandError, setCommandError] = useState("");
   const [overlay, setOverlay] = useState<OverlayState>(null);
   const [endFlow, setEndFlow] = useState<TerminalEndFlow>("idle");
+  const [employeeCardDelivery, setEmployeeCardDelivery] = useState<EmployeeCardDelivery>({
+    status: "idle",
+  });
+  const [endFlow, setEndFlow] = useState<TerminalEndFlow>("idle");
+  const [employeeCardDelivery, setEmployeeCardDelivery] = useState<EmployeeCardDelivery>({
+    status: "idle",
+  });
   const timersRef = useRef<number[]>([]);
+  const deliveryRequestedRef = useRef(false);
+  const deliveryRequestedRef = useRef(false);
 
   const selectedMail = useMemo(
     () => terminalMails.find((mail) => mail.id === progress.selectedMailId) ?? terminalMails[0],
@@ -251,6 +324,7 @@ export default function TerminalClient() {
 
     if (!isCorrect) {
       setPinError("아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
+      setPinError("아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
       setSelectedObjectIds([]);
       return;
     }
@@ -290,7 +364,55 @@ export default function TerminalClient() {
     setCommandError("");
     setOverlay(null);
     setEndFlow("idle");
+    setEmployeeCardDelivery({ status: "idle" });
+    deliveryRequestedRef.current = false;
+    setEndFlow("idle");
+    setEmployeeCardDelivery({ status: "idle" });
+    deliveryRequestedRef.current = false;
     window.localStorage.removeItem(TERMINAL_PROGRESS_STORAGE_KEY);
+  }
+
+  function getHintPromptCount() {
+    const storedCount = window.localStorage.getItem(HINT_PROMPT_COUNT_STORAGE_KEY);
+    const count = Number(storedCount);
+    return Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
+  }
+
+  async function sendEmployeeCard() {
+    if (deliveryRequestedRef.current) return;
+
+    deliveryRequestedRef.current = true;
+    setEmployeeCardDelivery({ status: "sending" });
+
+    try {
+      const response = await fetch("/api/terminal/completion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hintPromptCount: getHintPromptCount() }),
+      });
+      const result = (await response.json()) as {
+        email?: string;
+        error?: string;
+        rank?: string;
+        success?: boolean;
+      };
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error ?? "사원증 발송 요청에 실패했습니다.");
+      }
+
+      setEmployeeCardDelivery({ email: result.email, rank: result.rank, status: "sent" });
+    } catch (error) {
+      setEmployeeCardDelivery({
+        message: error instanceof Error ? error.message : "사원증 발송 요청에 실패했습니다.",
+        status: "failed",
+      });
+    }
+  }
+
+  async function finishEndingVideo() {
+    setEndFlow("survey-qr");
+    await sendEmployeeCard();
   }
 
   function completeEndingFlow() {
@@ -305,7 +427,9 @@ export default function TerminalClient() {
         : [...current.completedChallengeIds, challengeIds.pretext],
     }));
     setEndFlow("mock-video");
-    queueTimer(() => setEndFlow("survey-qr"), endingFlowMock.durationMs);
+    queueTimer(() => {
+      void finishEndingVideo();
+    }, endingFlowMock.durationMs);
   }
 
   const visibleEndFlow =
@@ -317,13 +441,107 @@ export default function TerminalClient() {
     return (
       <MockEndingVideo
         durationMs={endingFlowMock.durationMs}
-        onEnded={() => setEndFlow("survey-qr")}
+        onEnded={() => {
+          void finishEndingVideo();
+        }}
       />
     );
   }
 
   if (visibleEndFlow === "survey-qr") {
-    return <SurveyQrPage surveyUrl={endingFlowMock.surveyUrl} onReset={resetProgress} />;
+    return (
+      <SurveyQrPage
+        delivery={employeeCardDelivery}
+        surveyUrl={endingFlowMock.surveyUrl}
+        onReset={resetProgress}
+      />
+    );
+  }
+
+  function getHintPromptCount() {
+    const storedCount = window.localStorage.getItem(HINT_PROMPT_COUNT_STORAGE_KEY);
+    const count = Number(storedCount);
+    return Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
+  }
+
+  async function sendEmployeeCard() {
+    if (deliveryRequestedRef.current) return;
+
+    deliveryRequestedRef.current = true;
+    setEmployeeCardDelivery({ status: "sending" });
+
+    try {
+      const response = await fetch("/api/terminal/completion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hintPromptCount: getHintPromptCount() }),
+      });
+      const result = (await response.json()) as {
+        email?: string;
+        error?: string;
+        rank?: string;
+        success?: boolean;
+      };
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error ?? "사원증 발송 요청에 실패했습니다.");
+      }
+
+      setEmployeeCardDelivery({ email: result.email, rank: result.rank, status: "sent" });
+    } catch (error) {
+      setEmployeeCardDelivery({
+        message: error instanceof Error ? error.message : "사원증 발송 요청에 실패했습니다.",
+        status: "failed",
+      });
+    }
+  }
+
+  async function finishEndingVideo() {
+    setEndFlow("survey-qr");
+    await sendEmployeeCard();
+  }
+
+  function completeEndingFlow() {
+    const nextMail = getMailForStage("completed");
+    setActiveSection("messenger");
+    setProgress((current) => ({
+      currentStage: "completed",
+      unlockedMailIds: mergeUnlocked(current, nextMail.id),
+      selectedMailId: nextMail.id,
+      completedChallengeIds: current.completedChallengeIds.includes(challengeIds.pretext)
+        ? current.completedChallengeIds
+        : [...current.completedChallengeIds, challengeIds.pretext],
+    }));
+    setEndFlow("mock-video");
+    queueTimer(() => {
+      void finishEndingVideo();
+    }, endingFlowMock.durationMs);
+  }
+
+  const visibleEndFlow =
+    endFlow === "idle" && progress.currentStage === "completed" && completed.has(challengeIds.pretext)
+      ? "survey-qr"
+      : endFlow;
+
+  if (visibleEndFlow === "mock-video") {
+    return (
+      <MockEndingVideo
+        durationMs={endingFlowMock.durationMs}
+        onEnded={() => {
+          void finishEndingVideo();
+        }}
+      />
+    );
+  }
+
+  if (visibleEndFlow === "survey-qr") {
+    return (
+      <SurveyQrPage
+        delivery={employeeCardDelivery}
+        surveyUrl={endingFlowMock.surveyUrl}
+        onReset={resetProgress}
+      />
+    );
   }
 
   return (
@@ -352,6 +570,9 @@ export default function TerminalClient() {
             : activeSection === "messenger"
               ? "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
               : "lg:grid-cols-[230px_minmax(0,1fr)]"
+            : activeSection === "messenger"
+              ? "lg:grid-cols-[230px_330px_minmax(0,1fr)]"
+              : "lg:grid-cols-[230px_minmax(0,1fr)]"
         )}
       >
         <TerminalSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
@@ -366,6 +587,10 @@ export default function TerminalClient() {
               entry={selectedArchive}
             />
           </>
+        ) : activeSection === "containment" ? (
+          <ContainmentLogsPage />
+        ) : activeSection === "person" ? (
+          <PersonnelPage />
         ) : activeSection === "containment" ? (
           <ContainmentLogsPage />
         ) : activeSection === "person" ? (
@@ -388,9 +613,12 @@ export default function TerminalClient() {
               commandError={commandError}
               onToggleObject={toggleObjectSelection}
               onSubmitPin={submitPinChallenge}
+              onToggleObject={toggleObjectSelection}
+              onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}
               onSubmitCommand={submitCommand}
               onCubeComplete={() => unlockStage("corrupted-command", challengeIds.cube)}
+              onEndingComplete={completeEndingFlow}
               onEndingComplete={completeEndingFlow}
             />
           </>
@@ -699,7 +927,24 @@ function MockEndingVideo({
   );
 }
 
-function SurveyQrPage({ surveyUrl, onReset }: { surveyUrl: string; onReset: () => void }) {
+function SurveyQrPage({
+  delivery,
+  surveyUrl,
+  onReset,
+}: {
+  delivery: EmployeeCardDelivery;
+  surveyUrl: string;
+  onReset: () => void;
+}) {
+  const deliveryMessage =
+    delivery.status === "failed"
+      ? delivery.message
+      : delivery.status === "sent"
+        ? `${delivery.email ?? "등록된 이메일"}로 ${delivery.rank ?? "?"} 등급 사원증이 발송 되었습니다.`
+        : delivery.status === "sending"
+          ? "등록된 이메일로 사원증을 발송하는 중입니다."
+          : "영상 종료 후 사원증 발송이 예약됩니다.";
+
   return (
     <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-5xl flex-col items-center">
@@ -711,6 +956,333 @@ function SurveyQrPage({ surveyUrl, onReset }: { surveyUrl: string; onReset: () =
             회원가입 시에 입력한 이메일로
             <br />
             사원증이 발송 되었습니다.
+          </p>
+          <p
+            className={cx(
+              "mt-6 font-mono text-xs font-black tracking-[0.16em]",
+              delivery.status === "failed" ? "text-terminal-accent-text" : "text-terminal-text-dim"
+            )}
+          >
+            {deliveryMessage}
+          </p>
+        </section>
+
+        <section className="mt-20 w-full max-w-[520px] bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
+          <MockQrCode value={surveyUrl} />
+          <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
+            &gt;_ 플레이 후기 설문조사 폼
+          </p>
+          <p className="mt-5 break-all font-mono text-[10px] font-bold tracking-[0.12em] text-neutral-400">
+            {surveyUrl}
+          </p>
+        </section>
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="mt-10 border border-white/15 px-5 py-3 font-mono text-[10px] font-black tracking-[0.22em] text-white/35 transition hover:border-terminal-accent hover:text-white"
+        >
+          RESET TERMINAL
+        </button>
+      </div>
+    </main>
+  );
+}
+
+function MockQrCode({ value }: { value: string }) {
+  const size = 29;
+  const cells = Array.from({ length: size * size }, (_, index) => {
+    const x = index % size;
+    const y = Math.floor(index / size);
+    const inTopLeft = x < 7 && y < 7;
+    const inTopRight = x >= size - 7 && y < 7;
+    const inBottomLeft = x < 7 && y >= size - 7;
+    const inFinder = inTopLeft || inTopRight || inBottomLeft;
+
+    if (inFinder) {
+      const localX = inTopRight ? x - (size - 7) : x;
+      const localY = inBottomLeft ? y - (size - 7) : y;
+      const border = localX === 0 || localX === 6 || localY === 0 || localY === 6;
+      const center = localX >= 2 && localX <= 4 && localY >= 2 && localY <= 4;
+      return border || center;
+    }
+
+    const code = value.charCodeAt((x * 7 + y * 11) % value.length);
+    return (x * 3 + y * 5 + code) % 7 < 3;
+  });
+
+  return (
+    <div
+      className="mx-auto grid aspect-square w-full max-w-[270px] gap-[2px] bg-white p-2"
+      style={{ gridTemplateColumns: "repeat(29, minmax(0, 1fr))" }}
+      aria-label="Mock survey QR code"
+    >
+      {cells.map((active, index) => (
+        <span key={index} className={active ? "bg-black" : "bg-white"} />
+      ))}
+    </div>
+  );
+}
+
+function ContainmentLogsPage() {
+  return (
+    <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-12 sm:px-10 lg:px-18 lg:py-16">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-[clamp(2.2rem,5vw,4.4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
+          Secure Containment Logs
+        </h2>
+        <div className="mt-10 h-px bg-terminal-border" />
+
+        <div className="mt-12 space-y-5">
+          {containmentLogs.map((log) => (
+            <article
+              key={log.title}
+              className="grid gap-5 border border-terminal-border border-l-4 bg-[#111] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6"
+            >
+              <div>
+                <div className="flex flex-wrap items-center gap-4 font-mono">
+                  <span
+                    className={cx(
+                      "border px-3 py-1 text-[10px] font-black tracking-[0.12em]",
+                      log.badgeClassName
+                    )}
+                  >
+                    {log.badge}
+                  </span>
+                  <span className="text-xs font-black tracking-[0.12em] text-terminal-text-dim">
+                    TS: {log.timestamp}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-[clamp(1.35rem,3vw,2.2rem)] leading-none font-black tracking-[-0.04em] text-white">
+                  {log.title}
+                </h3>
+                <p className="mt-4 max-w-4xl text-sm leading-7 text-terminal-text-muted sm:text-base">
+                  {log.locked ? (
+                    <>
+                      보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
+                      <Redaction width="w-44" /> <Redaction width="w-12" />{" "}
+                      <Redaction width="w-36" /> 및 보호 처리 완료.
+                    </>
+                  ) : (
+                    log.summary
+                  )}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-[1fr_auto] items-center gap-4 sm:min-w-38">
+                <div className="text-right font-mono">
+                  <p className="text-xs font-black text-terminal-text-dim">AUTHOR</p>
+                  <p className="mt-2 text-sm font-black text-white">{log.author}</p>
+                </div>
+                <button
+                  type="button"
+                  className="grid h-11 w-11 place-items-center border border-terminal-border bg-[#151515] text-terminal-text-dim"
+                  aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
+                >
+                  {log.locked ? <Lock className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PersonnelPage() {
+  return (
+    <section className="min-h-0 overflow-y-auto bg-[#080808] px-4 py-12 sm:px-8 lg:px-16 lg:py-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-6 border-b border-terminal-border pb-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <h2 className="text-[clamp(2rem,4.5vw,4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
+              Personnel Security Part
+            </h2>
+            <p className="mt-5 font-mono text-sm font-black tracking-[0.22em] text-terminal-text-dim uppercase">
+              Sector-01 / Response Unit Alpha
+            </p>
+          </div>
+          <div className="font-mono text-sm tracking-[0.12em] lg:text-right">
+            <p className="font-black text-terminal-accent">ACCESS: GRANTED</p>
+            <p className="mt-3 text-terminal-text-dim">TS: 2024.11.23_14:22:09</p>
+          </div>
+        </div>
+
+        <div className="relative mx-auto mt-14 max-w-6xl pb-8">
+          <div className="mx-auto max-w-lg">
+            <PersonnelCard person={personnel.leader} leader />
+          </div>
+
+          <div className="mx-auto hidden h-20 w-px bg-terminal-border md:block" />
+          <div className="mx-auto hidden h-px max-w-4xl bg-terminal-border md:block" />
+          <div className="mx-auto hidden max-w-4xl grid-cols-3 md:grid">
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+            <span className="mx-auto h-10 w-px bg-terminal-border" />
+          </div>
+
+          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-3">
+            {personnel.senior.map((person) => (
+              <PersonnelCard key={person.name} person={person} />
+            ))}
+          </div>
+
+          <div className="mx-auto hidden h-16 w-px bg-terminal-border md:block" />
+          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-4">
+            {personnel.junior.map((person) => (
+              <PersonnelCard key={person.name} person={person} muted />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Redaction({ width }: { width: string }) {
+  return <span className={cx("mx-1 inline-block h-4 bg-terminal-text-dim align-middle", width)} />;
+}
+
+function PersonnelCard({
+  person,
+  leader = false,
+  muted = false,
+}: {
+  person: {
+    name: string;
+    callNum: string;
+    role: string;
+    highlighted?: boolean;
+    icon?: typeof Shield;
+  };
+  leader?: boolean;
+  muted?: boolean;
+}) {
+  const Icon = person.icon;
+
+  return (
+    <article
+      className={cx(
+        "relative border bg-[#121212] px-6 py-6",
+        leader && "border-t-4 border-t-terminal-accent",
+        person.highlighted
+          ? "border-terminal-accent bg-[#151515]"
+          : muted
+            ? "border-[#2a2a2a] bg-[#050505]"
+            : "border-terminal-border"
+      )}
+    >
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <p className="font-mono text-[10px] font-black tracking-[0.18em] text-terminal-text-dim uppercase">
+          {person.role}
+        </p>
+        {Icon && <Icon className="h-4 w-4 text-terminal-text-dim" />}
+      </div>
+      <h3 className="text-[clamp(1.25rem,2vw,1.85rem)] leading-none font-black tracking-[-0.04em] text-white">
+        {person.name}
+      </h3>
+      <p className="mt-5 font-mono text-sm font-black tracking-[0.18em] text-terminal-text-dim">
+        CALL NUM: {person.callNum}
+      </p>
+    </article>
+  );
+}
+
+function MockEndingVideo({
+  durationMs,
+  onEnded,
+}: {
+  durationMs: number;
+  onEnded: () => void;
+}) {
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const progress = Math.min(100, (elapsedMs / durationMs) * 100);
+
+  useEffect(() => {
+    const startedAt = window.performance.now();
+    const interval = window.setInterval(() => {
+      setElapsedMs(window.performance.now() - startedAt);
+    }, 120);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
+      <div className="absolute inset-0 bg-[linear-gradient(transparent_0_48%,rgb(255_255_255_/_0.055)_50%,transparent_52%),repeating-linear-gradient(0deg,rgb(255_255_255_/_0.045)_0_1px,transparent_1px_5px)] bg-[length:100%_7px,100%_5px] opacity-50" />
+      <div className="absolute inset-0 terminal-noise opacity-35" />
+      <div className="absolute inset-x-0 top-[6%] h-px bg-cyan-300/60 shadow-[0_0_14px_rgba(34,211,238,0.9)]" />
+      <div className="absolute inset-x-0 bottom-[6%] h-px bg-red-400/50 shadow-[0_0_16px_rgba(248,113,113,0.8)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_42%,rgb(0_0_0_/_0.72)_78%)]" />
+
+      <div className="relative z-10 grid min-h-screen place-items-center px-6">
+        <div className="flex items-center gap-8 text-center text-[clamp(2rem,4vw,4.2rem)] font-black tracking-[0.32em] text-white/90">
+          <span
+            className="text-terminal-accent-text"
+            style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}
+          >
+            &gt;_
+          </span>
+          <span style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}>
+            절대 뒤를 돌아보지 마.
+          </span>
+        </div>
+      </div>
+
+      <div className="absolute right-6 bottom-6 left-6 z-20 flex items-center gap-4">
+        <div className="h-px flex-1 bg-white/20">
+          <div className="h-px bg-terminal-accent-text" style={{ width: `${progress}%` }} />
+        </div>
+        <button
+          type="button"
+          onClick={onEnded}
+          className="border border-white/20 px-3 py-2 text-[10px] font-black tracking-[0.24em] text-white/50 transition hover:border-terminal-accent hover:text-white"
+        >
+          SKIP MOCK
+        </button>
+      </div>
+    </main>
+  );
+}
+
+function SurveyQrPage({
+  delivery,
+  surveyUrl,
+  onReset,
+}: {
+  delivery: EmployeeCardDelivery;
+  surveyUrl: string;
+  onReset: () => void;
+}) {
+  const deliveryMessage =
+    delivery.status === "failed"
+      ? delivery.message
+      : delivery.status === "sent"
+        ? `${delivery.email ?? "등록된 이메일"}로 ${delivery.rank ?? "?"} 등급 사원증이 발송 되었습니다.`
+        : delivery.status === "sending"
+          ? "등록된 이메일로 사원증을 발송하는 중입니다."
+          : "영상 종료 후 사원증 발송이 예약됩니다.";
+
+  return (
+    <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
+      <div className="mx-auto flex max-w-5xl flex-col items-center">
+        <section className="w-full max-w-3xl border border-terminal-accent/55 bg-black px-6 py-10 text-center shadow-[0_0_40px_rgba(176,0,0,0.18)] sm:px-12 sm:py-14">
+          <p className="font-mono text-[clamp(1.1rem,2vw,1.65rem)] tracking-[0.18em] text-terminal-accent-text">
+            UNKNOWN SYSTEM
+          </p>
+          <p className="mt-8 text-[clamp(1.7rem,4vw,3.15rem)] leading-[1.45] font-semibold tracking-normal text-neutral-400">
+            회원가입 시에 입력한 이메일로
+            <br />
+            사원증이 발송 되었습니다.
+          </p>
+          <p
+            className={cx(
+              "mt-6 font-mono text-xs font-black tracking-[0.16em]",
+              delivery.status === "failed" ? "text-terminal-accent-text" : "text-terminal-text-dim"
+            )}
+          >
+            {deliveryMessage}
           </p>
         </section>
 
@@ -831,6 +1403,8 @@ function MessengerDetail({
   commandError,
   onToggleObject,
   onSubmitPin,
+  onToggleObject,
+  onSubmitPin,
   onCommandChange,
   onSubmitCommand,
   onCubeComplete,
@@ -842,6 +1416,8 @@ function MessengerDetail({
   pinError: string;
   command: string;
   commandError: string;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
+  onSubmitPin: () => void;
   onToggleObject: (entry: TerminalObjectEntry) => void;
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
@@ -887,6 +1463,8 @@ function MessengerDetail({
           pinError,
           command,
           commandError,
+          onToggleObject,
+          onSubmitPin,
           onToggleObject,
           onSubmitPin,
           onCommandChange,
@@ -951,6 +1529,8 @@ function renderMailChallenge({
   commandError,
   onToggleObject,
   onSubmitPin,
+  onToggleObject,
+  onSubmitPin,
   onCommandChange,
   onSubmitCommand,
   onCubeComplete,
@@ -962,6 +1542,8 @@ function renderMailChallenge({
   pinError: string;
   command: string;
   commandError: string;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
+  onSubmitPin: () => void;
   onToggleObject: (entry: TerminalObjectEntry) => void;
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
@@ -979,6 +1561,7 @@ function renderMailChallenge({
             </p>
             <p className="mt-1 text-xs text-terminal-text-dim">
               안전한 수송을 위한 보안 승인 아이콘 4개를 선택하십시오.
+              안전한 수송을 위한 보안 승인 아이콘 4개를 선택하십시오.
             </p>
           </div>
         </div>
@@ -987,7 +1570,31 @@ function renderMailChallenge({
           {terminalObjects.map((entry) => {
             const selected = selectedObjectIds.includes(entry.id);
             const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
+          {terminalObjects.map((entry) => {
+            const selected = selectedObjectIds.includes(entry.id);
+            const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
 
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onToggleObject(entry)}
+                disabled={disabled}
+                title={`${entry.label} / ${entry.symbol}`}
+                className={cx(
+                  "grid aspect-[1.45] place-items-center border transition-colors",
+                  selected
+                    ? "border-terminal-accent bg-terminal-accent-soft text-terminal-accent-text"
+                    : "border-[#202020] bg-[#2a2a2a] text-terminal-text-dim hover:border-terminal-accent-muted hover:text-white",
+                  disabled && "cursor-not-allowed opacity-35 hover:border-[#202020] hover:text-terminal-text-dim"
+                )}
+                aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
+                aria-pressed={selected}
+              >
+                <ObjectSymbolIcon symbol={entry.symbol} className="h-5 w-5" />
+              </button>
+            );
+          })}
             return (
               <button
                 key={entry.id}
@@ -1015,6 +1622,13 @@ function renderMailChallenge({
           <p className="font-mono text-[10px] tracking-[0.16em] text-terminal-text-dim">
             SELECTED: {selectedObjectIds.length}/4
           </p>
+          <button
+            type="button"
+            onClick={onSubmitPin}
+            className="bg-terminal-accent-strong px-5 py-3 font-mono text-[10px] font-black tracking-[0.2em] text-white transition-colors hover:bg-terminal-accent-active"
+          >
+            VERIFY
+          </button>
           <button
             type="button"
             onClick={onSubmitPin}
@@ -1122,6 +1736,7 @@ function ArchiveList({
   );
 }
 
+function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
 function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
   return (
     <section className="min-h-0 overflow-y-auto bg-[#0f0f0f] px-6 py-7 lg:px-8">
