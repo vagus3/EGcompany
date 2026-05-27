@@ -47,6 +47,11 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+body:has(.d2-fiscal-page) header.sticky,
+body:has(.d2-fiscal-page) footer.mt-auto {
+  display: none;
+}
+
 .terminal-theme-lock {
   color-scheme: dark;
   background: var(--eg-terminal-bg);
