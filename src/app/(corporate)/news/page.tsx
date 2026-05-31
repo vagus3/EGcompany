@@ -1,102 +1,90 @@
-import Link from "next/link";
-import Image from "next/image";
-import { articles } from "@/lib/news-data";
-import DepartmentSidebar from "@/components/layout/DepartmentSidebar";
-
-export default function Page() {
-  const featured = articles.find((a) => a.featured)!;
-  const rest = articles.filter((a) => !a.featured);
+export default function NewsPage() {
+  const posts = [
+    {
+      date: "OCTOBER 21, 2024",
+      title: "싱가포르 지역 거점 신설",
+      image: "/images/news-singapore.jpg",
+    },
+    {
+      date: "OCTOBER 19, 2024",
+      title: "IT 시스템 유지보수로 인한 운영 중단",
+      image: "/images/news-system.jpg",
+    },
+    {
+      date: "NOVEMBER 28, 2024",
+      title: "야간 통행 제한 구역 확대",
+      image: "/images/news-restricted.jpg",
+    },
+    {
+      date: "DECEMBER 03, 2024",
+      title: "비인가 언어 패턴 감지 보고",
+      image: "/images/news-monitor.jpg",
+    },
+  ];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-14">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-12">
-        {/* Left: Articles */}
-        <div>
-          <p className="mb-4 text-[10px] tracking-[0.3em] text-gray-400 uppercase">
-            Corporate Updates
+    <main className="min-h-screen bg-[#f4f4f4] text-black">
+      <section className="mx-auto max-w-[960px] px-6 py-16">
+        <p className="mb-5 text-[10px] font-semibold tracking-[0.35em] text-gray-400">
+          CORPORATE UPDATES
+        </p>
+
+        <h1 className="mb-20 text-5xl font-medium tracking-[-0.04em]">
+          Company News & Announcements
+        </h1>
+
+        <article className="mb-24">
+          <img
+            src="/images/news-building.jpg"
+            alt="Company building"
+            className="mb-6 h-[320px] w-full object-cover grayscale"
+          />
+
+          <div className="mb-4 flex items-center gap-4">
+            <span className="bg-black px-3 py-1 text-[10px] font-bold tracking-[0.18em] text-white">
+              CORPORATE
+            </span>
+            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500">
+              OCTOBER 24, 2024
+            </span>
+          </div>
+
+          <h2 className="mb-5 text-2xl font-medium">
+            Q3 전략 보고서: 전략적 성장, 예상 뛰어넘다
+          </h2>
+
+          <p className="mb-8 max-w-[760px] text-sm leading-7 text-gray-500">
+            EG Company는 연구 및 운송 부문의 확장에 힘입어, 분기 실적이
+            전년 대비 14% 상승했다고 밝혔다. 이사회는 특히 자동화 물류
+            시스템의 성공적인 도입과 정착을 주요 성과로 강조했다.
           </p>
-          <h1 className="mb-10 text-3xl font-bold text-black">Company News & Announcements</h1>
 
-          {/* Featured article */}
-          <article className="mb-12">
-            <Link href={`/news/${featured.slug}`} className="group block">
-              <div className="relative mb-4 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
-                <Image
-                  src={featured.imageSrc}
-                  alt={featured.title}
-                  fill
-                  sizes="(min-width: 1024px) 640px, 100vw"
-                  className="object-cover grayscale"
-                  priority
-                />
-              </div>
-            </Link>
-            <div className="mb-2 flex items-center gap-3">
-              {featured.category && (
-                <span className="bg-black px-2 py-0.5 text-[10px] tracking-widest text-white uppercase">
-                  {featured.category}
-                </span>
-              )}
-              <span className="text-[11px] tracking-wider text-gray-400">
-                {featured.dateDisplay}
-              </span>
-            </div>
-            <Link href={`/news/${featured.slug}`} className="group">
-              <h2 className="mb-2 text-xl font-bold text-black underline-offset-2 group-hover:underline">
-                {featured.title}
-              </h2>
-            </Link>
-            <p className="mb-3 text-sm leading-relaxed text-gray-500">{featured.excerpt}</p>
-            <Link
-              href={`/news/${featured.slug}`}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold tracking-widest text-black uppercase transition-all hover:gap-2"
+          <button className="text-[10px] font-bold tracking-[0.2em]">
+            READ FULL REPORT <span className="ml-2">→</span>
+          </button>
+        </article>
+
+        <div className="grid grid-cols-1 gap-x-14 gap-y-24 border-t border-gray-300 pt-14 md:grid-cols-2">
+          {posts.map((post, index) => (
+            <article
+              key={post.title}
+              className={index === 2 ? "border-t border-gray-300 pt-14 md:border-0 md:pt-0" : ""}
             >
-              Read Full Report →
-            </Link>
-          </article>
+              <img
+                src={post.image}
+                alt={post.title}
+                className="mb-5 h-[200px] w-full object-cover grayscale"
+              />
 
-          {/* Smaller articles */}
-          <div className="grid gap-6 sm:grid-cols-2">
-            {rest.map((article) => (
-              <article key={article.slug}>
-                <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="relative mb-3 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
-                    <Image
-                      src={article.imageSrc}
-                      alt={article.title}
-                      fill
-                      sizes="(min-width: 640px) 50vw, 100vw"
-                      className="object-cover grayscale"
-                    />
-                  </div>
-                  <p className="mb-1 text-[11px] tracking-wider text-gray-400">
-                    {article.dateDisplay}
-                  </p>
-                  <h3 className="text-base leading-snug font-bold text-black underline-offset-2 group-hover:underline">
-                    {article.title}
-                  </h3>
-                </Link>
-              </article>
-            ))}
-          </div>
+              <p className="mb-6 text-[10px] font-semibold tracking-[0.18em] text-gray-500">
+                {post.date}
+              </p>
+
+              <h3 className="text-xl font-medium">{post.title}</h3>
+            </article>
+          ))}
         </div>
-
-        {/* Right: Sidebar */}
-        <div className="space-y-6">
-          <DepartmentSidebar />
-
-          {/* Internal Support */}
-          <div className="border border-gray-200 p-5">
-            <p className="mb-1 text-[10px] tracking-widest text-gray-400 uppercase">
-              Internal Support
-            </p>
-            <p className="mb-4 text-xs text-gray-500">개발팀에게 커피 한 잔 사 주기.</p>
-            <button className="w-full bg-black py-2.5 text-[11px] tracking-widest text-white uppercase transition-colors hover:bg-gray-800">
-              Get Support
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
