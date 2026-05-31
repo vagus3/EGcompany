@@ -61,7 +61,9 @@ export default function PortalClient({ portal }: { portal: PortalConfig }) {
     if (code.trim()) {
       if (portal.isSecurity) {
         router.push("/portals/security/terminal");
+        return;
       }
+      router.push(`/portals/${portal.slug}/detail`);
       return;
     }
     setStatus("denied");
