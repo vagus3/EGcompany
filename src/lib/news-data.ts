@@ -1,7 +1,7 @@
 export type Block =
   | { type: "paragraph"; text: string }
   | { type: "blockquote"; text: string }
-  | { type: "image"; caption?: string }
+  | { type: "image"; caption?: string; imageSrc?: string }
   | { type: "hr" }
   | {
       type: "maintenance-table";
@@ -21,6 +21,7 @@ export interface Article {
   title: string;
   excerpt: string;
   featured: boolean;
+  imageSrc: string;
   blocks: Block[];
 }
 
@@ -33,8 +34,9 @@ export const articles: Article[] = [
     excerpt:
       "EG Company는 연구 및 운송 부문의 확장에 힘입어, 분기 실적이 전년 대비 14% 상승했다고 밝혔다. 이사회는 특히 자동화 물류 시스템의 성공적인 도입과 정착을 주요 성과로 강조했다.",
     featured: true,
+    imageSrc: "/eg_png/egcompany_picture/News/03.png",
     blocks: [
-      { type: "image" },
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/03.png" },
       {
         type: "blockquote",
         text: '"3분기 동안 EG Company는 예측치를 상회하는 성장을 기록하며, 글로벌 운영 체계의 안정성과 확장성을 동시에 입증했다. 이번 실적 상승은 단순한 수익 증가를 넘어, 전략적 투자와 구조적 개선이 실제 성과로 이어졌다는 점에서 더욱 의미가 크다."',
@@ -76,9 +78,11 @@ export const articles: Article[] = [
     title: "싱가포르 지역 거점 신설",
     excerpt: "",
     featured: false,
+    imageSrc: "/eg_png/egcompany_picture/News/02.png",
     blocks: [
       {
         type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/02.png",
         caption:
           "FIGURE 2.0: STRATEGIC REGIONAL HUB IN THE HEART OF SINGAPORE'S FINANCIAL DISTRICT.",
       },
@@ -123,9 +127,10 @@ export const articles: Article[] = [
     title: "IT 시스템 유지보수로 인한 운영 중단",
     excerpt: "",
     featured: false,
+    imageSrc: "/eg_png/egcompany_picture/News/04.png",
     blocks: [
       { type: "hr" },
-      { type: "image" },
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/04.png" },
       {
         type: "paragraph",
         text: "안정적인 IT 서비스 제공과 보안 강화를 위하여 다음과 같이 시스템 정기 점검 및 유지보수 작업을 진행할 예정입니다.",

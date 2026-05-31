@@ -1,4 +1,5 @@
 import { companyEvolutionData } from "@/lib/evolution-data";
+import Image from "next/image";
 
 export default function Page() {
   return (
@@ -20,9 +21,15 @@ export default function Page() {
       <section className="mx-auto grid max-w-5xl items-start gap-10 px-4 pb-16 sm:px-6 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] lg:gap-16 lg:pb-24">
         {/* Portrait */}
         <div>
-          <div className="aspect-4/5 w-full max-w-72 overflow-hidden bg-gray-800 md:max-w-none">
-            {/* public/images/director.jpg 로 교체 가능 */}
-            <div className="bg-gradient-linear-to-b h-full w-full from-gray-700 to-gray-900" />
+          <div className="relative aspect-4/5 w-full max-w-72 overflow-hidden bg-gray-800 md:max-w-none">
+            <Image
+              src="/eg_png/egcompany_picture/AboutUs/AboutUs.png"
+              alt="Director E.G. portrait"
+              fill
+              sizes="(min-width: 768px) 280px, 288px"
+              className="object-cover"
+              priority
+            />
           </div>
           <p className="mt-3 text-sm font-semibold text-black">Director E.G.</p>
           <p className="mt-0.5 text-xs tracking-widest text-gray-400 uppercase">

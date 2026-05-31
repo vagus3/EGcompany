@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { articles, getArticle } from "@/lib/news-data";
 import type { Block } from "@/lib/news-data";
 import DepartmentSidebar from "@/components/layout/DepartmentSidebar";
@@ -12,7 +13,17 @@ function renderBlock(block: Block, idx: number) {
     case "image":
       return (
         <figure key={idx} className="my-6">
-          <div className="bg-gradient-linear-to-br aspect-4/3 w-full from-gray-300 via-gray-400 to-gray-500" />
+          <div className="relative aspect-4/3 w-full overflow-hidden bg-gray-300">
+            {block.imageSrc && (
+              <Image
+                src={block.imageSrc}
+                alt={block.caption ?? "EG Company news image"}
+                fill
+                sizes="(min-width: 1024px) 640px, 100vw"
+                className="object-cover grayscale"
+              />
+            )}
+          </div>
           {block.caption && (
             <figcaption className="mt-2 text-[10px] tracking-widest text-gray-400 uppercase">
               {block.caption}

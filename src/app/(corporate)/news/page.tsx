@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { articles } from "@/lib/news-data";
 import DepartmentSidebar from "@/components/layout/DepartmentSidebar";
 
@@ -19,7 +20,16 @@ export default function Page() {
           {/* Featured article */}
           <article className="mb-12">
             <Link href={`/news/${featured.slug}`} className="group block">
-              <div className="bg-gradient-linear-to-br mb-4 aspect-4/3 w-full overflow-hidden from-gray-200 to-gray-400 transition-opacity group-hover:opacity-90" />
+              <div className="relative mb-4 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
+                <Image
+                  src={featured.imageSrc}
+                  alt={featured.title}
+                  fill
+                  sizes="(min-width: 1024px) 640px, 100vw"
+                  className="object-cover grayscale"
+                  priority
+                />
+              </div>
             </Link>
             <div className="mb-2 flex items-center gap-3">
               {featured.category && (
@@ -50,7 +60,15 @@ export default function Page() {
             {rest.map((article) => (
               <article key={article.slug}>
                 <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="bg-gradient-linear-to-br mb-3 aspect-4/3 w-full overflow-hidden from-gray-200 to-gray-400 transition-opacity group-hover:opacity-90" />
+                  <div className="relative mb-3 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
+                    <Image
+                      src={article.imageSrc}
+                      alt={article.title}
+                      fill
+                      sizes="(min-width: 640px) 50vw, 100vw"
+                      className="object-cover grayscale"
+                    />
+                  </div>
                   <p className="mb-1 text-[11px] tracking-wider text-gray-400">
                     {article.dateDisplay}
                   </p>

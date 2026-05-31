@@ -13,33 +13,47 @@ import {
 const visualStyles = {
   hero: {
     backgroundImage:
-      "linear-gradient(90deg, rgb(0 0 0 / 0.72), rgb(255 255 255 / 0.08) 48%, rgb(0 0 0 / 0.72)), repeating-linear-gradient(90deg, rgb(255 255 255 / 0.2) 0 1px, transparent 1px 36px), linear-gradient(104deg, transparent 0 42%, rgb(230 230 230 / 0.58) 42% 48%, transparent 48% 55%, rgb(235 235 235 / 0.52) 55% 61%, transparent 61%), repeating-linear-gradient(0deg, rgb(255 255 255 / 0.08) 0 1px, transparent 1px 23px)",
+      "linear-gradient(90deg, rgb(0 0 0 / 0.72), rgb(255 255 255 / 0.08) 48%, rgb(0 0 0 / 0.72)), url('/eg_png/egcompany_picture/main.png')",
     backgroundColor: "#171717",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   stairs: {
     backgroundImage:
-      "linear-gradient(145deg, transparent 0 34%, rgb(235 235 235 / 0.62) 34% 37%, transparent 37%), repeating-linear-gradient(155deg, rgb(255 255 255 / 0.22) 0 2px, transparent 2px 18px), linear-gradient(90deg, rgb(0 0 0 / 0.82), rgb(70 70 70 / 0.42))",
+      "linear-gradient(90deg, rgb(0 0 0 / 0.72), rgb(0 0 0 / 0.08)), url('/eg_png/egcompany_picture/News/03.png')",
     backgroundColor: "#181818",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   logistics: {
     backgroundImage:
-      "repeating-linear-gradient(150deg, rgb(255 255 255 / 0.22) 0 2px, transparent 2px 18px), repeating-linear-gradient(30deg, rgb(255 255 255 / 0.14) 0 1px, transparent 1px 26px), linear-gradient(135deg, #111, #4a4a4a)",
+      "linear-gradient(90deg, rgb(0 0 0 / 0.52), rgb(0 0 0 / 0.1)), url('/eg_png/egcompany_picture/News/04.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   terrain: {
     backgroundImage:
-      "radial-gradient(ellipse at 18% 28%, transparent 0 16px, rgb(80 80 80 / 0.28) 17px 18px, transparent 19px), radial-gradient(ellipse at 70% 38%, transparent 0 24px, rgb(30 30 30 / 0.22) 25px 26px, transparent 27px), repeating-radial-gradient(ellipse at 45% 50%, rgb(60 60 60 / 0.18) 0 1px, transparent 1px 11px), linear-gradient(135deg, #dadada, #f4f4f4 52%, #bcbcbc)",
+      "linear-gradient(0deg, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0.38)), url('/eg_png/egcompany_picture/News/02.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   horizon: {
     backgroundImage:
-      "radial-gradient(ellipse at center, transparent 0 21%, rgb(255 255 255 / 0.12) 22% 22.6%, transparent 23%), repeating-radial-gradient(ellipse at center, rgb(255 255 255 / 0.13) 0 1px, transparent 1px 15px), linear-gradient(135deg, #000, #111 48%, #030303)",
+      "linear-gradient(0deg, rgb(0 0 0 / 0.58), rgb(0 0 0 / 0.58)), url('/eg_png/egcompany_picture/Company%20Information.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   insightA: {
     backgroundImage:
-      "linear-gradient(132deg, transparent 0 24%, #f5f5f5 24% 38%, transparent 38% 49%, #8c8c8c 49% 62%, transparent 62%), linear-gradient(45deg, #161616, #d8d8d8)",
+      "linear-gradient(0deg, rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.08)), url('/eg_png/egcompany_picture/News/01.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   insightB: {
     backgroundImage:
-      "repeating-linear-gradient(0deg, rgb(255 255 255 / 0.18) 0 1px, transparent 1px 8px), repeating-linear-gradient(90deg, rgb(0 0 0 / 0.18) 0 1px, transparent 1px 11px), linear-gradient(135deg, #444, #bcbcbc)",
+      "linear-gradient(0deg, rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.08)), url('/eg_png/egcompany_picture/News/05.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
 } satisfies Record<string, CSSProperties>;
 

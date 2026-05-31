@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
     <div>
@@ -81,9 +83,15 @@ export default function Page() {
         <div className="border border-gray-200 bg-white p-5 sm:p-8 lg:p-10">
           <div className="grid gap-8 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] lg:gap-10">
             {/* Left: building image */}
-            <div className="bg-gradient-linear-to-b aspect-3/4 shrink-0 overflow-hidden from-gray-700 via-gray-800 to-gray-950">
-              {/* public/images/hq-night.jpg 로 교체 가능 */}
-              <div className="h-full w-full" />
+            <div className="relative aspect-3/4 shrink-0 overflow-hidden bg-gray-900">
+              <Image
+                src="/eg_png/egcompany_picture/Company%20Information.png"
+                alt="EG Company headquarters at night"
+                fill
+                sizes="(min-width: 1024px) 280px, (min-width: 768px) 240px, 100vw"
+                className="object-cover"
+                priority
+              />
             </div>
 
             {/* Right: info fields */}
