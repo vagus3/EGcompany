@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 
 import { getPortal, portals } from "@/lib/portal-data";
@@ -20,7 +21,7 @@ const localImages = {
   portraitA: "/eg_png/egcompany_picture/card/card_a.png",
   portraitB: "/eg_png/egcompany_picture/card/card_b.png",
   portraitS: "/eg_png/egcompany_picture/card/card_s.png",
-  hq: "/eg_png/egcompany_picture/Company%20Information.png",
+  hq: "/eg_png/egcompany_picture/Company Information.png",
 };
 
 export default async function Page({ params }: PageProps) {
@@ -109,23 +110,35 @@ function FiscalPage() {
 
       <SplitSection
         title="Quarterly Financial Insights"
-        body="Quarterly financial insights track revenue movement, temporal governance, and the standards that keep management decisions auditable."
+        body="Quarterly financial insights track revenue movement across temporal governance, liquidity posture, and the standards that keep management decisions auditable."
         image={localImages.fiscal}
       />
 
       <TwoColumn>
         <SectionIntro
           title="Compliance & Governance"
-          body="Regulatory standards ensure continuity and promote consistent financial practices across jurisdictions."
+          body="Regulatory standards ensure continuity across jurisdictions and reinforce consistent financial, privacy, anti-bribery, and internal control practices."
         />
         <div className="grid gap-x-12 gap-y-12 md:grid-cols-2">
           {[
-            "Sarbanes-Oxley (SOX) Compliance",
-            "Data Privacy (GDPR/CCPA) Framework",
-            "Global Anti-Bribery & Corruption Policies",
-            "Internal Control (COSO) Framework",
-          ].map((item) => (
-            <MiniItem key={item} title={item} body={`${item} standards are monitored through internal controls and quarterly governance checks.`} />
+            [
+              "Sarbanes-Oxley (SOX) Compliance",
+              "Audit controls, disclosure integrity, and financial reporting standards are reviewed through quarterly governance checks.",
+            ],
+            [
+              "Data Privacy (GDPR/CCPA) Framework",
+              "Personal information access, retention, and authorization flows are monitored against regional privacy requirements.",
+            ],
+            [
+              "Global Anti-Bribery & Corruption Policies",
+              "Vendor exposure, gift approvals, and procurement exceptions are screened against anti-corruption policies.",
+            ],
+            [
+              "Internal Control (COSO) Framework",
+              "Risk, mitigation, and control ownership are mapped through COSO-aligned operating procedures.",
+            ],
+          ].map(([title, body]) => (
+            <MiniItem key={title} title={title} body={body} />
           ))}
         </div>
       </TwoColumn>
@@ -133,9 +146,24 @@ function FiscalPage() {
       <PeopleSection
         title="Lead Partners"
         people={[
-          ["Eleanor Vance", "Chief Compliance Officer", localImages.portraitS],
-          ["David Chen", "Head of Auditing", localImages.portraitB],
-          ["Maria Rodriguez", "Director of Financial Strategy", localImages.portraitA],
+          [
+            "Eleanor Vance",
+            "Chief Compliance Officer",
+            "Executive owner for regulatory continuity and financial control standards.",
+            localImages.portraitS,
+          ],
+          [
+            "David Chen",
+            "Head of Auditing",
+            "Leads impartial internal reviews and remediation follow-through.",
+            localImages.portraitB,
+          ],
+          [
+            "Maria Rodriguez",
+            "Director of Financial Strategy",
+            "Aligns liquidity planning with long-range institutional allocation.",
+            localImages.portraitA,
+          ],
         ]}
       />
 
@@ -168,30 +196,69 @@ function LogisticsPage() {
           <SectionTitle>Strategic Imperatives</SectionTitle>
           <NumberedList
             items={[
-              ["Global Supply Chain Resilience", "Architecting supply networks capable of withstanding geopolitical volatility and macro-economic shocks with redundant routing algorithms."],
-              ["Autonomous Fleet Management", "Transitioning legacy logistical assets to predictive, automated systems with telemetry-led optimization and real-time re-routing."],
-              ["Rapid Response Logistics", "Deploying targeted mobility assets for high-value extraction, emergency resupply, and immediate personnel movement."],
+              [
+                "Global Supply Chain Resilience",
+                "Architecting supply networks capable of withstanding geopolitical volatility and macro-economic shocks with redundant routing algorithms.",
+              ],
+              [
+                "Autonomous Fleet Management",
+                "Transitioning legacy logistical assets to predictive, automated systems with telemetry-led optimization and real-time re-routing.",
+              ],
+              [
+                "Rapid Response Logistics",
+                "Deploying targeted mobility assets for high-value extraction, emergency resupply, and immediate personnel movement.",
+              ],
             ]}
           />
           <MetricSection
             title="Global Supply Chain Metrics"
             metrics={[
-              ["99.9%", "On-Time Delivery", "Large scale delivery and route reliability across active corridors."],
-              ["45+", "Countries Served", "Multi-country network operations and customs coverage."],
-              ["1.2M", "Annual Shipments", "Annual shipments across commercial and protected transport channels."],
+              [
+                "99.9%",
+                "On-Time Delivery",
+                "Route reliability is monitored across active commercial and protected corridors.",
+              ],
+              [
+                "45+",
+                "Countries Served",
+                "Multi-country network operations are supported through customs and regional compliance coverage.",
+              ],
+              [
+                "1.2M",
+                "Annual Shipments",
+                "Annual shipment volume spans commercial freight, sensitive assets, and protected transport channels.",
+              ],
             ]}
           />
           <ListSection
             title="Sustainability & Innovation"
             subtitle="Green Fleet Initiatives"
-            items={["Electric Vehicle Integration", "Carbon Reduction Targets"]}
+            items={[
+              [
+                "Electric Vehicle Integration",
+                "Fleet replacement plans prioritize electric vehicle adoption where regional charging and route density support uptime.",
+              ],
+              [
+                "Carbon Reduction Targets",
+                "Reduction targets are measured against fuel telemetry, load consolidation, and predictive route planning.",
+              ],
+            ]}
           />
           <StoryGrid
             title="Client Success Stories"
             stories={[
-              ["Major Retailer: Optimized Distribution", "Regional distribution routes were consolidated and stabilized through corridor analysis."],
-              ["Pharma Corp: Cold Chain Solutions", "Temperature-sensitive shipments were protected through route assurance and timed logistics."],
-              ["Automotive Giant: Just-In-Time Logistics", "Critical part movement was synchronized to reduce idle time and line disruption."],
+              [
+                "Major Retailer: Optimized Distribution",
+                "Regional distribution routes were consolidated and stabilized through corridor analysis.",
+              ],
+              [
+                "Pharma Corp: Cold Chain Solutions",
+                "Temperature-sensitive shipments were protected through route assurance and timed logistics.",
+              ],
+              [
+                "Automotive Giant: Just-In-Time Logistics",
+                "Critical part movement was synchronized to reduce idle time and line disruption.",
+              ],
             ]}
           />
         </section>
@@ -216,9 +283,18 @@ function HumanPage() {
         <div className="mx-auto max-w-[1920px]">
           <SectionTitle>Strategic Directives</SectionTitle>
           <div className="mt-16 grid gap-12 md:grid-cols-3">
-            <ObjectiveCard title="Talent Acquisition" body="Identifying and securing top-tier professionals capable of executing complex strategies in high-stakes environments." />
-            <ObjectiveCard title="Employee Welfare" body="Maintaining rigorous standards for physical and psychological safety, ensuring sustained operational readiness across all divisions." />
-            <ObjectiveCard title="Organizational Dev" body="Structuring hierarchy and communication flows to eliminate friction and maximize cross-departmental efficiency." />
+            <ObjectiveCard
+              title="Talent Acquisition"
+              body="Identifying and securing top-tier professionals capable of executing complex strategies in high-stakes environments."
+            />
+            <ObjectiveCard
+              title="Employee Welfare"
+              body="Maintaining rigorous standards for physical and psychological safety, ensuring sustained operational readiness across all divisions."
+            />
+            <ObjectiveCard
+              title="Organizational Dev"
+              body="Structuring hierarchy and communication flows to eliminate friction and maximize cross-departmental efficiency."
+            />
           </div>
         </div>
       </section>
@@ -233,9 +309,34 @@ function HumanPage() {
 
       <section className="mx-auto max-w-[1920px] px-5 py-24 sm:px-24 sm:py-32">
         <SectionTitle>Career Development</SectionTitle>
-        <div className="mt-20 grid gap-8 md:grid-cols-4">
-          {["Junior Analyst", "Senior Strategist", "Team Lead", "Director"].map((role) => (
-            <MiniItem key={role} title={role} body={`${role} path with structured learning, mentorship, and progressive responsibility.`} borderTop />
+        <div className="mt-20 grid gap-8 md:grid-cols-3 xl:grid-cols-6">
+          {[
+            [
+              "Junior Analyst",
+              "Entry track focused on structured learning, rotation support, and precise execution.",
+            ],
+            [
+              "Senior Strategist",
+              "Senior path for personnel capable of designing welfare, staffing, and continuity systems.",
+            ],
+            [
+              "Team Lead",
+              "Leadership track centered on communication flow, operational readiness, and team development.",
+            ],
+            [
+              "Mentorship",
+              "Peer partnership and senior guidance channels for accelerated capability growth.",
+            ],
+            [
+              "Director",
+              "Executive path for cross-functional hierarchy, staffing policy, and organizational design.",
+            ],
+            [
+              "Training",
+              "Ongoing training programs maintain role readiness across changing operating demands.",
+            ],
+          ].map(([title, body]) => (
+            <MiniItem key={title} title={title} body={body} borderTop />
           ))}
         </div>
       </section>
@@ -243,9 +344,23 @@ function HumanPage() {
       <section className="bg-[#f3f3f3] px-5 py-24 sm:px-24 sm:py-32">
         <div className="mx-auto max-w-[1920px]">
           <SectionTitle>Employee Experience</SectionTitle>
+          <p className="mt-6 max-w-3xl text-base leading-7 text-neutral-600">
+            EG Company fosters an inclusive operating environment with clear progression paths,
+            educational support, and resilient employee standards.
+          </p>
           <div className="mt-12 grid gap-12 md:grid-cols-2">
-            <Testimonial name="Sarah Chen" role="Senior Manager" image={localImages.portraitS} />
-            <Testimonial name="Mark Davis" role="Lead Engineer" image={localImages.portraitB} />
+            <Testimonial
+              name="Sarah Chen"
+              role="Senior Manager"
+              quote="The growth opportunities are structured, measurable, and backed by real mentorship."
+              image={localImages.portraitS}
+            />
+            <Testimonial
+              name="Mark Davis"
+              role="Lead Engineer"
+              quote="Clear communication standards make cross-functional work faster and more reliable."
+              image={localImages.portraitB}
+            />
           </div>
         </div>
       </section>
@@ -276,9 +391,19 @@ function StrategicPage() {
         <TwoColumn>
           <SectionTitle>Core Vectors</SectionTitle>
           <div className="grid gap-8 md:grid-cols-2">
-            <ObjectiveCard title="Global Market Analysis" body="Continuous monitoring of macroeconomic indicators and geopolitical shifts to construct predictive models of emerging opportunities." />
-            <ObjectiveCard title="Experimental Technology" body="Evaluation and incubation of nascent technological frameworks before widespread market adoption." />
-            <ObjectiveCard title="Intelligence Synthesis" body="Translation of disparate, unstructured data sets into coherent operational intelligence for executive-level execution." wide />
+            <ObjectiveCard
+              title="Global Market Analysis"
+              body="Continuous monitoring of macroeconomic indicators and geopolitical shifts to construct predictive models of emerging opportunities."
+            />
+            <ObjectiveCard
+              title="Experimental Technology"
+              body="Evaluation and incubation of nascent technological frameworks before widespread market adoption."
+            />
+            <ObjectiveCard
+              title="Intelligence Synthesis"
+              body="Translation of disparate, unstructured data sets into coherent operational intelligence for executive-level execution."
+              wide
+            />
           </div>
         </TwoColumn>
       </section>
@@ -286,8 +411,24 @@ function StrategicPage() {
       <TwoColumn className="px-5 py-24 sm:px-12 sm:py-32">
         <SectionTitle>Recent Intelligence Reports</SectionTitle>
         <div className="grid gap-8 md:grid-cols-3">
-          {["Q3 Global Economic Shifts", "Emerging AI Architectures", "Supply Chain Vulnerability Assessment"].map((title, index) => (
-            <ReportCard key={title} date={["08.15.2024", "08.22.2024", "08.05.2024"][index]} title={title} />
+          {[
+            [
+              "08.15.2024",
+              "Q3 Global Economic Shifts",
+              "Macroeconomic indicators and geopolitical shifts are modeled for emerging risk and opportunity windows.",
+            ],
+            [
+              "08.22.2024",
+              "Emerging AI Architectures",
+              "New model architectures are monitored across manufacturing, commercial, and security channels.",
+            ],
+            [
+              "08.05.2024",
+              "Supply Chain Vulnerability Assessment",
+              "International supply chain dependencies are reassessed against disruption and annexation scenarios.",
+            ],
+          ].map(([date, title, body]) => (
+            <ReportCard key={title} date={date} title={title} body={body} />
           ))}
         </div>
       </TwoColumn>
@@ -312,17 +453,42 @@ function StrategicPage() {
       <PeopleSection
         title="Advisory Board"
         people={[
-          ["Dr. Anya Sharma", "Geopolitical Strategy", localImages.portraitS],
-          ["Marcus Chen", "Advanced Technology & Innovation", localImages.portraitB],
-          ["Elena Petrova", "Cyber Intelligence Defense", localImages.portraitA],
+          [
+            "Dr. Anya Sharma",
+            "Geopolitical Strategy",
+            "Advises on regional risk modeling and strategic market movement.",
+            localImages.portraitS,
+          ],
+          [
+            "Marcus Chen",
+            "Advanced Technology & Innovation",
+            "Reviews disruptive hardware and software signals before adoption.",
+            localImages.portraitB,
+          ],
+          [
+            "Elena Petrova",
+            "Cyber Intelligence Defense",
+            "Guides threat interpretation across hostile infrastructure patterns.",
+            localImages.portraitA,
+          ],
         ]}
       />
 
       <TwoColumn className="px-5 py-24 sm:px-12 sm:py-32">
         <SectionTitle>Direct Access</SectionTitle>
         <div className="grid gap-12 md:grid-cols-2">
-          <ContactPanel title="Dr. Aris Thorne" eyebrow="Director of Intelligence" body="Executive Oversight & Strategy" email="A.THORNE@EGCOMPANY.COM" />
-          <ContactPanel title="Operations Desk" eyebrow="Secure Communications" body="General Inquiries & Data Requests" email="INTEL.OPS@EGCOMPANY.COM" />
+          <ContactPanel
+            title="Dr. Aris Thorne"
+            eyebrow="Director of Intelligence"
+            body="Executive Oversight & Strategy"
+            email="A.THORNE@EGCOMPANY.COM"
+          />
+          <ContactPanel
+            title="Operations Desk"
+            eyebrow="Secure Communications"
+            body="General Inquiries & Data Requests"
+            email="INTEL.OPS@EGCOMPANY.COM"
+          />
         </div>
       </TwoColumn>
       <div className="px-5 pb-32 sm:px-12">
@@ -352,7 +518,7 @@ function EditorialHero({
         {eyebrow}
       </p>
       <h1
-        className={`mt-6 max-w-5xl font-semibold leading-none tracking-[-0.025em] ${
+        className={`mt-6 max-w-5xl leading-none font-semibold tracking-[-0.025em] ${
           large ? "text-[clamp(4rem,8vw,6rem)]" : "text-[clamp(3.4rem,7vw,4.5rem)]"
         }`}
       >
@@ -396,10 +562,18 @@ function SectionIntro({ title, body }: { title: string; body: string }) {
   );
 }
 
-function ObjectiveCard({ title, body, wide = false }: { title: string; body: string; wide?: boolean }) {
+function ObjectiveCard({
+  title,
+  body,
+  wide = false,
+}: {
+  title: string;
+  body: string;
+  wide?: boolean;
+}) {
   return (
     <article className={`bg-white p-10 sm:p-14 ${wide ? "md:col-span-2" : ""}`}>
-      <div className="mb-8 h-8 w-8 border-l-2 border-t-2 border-black/45" />
+      <div className="mb-8 h-8 w-8 border-t-2 border-l-2 border-black/45" />
       <h3 className="text-xl font-semibold">{title}</h3>
       <p className="mt-4 text-base leading-7 text-neutral-600">{body}</p>
     </article>
@@ -424,7 +598,7 @@ function AsideCard({
         {blocks.map(([label, value]) => (
           <div key={label}>
             <p className="text-xs font-semibold tracking-[0.1em] uppercase">{label}</p>
-            <p className="mt-2 whitespace-pre-line text-sm leading-6 text-neutral-600">{value}</p>
+            <p className="mt-2 text-sm leading-6 whitespace-pre-line text-neutral-600">{value}</p>
           </div>
         ))}
       </div>
@@ -434,15 +608,35 @@ function AsideCard({
           <p className="mt-3 text-sm leading-6 text-neutral-600">{directive}</p>
         </div>
       )}
-      {button && <button className="mt-8 w-full bg-black px-5 py-4 text-sm font-semibold text-white">{button}</button>}
+      {button && (
+        <button className="mt-8 w-full bg-black px-5 py-4 text-sm font-semibold text-white">
+          {button}
+        </button>
+      )}
     </aside>
   );
 }
 
-function FeatureImage({ image, className = "", tall = false }: { image: string; className?: string; tall?: boolean }) {
+function FeatureImage({
+  image,
+  className = "",
+  tall = false,
+}: {
+  image: string;
+  className?: string;
+  tall?: boolean;
+}) {
   return (
-    <div className={`overflow-hidden bg-[#f3f3f3] ${tall ? "aspect-[4/5]" : "aspect-[16/7]"} ${className}`}>
-      <img src={image} alt="" className="h-full w-full object-cover grayscale" />
+    <div
+      className={`relative overflow-hidden bg-[#f3f3f3] ${tall ? "aspect-[4/5]" : "aspect-[16/7]"} ${className}`}
+    >
+      <Image
+        src={image}
+        alt=""
+        fill
+        sizes="(min-width: 1024px) 60vw, 100vw"
+        className="object-cover grayscale"
+      />
     </div>
   );
 }
@@ -456,7 +650,15 @@ function SplitSection({ title, body, image }: { title: string; body: string; ima
   );
 }
 
-function MiniItem({ title, body, borderTop = false }: { title: string; body: string; borderTop?: boolean }) {
+function MiniItem({
+  title,
+  body,
+  borderTop = false,
+}: {
+  title: string;
+  body: string;
+  borderTop?: boolean;
+}) {
   return (
     <article className={borderTop ? "border-t border-black/20 pt-6" : ""}>
       <h3 className="text-lg font-semibold">{title}</h3>
@@ -470,7 +672,9 @@ function NumberedList({ items }: { items: [string, string][] }) {
     <div className="mt-14 space-y-16">
       {items.map(([title, body], index) => (
         <div key={title} className="grid gap-6 sm:grid-cols-[70px_1fr]">
-          <p className="text-5xl font-black tracking-[-0.05em] text-neutral-200">{String(index + 1).padStart(2, "0")}</p>
+          <p className="text-5xl font-black tracking-[-0.05em] text-neutral-200">
+            {String(index + 1).padStart(2, "0")}
+          </p>
           <div>
             <h3 className="text-2xl font-bold">{title}</h3>
             <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-600">{body}</p>
@@ -498,19 +702,27 @@ function MetricSection({ title, metrics }: { title: string; metrics: [string, st
   );
 }
 
-function ListSection({ title, subtitle, items }: { title: string; subtitle: string; items: string[] }) {
+function ListSection({
+  title,
+  subtitle,
+  items,
+}: {
+  title: string;
+  subtitle: string;
+  items: [string, string][];
+}) {
   return (
     <section className="mt-24 border-t border-black/10 pt-10">
       <SectionTitle>{title}</SectionTitle>
       <h3 className="mt-10 text-xl font-bold">{subtitle}</h3>
       <ul className="mt-6 space-y-5">
-        {items.map((item) => (
+        {items.map(([item, body]) => (
           <li key={item} className="flex gap-3 text-sm leading-6 text-neutral-600">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-black" />
             <span>
               <strong className="text-black">{item}</strong>
               <br />
-              {item} is managed through measurable targets and operational review.
+              {body}
             </span>
           </li>
         ))}
@@ -532,18 +744,27 @@ function StoryGrid({ title, stories }: { title: string; stories: [string, string
   );
 }
 
-function PeopleSection({ title, people }: { title: string; people: [string, string, string][] }) {
+function PeopleSection({
+  title,
+  people,
+}: {
+  title: string;
+  people: [string, string, string, string][];
+}) {
   return (
     <section className="mx-auto max-w-[1920px] px-5 py-24 sm:px-12 sm:py-32">
       <SectionTitle>{title}</SectionTitle>
       <div className="mt-12 grid gap-12 md:grid-cols-3">
-        {people.map(([name, role, image]) => (
+        {people.map(([name, role, body, image]) => (
           <article key={name}>
-            <div className="h-24 w-24 overflow-hidden rounded-xl bg-neutral-200 md:h-48 md:w-48">
-              <img src={image} alt={name} className="h-full w-full object-cover grayscale" />
+            <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-neutral-200 md:h-48 md:w-48">
+              <Image src={image} alt={name} fill sizes="192px" className="object-cover grayscale" />
             </div>
             <h3 className="mt-6 text-lg font-semibold">{name}</h3>
-            <p className="mt-1 text-sm leading-5 text-neutral-600">{role}</p>
+            <p className="mt-1 text-xs font-semibold tracking-[0.08em] text-neutral-500 uppercase">
+              {role}
+            </p>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-neutral-600">{body}</p>
           </article>
         ))}
       </div>
@@ -551,20 +772,30 @@ function PeopleSection({ title, people }: { title: string; people: [string, stri
   );
 }
 
-function Testimonial({ name, role, image }: { name: string; role: string; image: string }) {
+function Testimonial({
+  name,
+  role,
+  quote,
+  image,
+}: {
+  name: string;
+  role: string;
+  quote: string;
+  image: string;
+}) {
   return (
     <article className="grid overflow-hidden bg-white shadow-sm sm:grid-cols-[1fr_208px]">
       <div className="flex min-h-80 flex-col justify-between p-10">
         <p className="text-4xl leading-none">&#34;</p>
-        <p className="mt-6 text-base leading-7 text-neutral-600">
-          EG Company fosters a focused environment with clear growth opportunities and strong operational standards.
-        </p>
+        <p className="mt-6 text-base leading-7 text-neutral-600">{quote}</p>
         <div className="mt-8">
           <h3 className="text-sm font-semibold">{name}</h3>
           <p className="text-xs text-neutral-600">{role}</p>
         </div>
       </div>
-      <img src={image} alt={name} className="h-full min-h-80 w-full object-cover grayscale" />
+      <div className="relative min-h-80">
+        <Image src={image} alt={name} fill sizes="208px" className="object-cover grayscale" />
+      </div>
     </article>
   );
 }
@@ -577,42 +808,54 @@ function ContactBlock({ title, rows }: { title: string; rows: [string, string][]
         {rows.map(([label, value]) => (
           <div key={label}>
             <p className="text-xs tracking-[0.05em] uppercase">{label}</p>
-            <p className="mt-3 whitespace-pre-line text-lg leading-8 text-neutral-600">{value}</p>
+            <p className="mt-3 text-lg leading-8 whitespace-pre-line text-neutral-600">{value}</p>
           </div>
         ))}
-        <button className="bg-black px-8 py-4 text-sm tracking-[0.05em] text-white uppercase">Secure Transmission</button>
+        <button className="bg-black px-8 py-4 text-sm tracking-[0.05em] text-white uppercase">
+          Secure Transmission
+        </button>
       </div>
     </section>
   );
 }
 
-function ReportCard({ date, title }: { date: string; title: string }) {
+function ReportCard({ date, title, body }: { date: string; title: string; body: string }) {
   return (
     <article className="border border-neutral-200 bg-white p-10">
       <p className="text-[10px] tracking-[0.1em] text-neutral-600 uppercase">{date}</p>
-      <h3 className="mt-4 text-lg font-semibold leading-7">{title}</h3>
-      <p className="mt-5 text-sm leading-6 text-neutral-600">
-        Ongoing analysis package prepared for executive review and operational planning.
-      </p>
+      <h3 className="mt-4 text-lg leading-7 font-semibold">{title}</h3>
+      <p className="mt-5 text-sm leading-6 text-neutral-600">{body}</p>
     </article>
   );
 }
 
-function ContactPanel({ eyebrow, title, body, email }: { eyebrow: string; title: string; body: string; email: string }) {
+function ContactPanel({
+  eyebrow,
+  title,
+  body,
+  email,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  email: string;
+}) {
   return (
     <article className="border-l-4 border-neutral-200 bg-[#f3f3f3] px-10 py-9">
       <p className="text-[10px] tracking-[0.1em] text-neutral-600 uppercase">{eyebrow}</p>
       <h3 className="mt-3 text-xl font-semibold">{title}</h3>
       <p className="mt-2 text-base text-neutral-600">{body}</p>
-      <p className="mt-8 inline-block border-b border-black/30 pb-1 text-xs tracking-[0.1em] uppercase">{email}</p>
+      <p className="mt-8 inline-block border-b border-black/30 pb-1 text-xs tracking-[0.1em] uppercase">
+        {email}
+      </p>
     </article>
   );
 }
 
 function ImageBand({ image }: { image: string }) {
   return (
-    <div className="h-[400px] overflow-hidden bg-[#f3f3f3]">
-      <img src={image} alt="" className="h-full w-full object-cover grayscale opacity-90" />
+    <div className="relative h-[400px] overflow-hidden bg-[#f3f3f3]">
+      <Image src={image} alt="" fill sizes="100vw" className="object-cover opacity-90 grayscale" />
     </div>
   );
 }
