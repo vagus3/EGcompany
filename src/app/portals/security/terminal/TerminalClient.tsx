@@ -80,6 +80,11 @@ const endingFlowMock = {
   videoSrc: "/eg_png/egcompany_picture/P/ending/ending_v.mp4",
 };
 
+const employeeCardRewardImages = [
+  "/eg_png/egcompany_picture/card/card_a.png",
+  "/eg_png/egcompany_picture/card/card_b.png",
+] as const;
+
 const containmentLogs = [
   {
     badge: "DECLASSIFIED",
@@ -860,6 +865,7 @@ function SurveyQrPage({
   surveyUrl: string;
   onReset: () => void;
 }) {
+  const [rewardCardSrc, setRewardCardSrc] = useState<(typeof employeeCardRewardImages)[number]>();
   const deliveryMessage =
     delivery.status === "failed"
       ? delivery.message
@@ -869,9 +875,39 @@ function SurveyQrPage({
           ? "등록된 이메일로 사원증을 발송하는 중입니다."
           : "영상 종료 후 사원증 발송이 예약됩니다.";
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setRewardCardSrc(
+        employeeCardRewardImages[Math.floor(Math.random() * employeeCardRewardImages.length)]
+      );
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-5xl flex-col items-center">
+        <section className="mb-12 w-full max-w-[320px] sm:mb-14 sm:max-w-[380px]">
+          <div className="border-terminal-accent/45 relative aspect-[638/1016] overflow-hidden border bg-black shadow-[0_0_60px_rgba(176,0,0,0.22)]">
+            {rewardCardSrc ? (
+              <Image
+                src={rewardCardSrc}
+                alt="발급된 EG 사원증"
+                fill
+                sizes="(max-width: 640px) 320px, 380px"
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="terminal-noise absolute inset-0 opacity-30" />
+            )}
+          </div>
+          <p className="text-terminal-text-dim mt-4 text-center font-mono text-[10px] font-black tracking-[0.18em]">
+            EMPLOYEE ID CARD ISSUED
+          </p>
+        </section>
+
         <section className="border-terminal-accent/55 w-full max-w-3xl border bg-black px-6 py-10 text-center shadow-[0_0_40px_rgba(176,0,0,0.18)] sm:px-12 sm:py-14">
           <p className="text-terminal-accent-text font-mono text-[clamp(1.1rem,2vw,1.65rem)] tracking-[0.18em]">
             UNKNOWN SYSTEM
