@@ -4,6 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { departments } from "@/lib/departments-data";
 
+function getDepartmentHref(slug: string) {
+  return slug === "security" ? "/portals/security/terminal" : `/portals/${slug}/detail`;
+}
+
 export default function Page() {
   const [report, setReport] = useState("");
   const [sent, setSent] = useState(false);
@@ -27,11 +31,7 @@ export default function Page() {
         {departments.map(({ category, name, slug, email, phone }) => (
           <Link
             key={name}
-            href={
-              slug.toLowerCase() === "hr" || name.includes("HR") || name === "Human Resources"
-                ? "/HR"
-                : `/portals/${slug}`
-            }
+            href={getDepartmentHref(slug)}
             className="group block bg-white p-5 transition-colors hover:bg-gray-50 sm:p-7"
           >
             <p className="mb-1 text-[10px] tracking-widest text-gray-400 uppercase">{category}</p>
