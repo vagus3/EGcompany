@@ -87,7 +87,18 @@ const endingFlowMock = {
   surveyUrl: "https://forms.gle/eg-play-survey-mock",
 };
 
-const containmentLogs = [
+type ContainmentLog = {
+  badge: string;
+  badgeClassName: string;
+  timestamp: string;
+  title: string;
+  summary: string;
+  author: string;
+  locked: boolean;
+  critical?: boolean;
+};
+
+const containmentLogs: ContainmentLog[] = [
   {
     badge: "DECLASSIFIED",
     badgeClassName: "border-terminal-accent text-terminal-accent",
@@ -118,19 +129,15 @@ const containmentLogs = [
   },
 ];
 
-const personnel = {
-  leader: { name: "DANIEL K. WEBER", callNum: "09-459273", role: "LEADER", icon: Shield },
-  senior: [
-    { name: "LEE SO-YEON", callNum: "09-905316", role: "SENIOR STAFF", icon: IdCard },
-    { name: "MARCUS HALE", callNum: "09-274859", role: "SENIOR STAFF", icon: Shield },
-    { name: "PARK MIN-HO", callNum: "09-618042", role: "SENIOR STAFF", icon: Lock },
-  ],
-  junior: [
-    { name: "KIM DO-YUN", callNum: "09-483721", role: "JUNIOR STAFF" },
-    { name: "HAN JI-WOO", callNum: "09-739165", role: "JUNIOR STAFF" },
-    { name: "(PLAYER)", callNum: "09-152984", role: "JUNIOR STAFF", highlighted: true },
-    { name: "ELENA KOVAC", callNum: "09-867203", role: "JUNIOR STAFF" },
-  ],
+const criticalPersonnelLog: ContainmentLog = {
+  badge: "CRITICAL",
+  badgeClassName: "border-terminal-accent text-terminal-accent",
+  timestamp: "1988-04-15T00:00:01Z",
+  title: "[LOG-????] ???????????",
+  summary: "“추적” 행동이 시작되었습니다.",
+  author: "AUTO-SYS ALARM",
+  locked: false,
+  critical: true,
 };
 
 function getMailForStage(stage: TerminalStage) {
@@ -483,9 +490,9 @@ export default function TerminalClient() {
             />
           </>
         ) : activeSection === "containment" ? (
-          <ContainmentLogsPage />
+          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : activeSection === "person" ? (
-          <PersonnelPage />
+          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : (
           <>
             <MessengerList
@@ -595,7 +602,11 @@ function TerminalSidebar({
   );
 }
 
-function ContainmentLogsPage() {
+function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) {
+  const visibleLogs = showCriticalLog
+    ? [...containmentLogs, criticalPersonnelLog]
+    : containmentLogs;
+
   return (
     <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-12 sm:px-10 lg:px-18 lg:py-16">
       <div className="mx-auto max-w-6xl">
@@ -605,10 +616,15 @@ function ContainmentLogsPage() {
         <div className="bg-terminal-border mt-10 h-px" />
 
         <div className="mt-12 space-y-5">
-          {containmentLogs.map((log) => (
+          {visibleLogs.map((log) => (
             <article
               key={log.title}
-              className="border-terminal-border grid gap-5 border border-l-4 bg-[#111] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6"
+              className={cx(
+                "grid gap-5 border border-l-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6",
+                log.critical
+                  ? "border-terminal-accent bg-[#260406]"
+                  : "border-terminal-border bg-[#111]"
+              )}
             >
               <div>
                 <div className="flex flex-wrap items-center gap-4 font-mono">
@@ -628,7 +644,12 @@ function ContainmentLogsPage() {
                   {log.title}
                 </h3>
                 <p className="text-terminal-text-muted mt-4 max-w-4xl text-sm leading-7 sm:text-base">
-                  {log.locked ? (
+                  {log.critical ? (
+                    <>
+                      {log.summary} <Redaction width="w-44" /> <Redaction width="w-24" />{" "}
+                      <Redaction width="w-16" /> 및 <Redaction width="w-20" /> 요망.
+                    </>
+                  ) : log.locked ? (
                     <>
                       보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
                       <Redaction width="w-44" /> <Redaction width="w-12" />{" "}
@@ -647,10 +668,21 @@ function ContainmentLogsPage() {
                 </div>
                 <button
                   type="button"
-                  className="border-terminal-border text-terminal-text-dim grid h-11 w-11 place-items-center border bg-[#151515]"
+                  className={cx(
+                    "grid h-11 w-11 place-items-center border bg-[#151515]",
+                    log.critical
+                      ? "border-terminal-accent text-terminal-accent-text"
+                      : "border-terminal-border text-terminal-text-dim"
+                  )}
                   aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
                 >
-                  {log.locked ? <Lock className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {log.critical ? (
+                    <TriangleAlert className="h-5 w-5" />
+                  ) : log.locked ? (
+                    <Lock className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </article>
@@ -661,103 +693,8 @@ function ContainmentLogsPage() {
   );
 }
 
-function PersonnelPage() {
-  return (
-    <section className="min-h-0 overflow-y-auto bg-[#080808] px-4 py-12 sm:px-8 lg:px-16 lg:py-16">
-      <div className="mx-auto max-w-7xl">
-        <div className="border-terminal-border grid gap-6 border-b pb-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <h2 className="text-[clamp(2rem,4.5vw,4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
-              Personnel Security Part
-            </h2>
-            <p className="text-terminal-text-dim mt-5 font-mono text-sm font-black tracking-[0.22em] uppercase">
-              Sector-01 / Response Unit Alpha
-            </p>
-          </div>
-          <div className="font-mono text-sm tracking-[0.12em] lg:text-right">
-            <p className="text-terminal-accent font-black">ACCESS: GRANTED</p>
-            <p className="text-terminal-text-dim mt-3">TS: 2024.11.23_14:22:09</p>
-          </div>
-        </div>
-
-        <div className="relative mx-auto mt-14 max-w-6xl pb-8">
-          <div className="mx-auto max-w-lg">
-            <PersonnelCard person={personnel.leader} leader />
-          </div>
-
-          <div className="bg-terminal-border mx-auto hidden h-20 w-px md:block" />
-          <div className="bg-terminal-border mx-auto hidden h-px max-w-4xl md:block" />
-          <div className="mx-auto hidden max-w-4xl grid-cols-3 md:grid">
-            <span className="bg-terminal-border mx-auto h-10 w-px" />
-            <span className="bg-terminal-border mx-auto h-10 w-px" />
-            <span className="bg-terminal-border mx-auto h-10 w-px" />
-          </div>
-
-          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-3">
-            {personnel.senior.map((person) => (
-              <PersonnelCard key={person.name} person={person} />
-            ))}
-          </div>
-
-          <div className="bg-terminal-border mx-auto hidden h-16 w-px md:block" />
-          <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-4">
-            {personnel.junior.map((person) => (
-              <PersonnelCard key={person.name} person={person} muted />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Redaction({ width }: { width: string }) {
   return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
-}
-
-function PersonnelCard({
-  person,
-  leader = false,
-  muted = false,
-}: {
-  person: {
-    name: string;
-    callNum: string;
-    role: string;
-    highlighted?: boolean;
-    icon?: typeof Shield;
-  };
-  leader?: boolean;
-  muted?: boolean;
-}) {
-  const Icon = person.icon;
-
-  return (
-    <article
-      className={cx(
-        "relative border bg-[#121212] px-6 py-6",
-        leader && "border-t-terminal-accent border-t-4",
-        person.highlighted
-          ? "border-terminal-accent bg-[#151515]"
-          : muted
-            ? "border-[#2a2a2a] bg-[#050505]"
-            : "border-terminal-border"
-      )}
-    >
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <p className="text-terminal-text-dim font-mono text-[10px] font-black tracking-[0.18em] uppercase">
-          {person.role}
-        </p>
-        {Icon && <Icon className="text-terminal-text-dim h-4 w-4" />}
-      </div>
-      <h3 className="text-[clamp(1.25rem,2vw,1.85rem)] leading-none font-black tracking-[-0.04em] text-white">
-        {person.name}
-      </h3>
-      <p className="text-terminal-text-dim mt-5 font-mono text-sm font-black tracking-[0.18em]">
-        CALL NUM: {person.callNum}
-      </p>
-    </article>
-  );
 }
 
 function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded: () => void }) {
