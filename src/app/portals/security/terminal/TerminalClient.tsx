@@ -460,7 +460,7 @@ export default function TerminalClient() {
 
   function submitCommand(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (command.trim().toUpperCase() !== "ASCYES") {
+    if (command.trim().toUpperCase() !== "RAOMTMI") {
       setCommandError("명령어가 일치하지 않습니다.");
       return;
     }
