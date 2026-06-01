@@ -213,6 +213,10 @@ function getChallengeObjects() {
     .filter(Boolean) as TerminalObjectEntry[];
 }
 
+function getWesenImageSrc(entry: TerminalObjectEntry) {
+  return `/eg_png/security_picture/${entry.id.toLowerCase().replace("-", "_")}.png`;
+}
+
 export default function TerminalClient() {
   const [progress, setProgress] = useState<TerminalProgress>(() => getInitialProgress());
   const [activeSection, setActiveSection] = useState<Section>("messenger");
@@ -1487,22 +1491,30 @@ function ArchiveDetail({
             onClick={() => isPinSelectionEnabled && onToggleObject(entry)}
             disabled={!isPinSelectionEnabled}
             className={cx(
-              "text-terminal-text-dim grid aspect-square w-full place-items-center bg-[#222] transition",
-              isPinSelectionEnabled &&
-                "hover:bg-terminal-tile hover:text-terminal-accent-text cursor-pointer",
-              selected && "bg-terminal-accent-soft text-terminal-accent-text"
+              "text-terminal-text-dim relative block aspect-square w-full overflow-hidden bg-[#222] transition",
+              isPinSelectionEnabled && "hover:bg-terminal-tile cursor-pointer",
+              selected && "ring-terminal-accent ring-2"
             )}
             aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
             aria-pressed={selected}
           >
-            <ObjectSymbolIcon symbol={entry.symbol} className="h-28 w-28 stroke-1" />
+            <Image
+              src={getWesenImageSrc(entry)}
+              alt={`${entry.label} visual archive`}
+              fill
+              sizes="240px"
+              className="object-cover grayscale transition duration-300 hover:grayscale-0"
+            />
+            <span className="pointer-events-none absolute inset-0 border border-white/5" />
           </button>
           {isPinSelectionEnabled && (
             <p className="text-terminal-accent mt-3 font-mono text-[9px] font-black tracking-[0.12em]">
               {selected ? "SELECTED_FOR_TRANSPORT" : "CLICK_ICON_TO_SELECT"}
             </p>
           )}
-          <p className="mt-3 font-mono text-[9px] font-black text-white">{entry.label}.JPG</p>
+          <p className="mt-3 font-mono text-[9px] font-black text-white">
+            {entry.id.toLowerCase().replace("-", "_")}.png
+          </p>
           <div className="mt-8 font-mono text-[9px] tracking-[0.12em]">
             <p className="text-terminal-accent mb-5 text-center font-black">SECURITY_READOUT</p>
             <MetaRow label="LAST KNOWN LOCATION" value="SEOUL, KR" />
