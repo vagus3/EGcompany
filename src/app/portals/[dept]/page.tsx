@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { portals, getPortal } from "@/lib/portal-data";
-import PortalClient from "./PortalClient";
 
 export function generateStaticParams() {
   return portals.map((p) => ({ dept: p.slug }));
@@ -15,5 +14,6 @@ export default async function Page({ params }: PageProps) {
   const portal = getPortal(dept);
   if (!portal) notFound();
 
-  return <PortalClient portal={portal} />;
+  if (portal.isSecurity) redirect("/portals/security/terminal");
+  redirect(`/portals/${portal.slug}/detail`);
 }
