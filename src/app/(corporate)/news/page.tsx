@@ -1,90 +1,96 @@
-export default function NewsPage() {
-  const posts = [
-    {
-      date: "OCTOBER 21, 2024",
-      title: "싱가포르 지역 거점 신설",
-      image: "/images/news-singapore.jpg",
-    },
-    {
-      date: "OCTOBER 19, 2024",
-      title: "IT 시스템 유지보수로 인한 운영 중단",
-      image: "/images/news-system.jpg",
-    },
-    {
-      date: "NOVEMBER 28, 2024",
-      title: "야간 통행 제한 구역 확대",
-      image: "/images/news-restricted.jpg",
-    },
-    {
-      date: "DECEMBER 03, 2024",
-      title: "비인가 언어 패턴 감지 보고",
-      image: "/images/news-monitor.jpg",
-    },
-  ];
+import Link from "next/link";
+import Image from "next/image";
+import { articles } from "@/lib/news-data";
+
+export default function Page() {
+  const featured = articles.find((a) => a.featured) ?? articles[0];
+  const rest = articles.filter((a) => a.slug !== featured.slug);
 
   return (
-    <main className="min-h-screen bg-[#f4f4f4] text-black">
-      <section className="mx-auto max-w-[960px] px-6 py-16">
-        <p className="mb-5 text-[10px] font-semibold tracking-[0.35em] text-gray-400">
-          CORPORATE UPDATES
+    <div className="bg-white">
+      <section className="mx-auto max-w-5xl px-4 pt-14 pb-24 sm:px-6 md:pt-20">
+        <p className="mb-5 text-[10px] tracking-[0.35em] text-gray-400 uppercase">
+          Corporate Updates
         </p>
 
-        <h1 className="mb-20 text-5xl font-medium tracking-[-0.04em]">
+        <h1 className="mb-16 text-[clamp(2.4rem,4vw,3.6rem)] leading-tight font-medium tracking-tight text-black">
           Company News & Announcements
         </h1>
 
-        <article className="mb-24">
-          <img
-            src="/images/news-building.jpg"
-            alt="Company building"
-            className="mb-6 h-[320px] w-full object-cover grayscale"
-          />
+        {/* Featured Article */}
+        <article className="mb-20">
+          <Link href={`/news/${featured.slug}`} className="group block">
+            <div className="relative mb-6 aspect-[16/7] w-full overflow-hidden bg-gray-300">
+              <Image
+                src={featured.imageSrc}
+                alt={featured.title}
+                fill
+                sizes="(min-width: 1024px) 1024px, 100vw"
+                className="object-cover grayscale transition-opacity group-hover:opacity-90"
+                priority
+              />
+            </div>
+          </Link>
 
           <div className="mb-4 flex items-center gap-4">
-            <span className="bg-black px-3 py-1 text-[10px] font-bold tracking-[0.18em] text-white">
-              CORPORATE
-            </span>
-            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500">
-              OCTOBER 24, 2024
+            {featured.category && (
+              <span className="bg-black px-3 py-1 text-[10px] font-bold tracking-[0.18em] text-white uppercase">
+                {featured.category}
+              </span>
+            )}
+
+            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+              {featured.dateDisplay}
             </span>
           </div>
 
-          <h2 className="mb-5 text-2xl font-medium">
-            Q3 전략 보고서: 전략적 성장, 예상 뛰어넘다
-          </h2>
+          <Link href={`/news/${featured.slug}`} className="group">
+            <h2 className="mb-5 text-2xl font-medium text-black underline-offset-2 group-hover:underline">
+              {featured.title}
+            </h2>
+          </Link>
 
-          <p className="mb-8 max-w-[760px] text-sm leading-7 text-gray-500">
-            EG Company는 연구 및 운송 부문의 확장에 힘입어, 분기 실적이
-            전년 대비 14% 상승했다고 밝혔다. 이사회는 특히 자동화 물류
-            시스템의 성공적인 도입과 정착을 주요 성과로 강조했다.
-          </p>
+          {featured.excerpt && (
+            <p className="mb-8 max-w-3xl text-sm leading-7 text-gray-500">
+              {featured.excerpt}
+            </p>
+          )}
 
-          <button className="text-[10px] font-bold tracking-[0.2em]">
-            READ FULL REPORT <span className="ml-2">→</span>
-          </button>
+          <Link
+            href={`/news/${featured.slug}`}
+            className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-black uppercase transition-all hover:gap-3"
+          >
+            Read Full Report →
+          </Link>
         </article>
 
-        <div className="grid grid-cols-1 gap-x-14 gap-y-24 border-t border-gray-300 pt-14 md:grid-cols-2">
-          {posts.map((post, index) => (
-            <article
-              key={post.title}
-              className={index === 2 ? "border-t border-gray-300 pt-14 md:border-0 md:pt-0" : ""}
-            >
-              <img
-                src={post.image}
-                alt={post.title}
-                className="mb-5 h-[200px] w-full object-cover grayscale"
-              />
+        {/* Other Articles */}
+        <div className="grid gap-x-14 gap-y-20 border-t border-gray-200 pt-14 sm:grid-cols-2">
+          {rest.map((article) => (
+            <article key={article.slug}>
+              <Link href={`/news/${article.slug}`} className="group block">
+                <div className="relative mb-5 aspect-[16/9] w-full overflow-hidden bg-gray-300">
+                  <Image
+                    src={article.imageSrc}
+                    alt={article.title}
+                    fill
+                    sizes="(min-width: 640px) 480px, 100vw"
+                    className="object-cover grayscale transition-opacity group-hover:opacity-90"
+                  />
+                </div>
 
-              <p className="mb-6 text-[10px] font-semibold tracking-[0.18em] text-gray-500">
-                {post.date}
-              </p>
+                <p className="mb-5 text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                  {article.dateDisplay}
+                </p>
 
-              <h3 className="text-xl font-medium">{post.title}</h3>
+                <h3 className="text-xl font-medium text-black underline-offset-2 group-hover:underline">
+                  {article.title}
+                </h3>
+              </Link>
             </article>
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

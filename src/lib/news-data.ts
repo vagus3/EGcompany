@@ -3,6 +3,7 @@ export type Block =
   | { type: "blockquote"; text: string }
   | { type: "image"; caption?: string; imageSrc?: string }
   | { type: "hr" }
+  | { type: "hidden-note"; text: string }
   | {
       type: "maintenance-table";
       rows: { label: string; value: string }[];
@@ -34,9 +35,9 @@ export const articles: Article[] = [
     excerpt:
       "EG Company는 연구 및 운송 부문의 확장에 힘입어, 분기 실적이 전년 대비 14% 상승했다고 밝혔다. 이사회는 특히 자동화 물류 시스템의 성공적인 도입과 정착을 주요 성과로 강조했다.",
     featured: true,
-    imageSrc: "/eg_png/egcompany_picture/News/03.png",
+    imageSrc: "/eg_png/egcompany_picture/News/01.png",
     blocks: [
-      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/03.png" },
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/01.png" },
       {
         type: "blockquote",
         text: '"3분기 동안 EG Company는 예측치를 상회하는 성장을 기록하며, 글로벌 운영 체계의 안정성과 확장성을 동시에 입증했다. 이번 실적 상승은 단순한 수익 증가를 넘어, 전략적 투자와 구조적 개선이 실제 성과로 이어졌다는 점에서 더욱 의미가 크다."',
@@ -127,10 +128,10 @@ export const articles: Article[] = [
     title: "IT 시스템 유지보수로 인한 운영 중단",
     excerpt: "",
     featured: false,
-    imageSrc: "/eg_png/egcompany_picture/News/04.png",
+    imageSrc: "/eg_png/egcompany_picture/News/03.png",
     blocks: [
       { type: "hr" },
-      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/04.png" },
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/03.png" },
       {
         type: "paragraph",
         text: "안정적인 IT 서비스 제공과 보안 강화를 위하여 다음과 같이 시스템 정기 점검 및 유지보수 작업을 진행할 예정입니다.",
@@ -156,6 +157,95 @@ export const articles: Article[] = [
       {
         type: "paragraph",
         text: "저희 IT 운영팀은 예정된 시간 내에 작업을 완료하여 신속하게 서비스를 정상화할 수 있도록 최선을 다하겠습니다. 서비스 이용에 불편을 드려 대단히 죄송하며, 더 나은 환경을 제공하기 위한 필수적인 과정임을 널리 양해 부탁드립니다.",
+      },
+    ],
+  },
+    {
+    slug: "night-access-restriction",
+    breadcrumb: ["NEWS", "SECURITY", "RESTRICTED AREA"],
+    dateDisplay: "NOVEMBER 28, 2024",
+    title: "야간 통행 제한 구역 확대",
+    excerpt: "",
+    featured: false,
+    imageSrc: "/eg_png/egcompany_picture/News/04.png",
+    blocks: [
+      {
+        type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/04.png",
+      },
+      {
+        type: "blockquote",
+        text: '"최근 보안 사고 증가에 따라 일부 구역의 야간 출입이 제한됩니다. 본 조치는 시설 안정성과 내부 운영 보안을 강화하기 위한 예방 대응의 일환입니다."',
+      },
+      {
+        type: "paragraph",
+        text: "EG Company는 본사 및 일부 지역 거점 시설 내 야간 보안 통제 범위를 확대한다고 밝혔습니다. 이번 조치는 특정 시간대 반복적으로 발생한 비인가 접근 시도와 내부 보안 사고 보고 증가에 대응하기 위한 조치로, 일부 구역에 대해 제한적 출입 통제가 적용됩니다.",
+      },
+      {
+        type: "stats",
+        title: "INTERNAL SECURITY STATUS",
+        metrics: [
+          { value: "22:00 - 05:00", label: "RESTRICTED ACCESS WINDOW" },
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "통제 대상에는 연구 보관 구역, 서버 관리 구역, 미사용 물류 통로 및 일부 지하 시설이 포함됩니다. 회사 측은 야간 시간대 불필요한 이동을 최소화하고, 내부 감시 체계의 효율성을 높이기 위한 목적이라고 설명했습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "특히 최근 몇 주간 특정 구역에서 승인되지 않은 접근 기록과 비정상 출입 로그가 반복적으로 감지되면서, 보안 부서는 야간 운영 프로토콜 전면 재검토에 착수한 상태입니다. 일부 기록은 정상적인 인증 절차를 거치지 않았음에도 내부 시스템상 출입 흔적이 남아 있었던 것으로 확인되었습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "현재 모든 제한 구역에는 추가 감시 장비와 자동 잠금 시스템이 적용되었으며, 지정 시간 이후에는 별도 승인 없이 접근이 불가능합니다. 또한 내부 순찰 인력과 모니터링 빈도 역시 기존 대비 확대 운영되고 있습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "회사 관계자는 “이번 조치는 일시적인 대응이 아닌 장기적인 시설 안정화 계획의 일부”라며, “모든 직원께서는 갱신된 야간 이동 규정을 반드시 숙지해주시기 바란다”고 밝혔습니다.",
+      },
+    ],
+  },
+  {
+    slug: "unauthorized-language-pattern",
+    breadcrumb: ["NEWS", "REPORTS", "LANGUAGE PATTERN"],
+    dateDisplay: "DECEMBER 03, 2024",
+    title: "비인가 언어 패턴 감지 보고",
+    excerpt: "",
+    featured: false,
+    imageSrc: "/eg_png/egcompany_picture/News/05.png",
+    blocks: [
+      {
+        type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/05.png",
+      },
+      {
+        type: "blockquote",
+        text: '"일부 내부 기록에서 승인되지 않은 언어 패턴이 반복적으로 감지되었습니다. 현재 해당 패턴은 기존 데이터 분류 체계로 해석되지 않으며, 추가 분석이 진행 중입니다."',
+      },
+      {
+        type: "paragraph",
+        text: "EG Company 내부 모니터링 시스템은 최근 일부 서버 기록과 아카이브 문서에서 비인가 언어 패턴이 반복적으로 나타난 사실을 확인했습니다. 해당 패턴은 기존 운영 언어, 보안 코드, 시스템 로그 문법과 일치하지 않는 형태로 분류되었습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "초기 분석 결과, 해당 문자는 단순한 인코딩 오류나 파일 손상으로 보기 어려운 반복성을 보였습니다. 특히 일부 기록에서는 동일한 배열이 시간차를 두고 재출현했으며, 특정 부서의 접근 로그와 함께 감지되는 경향이 확인되었습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "보안 부서는 현재 관련 문서의 외부 반출을 제한하고, 영향을 받은 데이터베이스에 대한 접근 권한을 임시 조정했습니다. 또한 해당 패턴이 발견된 기록은 별도의 격리 저장소로 이동되어 추가 분석 중입니다.",
+      },
+      {
+        type: "paragraph",
+        text: "회사 측은 이번 현상이 운영 시스템 전반에 직접적인 장애를 일으키지는 않았다고 밝혔으나, 동일 패턴이 반복적으로 관측되는 만큼 지속적인 감시와 추가 검증이 필요하다고 설명했습니다.",
+      },
+      {
+        type: "paragraph",
+        text: "현재까지 해당 언어 패턴의 출처는 확인되지 않았습니다. 내부 보고서에는 단순 오류 가능성과 함께, 외부 개입 또는 미등록 프로토콜의 흔적일 가능성 역시 함께 기록되어 있습니다.",
+      },
+      {
+        type: "hidden-note",
+        text: "일부 기록은 오류처럼 보입니다. 그러나 반복되는 오류는 더 이상 단순한 ERROR III 가 아닙니다. 해당 SIGNAL V 은 특정 SOURCE II 없이 발생하고 있으며, 일부 SYSTEM VI 에서는 동일한 PATTERN IV 이 반복적으로 검출되고 있습니다. 내부 NETWORK I 분석 결과, 일부 ARCHIVE V 기록 역시 비정상적으로 변형된 상태로 확인되었습니다.",
       },
     ],
   },
