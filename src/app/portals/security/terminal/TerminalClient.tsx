@@ -21,6 +21,7 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
@@ -36,11 +37,10 @@ import {
 } from "@/lib/terminal-data";
 import { cx, terminalTheme } from "@/theme/classes";
 import CubeChallenge from "./CubeChallenge";
-import PretextEndingChallenge from "./PretextEndingChallenge";
 
 type OverlayState = "found" | "command-warning" | null;
 type Section = "messenger" | "archive" | "containment" | "person";
-type TerminalEndFlow = "idle" | "mock-video" | "survey-qr";
+type TerminalEndFlow = "idle" | "ending-video" | "survey-qr";
 type EmployeeCardDelivery =
   | { status: "idle" }
   | { status: "sending" }
@@ -66,22 +66,12 @@ const challengeObjectOrder = [
 ] as const;
 
 const endingFlowMock = {
-  durationMs: 6500,
+  posterSrc: "/eg_png/egcompany_picture/P/ending/ending.png",
   surveyUrl: "https://forms.gle/eg-play-survey-mock",
+  videoSrc: "/eg_png/egcompany_picture/P/ending/ending_v.mp4",
 };
 
-type ContainmentLog = {
-  badge: string;
-  badgeClassName: string;
-  timestamp: string;
-  title: string;
-  summary: string;
-  author: string;
-  locked: boolean;
-  critical?: boolean;
-};
-
-const containmentLogs: ContainmentLog[] = [
+const containmentLogs = [
   {
     badge: "DECLASSIFIED",
     badgeClassName: "border-terminal-accent text-terminal-accent",
@@ -128,18 +118,9 @@ function getMailForStage(stage: TerminalStage) {
 }
 
 function getVisibleMails(progress: TerminalProgress) {
-  const completed = new Set(progress.completedChallengeIds);
-  const byId = new Map(terminalMails.map((mail) => [mail.id, mail]));
-  const visibleIds = ["transport-request", "cube-warning"];
-
-  if (completed.has(challengeIds.pin)) visibleIds.unshift("urgent-containment");
-  if (completed.has(challengeIds.cube)) visibleIds.unshift("corrupted-command");
-  if (completed.has(challengeIds.corrupted)) visibleIds.push("empty-face");
-  if (completed.has(challengeIds.pretext) || progress.currentStage === "completed") {
-    visibleIds.push("completed");
-  }
-
-  return visibleIds.map((id) => byId.get(id)).filter(Boolean) as TerminalMail[];
+  const unlockedMailIds = new Set(progress.unlockedMailIds);
+  const visibleMails = terminalMails.filter((mail) => unlockedMailIds.has(mail.id));
+  return visibleMails.length > 0 ? visibleMails : [terminalMails[0]];
 }
 
 function isProgress(value: unknown): value is TerminalProgress {
@@ -153,16 +134,41 @@ function isProgress(value: unknown): value is TerminalProgress {
   );
 }
 
+function hasPretextCompletionParam() {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("pretextComplete") === "1";
+}
+
+function withPretextCompletion(progress: TerminalProgress): TerminalProgress {
+  const nextMail = getMailForStage("completed");
+
+  return {
+    currentStage: "completed",
+    unlockedMailIds: mergeUnlocked(progress, nextMail.id),
+    selectedMailId: nextMail.id,
+    completedChallengeIds: progress.completedChallengeIds.includes(challengeIds.pretext)
+      ? progress.completedChallengeIds
+      : [...progress.completedChallengeIds, challengeIds.pretext],
+  };
+}
+
 function getInitialProgress() {
   if (typeof window === "undefined") return initialTerminalProgress;
   const raw = window.localStorage.getItem(TERMINAL_PROGRESS_STORAGE_KEY);
-  if (!raw) return initialTerminalProgress;
+  if (!raw) {
+    return hasPretextCompletionParam()
+      ? withPretextCompletion(initialTerminalProgress)
+      : initialTerminalProgress;
+  }
 
   try {
     const parsed = JSON.parse(raw);
-    return isProgress(parsed) ? parsed : initialTerminalProgress;
+    const progress = isProgress(parsed) ? parsed : initialTerminalProgress;
+    return hasPretextCompletionParam() ? withPretextCompletion(progress) : progress;
   } catch {
-    return initialTerminalProgress;
+    return hasPretextCompletionParam()
+      ? withPretextCompletion(initialTerminalProgress)
+      : initialTerminalProgress;
   }
 }
 
@@ -218,7 +224,7 @@ function getWesenImageSrc(entry: TerminalObjectEntry) {
 }
 
 export default function TerminalClient() {
-  const [progress, setProgress] = useState<TerminalProgress>(() => getInitialProgress());
+  const [progress, setProgress] = useState<TerminalProgress>(initialTerminalProgress);
   const [activeSection, setActiveSection] = useState<Section>("messenger");
   const [selectedArchiveId, setSelectedArchiveId] = useState("WESEN-1744");
   const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>([]);
@@ -232,7 +238,7 @@ export default function TerminalClient() {
     status: "idle",
   });
   const timersRef = useRef<number[]>([]);
-  const cubeModalTimerRef = useRef<number | null>(null);
+  const progressHydratedRef = useRef(false);
   const deliveryRequestedRef = useRef(false);
 
   const visibleMails = useMemo(() => getVisibleMails(progress), [progress]);
@@ -251,6 +257,21 @@ export default function TerminalClient() {
   );
 
   useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const hasCompletedPretext = hasPretextCompletionParam();
+      progressHydratedRef.current = true;
+      setProgress(getInitialProgress());
+      if (hasCompletedPretext) {
+        setEndFlow("ending-video");
+        window.history.replaceState(null, "", "/portals/security/terminal");
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!progressHydratedRef.current) return;
     window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(progress));
   }, [progress]);
 
@@ -425,28 +446,6 @@ export default function TerminalClient() {
     await sendEmployeeCard();
   }
 
-  function completeEndingFlow() {
-    const nextMail = getMailForStage("completed");
-    setActiveSection("messenger");
-    setProgress((current) => ({
-      currentStage: "completed",
-      unlockedMailIds: mergeUnlocked(current, nextMail.id),
-      selectedMailId: nextMail.id,
-      completedChallengeIds: current.completedChallengeIds.includes(challengeIds.pretext)
-        ? current.completedChallengeIds
-        : [...current.completedChallengeIds, challengeIds.pretext],
-    }));
-    setEndFlow("mock-video");
-    queueTimer(() => {
-      void finishEndingVideo();
-    }, endingFlowMock.durationMs);
-  }
-
-  function completeCubeChallenge() {
-    setCubeModalOpen(false);
-    unlockStage("corrupted-command", challengeIds.cube);
-  }
-
   const visibleEndFlow =
     endFlow === "idle" &&
     progress.currentStage === "completed" &&
@@ -460,10 +459,11 @@ export default function TerminalClient() {
     progress.currentStage === "cube-hold" &&
     !completed.has(challengeIds.cube);
 
-  if (visibleEndFlow === "mock-video") {
+  if (visibleEndFlow === "ending-video") {
     return (
-      <MockEndingVideo
-        durationMs={endingFlowMock.durationMs}
+      <FullscreenEndingVideo
+        posterSrc={endingFlowMock.posterSrc}
+        videoSrc={endingFlowMock.videoSrc}
         onEnded={() => {
           void finishEndingVideo();
         }}
@@ -557,16 +557,39 @@ export default function TerminalClient() {
               onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}
               onSubmitCommand={submitCommand}
-              onEndingComplete={completeEndingFlow}
+              onCubeComplete={() => unlockStage("corrupted-command", challengeIds.cube)}
             />
           </>
         )}
       </div>
 
       {overlay && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black font-mono">
-          <div className="terminal-noise absolute inset-0 opacity-30" />
-          <p className="text-terminal-accent-text relative text-center text-3xl font-black tracking-[0.42em] sm:text-5xl">
+        <div
+          className={cx(
+            "fixed inset-0 z-50 grid place-items-center overflow-hidden bg-black font-mono",
+            overlay === "found" && "terminal-found-overlay"
+          )}
+        >
+          <div
+            className={cx(
+              "terminal-noise absolute inset-0",
+              overlay === "found" ? "opacity-80 mix-blend-screen" : "opacity-30"
+            )}
+          />
+          {overlay === "found" && (
+            <>
+              <div className="terminal-scanline absolute inset-0 opacity-70" />
+              <div className="terminal-found-bars absolute inset-0" />
+              <div className="terminal-found-tear absolute inset-0" />
+            </>
+          )}
+          <p
+            data-text={overlay === "found" ? "FoUnd." : "UNKNOWN LANGUAGE DETECTED"}
+            className={cx(
+              "text-terminal-accent-text relative text-center text-3xl font-black tracking-[0.42em] sm:text-5xl",
+              overlay === "found" && "terminal-found-title text-[clamp(3.6rem,10vw,8.5rem)]"
+            )}
+          >
             {overlay === "found" ? "FoUnd." : "UNKNOWN LANGUAGE DETECTED"}
           </p>
           {overlay === "command-warning" && (
@@ -766,26 +789,74 @@ function Redaction({ width }: { width: string }) {
   return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
 }
 
-function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded: () => void }) {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const progress = Math.min(100, (elapsedMs / durationMs) * 100);
-
-  useEffect(() => {
-    const startedAt = window.performance.now();
-    const interval = window.setInterval(() => {
-      setElapsedMs(window.performance.now() - startedAt);
-    }, 120);
-
-    return () => window.clearInterval(interval);
-  }, []);
+function PersonnelCard({
+  person,
+  leader = false,
+  muted = false,
+}: {
+  person: {
+    name: string;
+    callNum: string;
+    role: string;
+    highlighted?: boolean;
+    icon?: typeof Shield;
+  };
+  leader?: boolean;
+  muted?: boolean;
+}) {
+  const Icon = person.icon;
 
   return (
+    <article
+      className={cx(
+        "relative border bg-[#121212] px-6 py-6",
+        leader && "border-t-terminal-accent border-t-4",
+        person.highlighted
+          ? "border-terminal-accent bg-[#151515]"
+          : muted
+            ? "border-[#2a2a2a] bg-[#050505]"
+            : "border-terminal-border"
+      )}
+    >
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <p className="text-terminal-text-dim font-mono text-[10px] font-black tracking-[0.18em] uppercase">
+          {person.role}
+        </p>
+        {Icon && <Icon className="text-terminal-text-dim h-4 w-4" />}
+      </div>
+      <h3 className="text-[clamp(1.25rem,2vw,1.85rem)] leading-none font-black tracking-[-0.04em] text-white">
+        {person.name}
+      </h3>
+      <p className="text-terminal-text-dim mt-5 font-mono text-sm font-black tracking-[0.18em]">
+        CALL NUM: {person.callNum}
+      </p>
+    </article>
+  );
+}
+
+function FullscreenEndingVideo({
+  posterSrc,
+  videoSrc,
+  onEnded,
+}: {
+  posterSrc: string;
+  videoSrc: string;
+  onEnded: () => void;
+}) {
+  return (
     <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_0_48%,rgb(255_255_255_/_0.055)_50%,transparent_52%),repeating-linear-gradient(0deg,rgb(255_255_255_/_0.045)_0_1px,transparent_1px_5px)] bg-[length:100%_7px,100%_5px] opacity-50" />
-      <div className="terminal-noise absolute inset-0 opacity-35" />
-      <div className="absolute inset-x-0 top-[6%] h-px bg-cyan-300/60 shadow-[0_0_14px_rgba(34,211,238,0.9)]" />
-      <div className="absolute inset-x-0 bottom-[6%] h-px bg-red-400/50 shadow-[0_0_16px_rgba(248,113,113,0.8)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_42%,rgb(0_0_0_/_0.72)_78%)]" />
+      <video
+        src={videoSrc}
+        poster={posterSrc}
+        autoPlay
+        muted
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover"
+        onEnded={onEnded}
+      />
+      <div className="absolute inset-0 bg-black/35" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_45%,rgb(0_0_0_/_0.72)_82%)]" />
+      <div className="terminal-noise absolute inset-0 opacity-25" />
 
       <div className="relative z-10 grid min-h-screen place-items-center px-6">
         <div className="flex items-center gap-8 text-center text-[clamp(2rem,4vw,4.2rem)] font-black tracking-[0.32em] text-white/90">
@@ -801,16 +872,13 @@ function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded:
         </div>
       </div>
 
-      <div className="absolute right-6 bottom-6 left-6 z-20 flex items-center gap-4">
-        <div className="h-px flex-1 bg-white/20">
-          <div className="bg-terminal-accent-text h-px" style={{ width: `${progress}%` }} />
-        </div>
+      <div className="absolute right-6 bottom-6 z-20">
         <button
           type="button"
           onClick={onEnded}
           className="hover:border-terminal-accent border border-white/20 px-3 py-2 text-[10px] font-black tracking-[0.24em] text-white/50 transition hover:text-white"
         >
-          SKIP MOCK
+          SKIP
         </button>
       </div>
     </main>
@@ -1008,7 +1076,7 @@ function MessengerDetail({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
-  onEndingComplete,
+  onCubeComplete,
 }: {
   mail: TerminalMail;
   currentStage: TerminalStage;
@@ -1021,7 +1089,7 @@ function MessengerDetail({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
-  onEndingComplete: () => void;
+  onCubeComplete: () => void;
 }) {
   const isCurrentChallenge = mail.unlockedStage === currentStage;
   const isCompletedChallenge =
@@ -1088,7 +1156,7 @@ function MessengerDetail({
           onSubmitPin,
           onCommandChange,
           onSubmitCommand,
-          onEndingComplete,
+          onCubeComplete,
         })}
       </div>
 
@@ -1224,7 +1292,7 @@ function renderMailChallenge({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
-  onEndingComplete,
+  onCubeComplete,
 }: {
   mail: TerminalMail;
   isCurrentChallenge: boolean;
@@ -1238,7 +1306,7 @@ function renderMailChallenge({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
-  onEndingComplete: () => void;
+  onCubeComplete: () => void;
 }) {
   if (mail.challengeType === "none") {
     return null;
@@ -1378,7 +1446,21 @@ function renderMailChallenge({
     return completed.has(challengeIds.pretext) ? (
       <CompletedPanel label="EMPTY_FACE_CONFIRMED" />
     ) : (
-      <PretextEndingChallenge onComplete={onEndingComplete} />
+      <section className="border-terminal-border border bg-[#101010] p-6">
+        <p className="text-terminal-accent-muted font-mono text-xs font-black tracking-[0.28em]">
+          PRETEXT_FIELD_READY
+        </p>
+        <p className="text-terminal-text-muted mt-4 text-sm leading-6">
+          이 파일은 터미널 내부 프레임에서 안정적으로 열람할 수 없습니다. 전체 화면 격리 환경에서
+          Pretext 충돌 필드를 시작하십시오.
+        </p>
+        <Link
+          href="/portals/security/terminal/pretext"
+          className="bg-terminal-accent-strong hover:bg-terminal-accent-active mt-6 inline-flex px-5 py-3 font-mono text-xs font-black tracking-[0.22em] text-white transition"
+        >
+          OPEN FULLSCREEN
+        </Link>
+      </section>
     );
   }
 
