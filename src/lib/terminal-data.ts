@@ -47,7 +47,7 @@ export interface TerminalObjectEntry {
   status: string;
 }
 
-export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v2";
+export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v3";
 
 export const pinChallengeAnswer = ["OBSERVE", "TRACE", "KEY", "LOCK"] as const;
 
