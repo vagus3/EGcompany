@@ -129,9 +129,9 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
   }
 
   return (
-    <section className="border border-terminal-border bg-black/40">
+    <section className="border-terminal-border border bg-black/40">
       <div className="grid gap-5 p-5 lg:grid-cols-[1fr_230px]">
-        <div className="h-[360px] min-h-[320px] border border-terminal-border bg-[#020202] sm:h-[430px]">
+        <div className="border-terminal-border h-[360px] min-h-[320px] border bg-[#020202] sm:h-[430px]">
           <Canvas camera={{ position: [3.2, 2.7, 4.2], fov: 43 }} gl={{ antialias: true }}>
             <color attach="background" args={["#020202"]} />
             <ambientLight intensity={1.2} />
@@ -152,34 +152,34 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
           </Canvas>
         </div>
 
-        <aside className="flex flex-col justify-between gap-5 border border-terminal-border bg-terminal-panel-deep p-5 font-mono">
+        <aside className="border-terminal-border bg-terminal-panel-deep flex flex-col justify-between gap-6 border p-5">
           <div>
-            <p className="text-xs font-black tracking-[0.32em] text-terminal-accent-muted">
-              CUBE_PROTOCOL
+            <p className="text-terminal-accent-muted font-mono text-xs font-black tracking-[0.32em]">
+              INCIDENT_ECHO
             </p>
-            <h4 className="mt-4 text-xl font-black text-terminal-text">반대면을 유지하십시오</h4>
-            <p className="mt-4 text-sm leading-6 text-terminal-text-muted">
-              진실은 관찰의 반대편에 있습니다. 큐브를 회전해 OBSERVE의 반대면을 찾고 4초간
-              누르고 있으십시오.
-            </p>
+            <div className="text-terminal-text-muted mt-5 space-y-4 text-sm leading-6">
+              <p>
+                격리 실패 직후 회수된 기록 장치에서 정육면체 형태의 시각 신호가 반복적으로 출력되고
+                있습니다.
+              </p>
+              <p>
+                각 면은 서로 다른 접근 로그를 보관하고 있으며, 하나의 면이 활성화되는 동안 시스템
+                추적 신호가 안정화됩니다.
+              </p>
+            </div>
           </div>
 
           <div>
-            <div className="mb-3 flex justify-between text-xs text-terminal-text-dim">
-              <span>TRACE HOLD</span>
+            <div className="text-terminal-text-dim mb-3 flex justify-between font-mono text-xs">
+              <span>PROGRESS</span>
               <span>{Math.round(holdProgress * 100)}%</span>
             </div>
-            <div className="h-3 overflow-hidden bg-terminal-border">
+            <div className="bg-terminal-border h-3 overflow-hidden">
               <div
-                className="h-full bg-terminal-accent-strong transition-[width]"
+                className="bg-terminal-accent-strong h-full transition-[width]"
                 style={{ width: `${holdProgress * 100}%` }}
               />
             </div>
-            <p className="mt-3 text-xs text-terminal-text-dim">
-              {heldFace && heldFace !== "TRACE"
-                ? `${heldFace}는 반대면이 아닙니다.`
-                : "포인터를 떼면 진행률이 초기화됩니다."}
-            </p>
           </div>
         </aside>
       </div>
