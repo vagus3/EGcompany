@@ -54,6 +54,14 @@ const challengeIds = {
   pretext: "pretext-ending",
 } as const;
 
+const stageOrder: TerminalStage[] = [
+  "pin-select",
+  "cube-hold",
+  "corrupted-command",
+  "pretext-ending",
+  "completed",
+];
+
 const challengeObjectOrder = [
   "WESEN-106",
   "WESEN-392",
@@ -134,18 +142,14 @@ function getMailForStage(stage: TerminalStage) {
 }
 
 function getVisibleMails(progress: TerminalProgress) {
-  const completed = new Set(progress.completedChallengeIds);
-  const byId = new Map(terminalMails.map((mail) => [mail.id, mail]));
-  const visibleIds = ["transport-request", "cube-warning"];
+  const currentStageIndex = Math.max(stageOrder.indexOf(progress.currentStage), 0);
+  const visibleCount = Math.min(terminalMails.length, currentStageIndex + 2);
+  const visibleMailIds = new Set([
+    ...terminalMails.slice(0, visibleCount).map((mail) => mail.id),
+    ...progress.unlockedMailIds,
+  ]);
 
-  if (completed.has(challengeIds.pin)) visibleIds.unshift("urgent-containment");
-  if (completed.has(challengeIds.cube)) visibleIds.unshift("corrupted-command");
-  if (completed.has(challengeIds.corrupted)) visibleIds.push("empty-face");
-  if (completed.has(challengeIds.pretext) || progress.currentStage === "completed") {
-    visibleIds.push("completed");
-  }
-
-  return visibleIds.map((id) => byId.get(id)).filter(Boolean) as TerminalMail[];
+  return terminalMails.filter((mail) => visibleMailIds.has(mail.id));
 }
 
 function isProgress(value: unknown): value is TerminalProgress {
