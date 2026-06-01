@@ -47,7 +47,7 @@ export interface TerminalObjectEntry {
   status: string;
 }
 
-export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v1";
+export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v2";
 
 export const pinChallengeAnswer = ["OBSERVE", "TRACE", "KEY", "LOCK"] as const;
 
@@ -94,7 +94,10 @@ export const terminalObjects: TerminalObjectEntry[] = [
       "WESEN-1744는 금속 재질의 고전식 열쇠 형태의 개체이다. 외형은 단순하지만, 존재하지 않는 잠금장치에도 대응하는 특성을 가진다.",
       "이 개체는 사용자가 인식하고 있는 '열려야 하는 대상'에 반응하여 해당 대상의 잠금 상태를 해제한다.",
     ],
-    containment: ["실제 자물쇠가 없어도 작동하며, 디지털 시스템에도 적용된다.", "사용 시, 열리는 대상은 항상 하나로 고정되지 않는다."],
+    containment: [
+      "실제 자물쇠가 없어도 작동하며, 디지털 시스템에도 적용된다.",
+      "사용 시, 열리는 대상은 항상 하나로 고정되지 않는다.",
+    ],
     status: "현재 EG Log 03-27 창고에 보관 중",
   },
   {
@@ -180,33 +183,34 @@ export const terminalMails: TerminalMail[] = [
     level: "INTERNAL // LOGISTICS",
     time: "16:45:12 ZULU",
     title: "[업무요청] WESEN 개체 정보 전달 요청",
-    sender: "제이크 (수송팀 리더)",
-    to: "셀리아이아",
-    preview: "수송 예정 WESEN 개체 정보를 전달 요청드립니다.",
+    sender: "제이크_수송팀 리더",
+    to: "(플레이어)",
+    preview: "안녕하세요, 수송팀 리더 제이크입니다. 금일 캐나다 지부에서...",
     tags: ["TRANSPORT", "REQUEST"],
     unlockedStage: "pin-select",
     challengeType: "pin-select",
     body: [
       "안녕하세요, 수송팀 리더 제이크입니다.",
-      "금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 WESEN 개체 수송이 예정되어 있습니다. 현재 수송 준비 과정에서 일부 개체의 세부 정보 확인이 지연되고 있어, 안전한 수송을 위해 각 개체에 대한 최신 정보를 요청드립니다.",
+      "금일 캐나다 지부에서 샌프란시스코 지부로 총 4건의 Wesen 개체 수송이 예정 되어 있습니다. 현재 수송 준비 과정에서 일부 개체의 세부 정보 확인이 지연되고 있어, 안전한 수송을 위해 각 개체에 대한 최신 정보를 요청드립니다.",
       "아래 항목을 포함하여 회신 부탁드립니다.",
-      "개체 등급, 격리 절차, 주요 특성 및 위험 요소, 수송 시 유의점",
+      "- 객체 등급 (Object Class), - 격리 절차 (Special Containment Procedures), - 주요 특성 및 위험 요소 (Key Traits/Hazards), - 수송 시 유의사항 (Transport Precautions)",
     ],
   },
   {
     id: "cube-warning",
-    level: "URGENT // LEVEL 5",
-    time: "16:51:03 ZULU",
-    title: "[긴급] 승인되지 않은 정육면체 문서 접근",
-    sender: "UNKNOWN_RELAY",
-    to: "ADMIN_L5@SITE-19.TERMINAL",
-    preview: "정육면체는 마주보는 면 관계가 중요합니다.",
-    tags: ["URGENT", "CUBE"],
+    level: "INTERNAL // RESEARCH",
+    time: "14:22:09 ZULU",
+    title: "[연구팀] 2분기 실적 보고서",
+    sender: "연구팀_기록관리",
+    to: "(플레이어)",
+    preview: "2분기 실적 보고서 pdf 첨부 드립니다. 확인하시고 추후 사내 전체 회의에...",
+    tags: ["RESEARCH", "REPORT"],
     unlockedStage: "cube-hold",
     challengeType: "cube-hold",
     body: [
-      "메일 하단의 경고 버튼을 누르면 격리 문서가 열립니다.",
-      "정육면체는 마주보는 면 관계가 중요합니다. 진실은 관찰의 반대편에 있습니다.",
+      "2분기 실적 보고서 pdf 첨부 드립니다.",
+      "확인하시고 추후 사내 전체 회의에서 공유 부탁드립니다.",
+      "첨부 문서의 일부 페이지는 내부 시스템 오류로 인해 비정상적인 정육면체 도식으로 표시될 수 있습니다.",
       "앞면 OBSERVE, 뒷면 TRACE, 윗면 KEY, 아랫면 LOCK, 왼쪽면 OPEN, 오른쪽면 FALSE",
     ],
   },

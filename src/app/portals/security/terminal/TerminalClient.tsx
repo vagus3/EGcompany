@@ -16,6 +16,7 @@ import {
   Settings,
   Shield,
   Skull,
+  TerminalSquare,
   TriangleAlert,
   User,
 } from "lucide-react";
@@ -51,6 +52,25 @@ const challengeIds = {
   corrupted: "corrupted-command",
   pretext: "pretext-ending",
 } as const;
+
+const stageOrder: TerminalStage[] = [
+  "pin-select",
+  "cube-hold",
+  "corrupted-command",
+  "pretext-ending",
+  "completed",
+];
+
+const challengeObjectOrder = [
+  "WESEN-106",
+  "WESEN-392",
+  "WESEN-783",
+  "WESEN-0491",
+  "WESEN-1744",
+  "WESEN-096",
+  "WESEN-9428",
+  "WESEN-0101",
+] as const;
 
 const corruptedFragments = [
   { raw: "TR@CE", restored: "TRACE", answer: "A" },
@@ -116,6 +136,12 @@ function getMailForStage(stage: TerminalStage) {
   return terminalMails.find((mail) => mail.unlockedStage === stage) ?? terminalMails[0];
 }
 
+function getVisibleMails(progress: TerminalProgress) {
+  const currentStageIndex = Math.max(stageOrder.indexOf(progress.currentStage), 0);
+  const visibleCount = Math.min(terminalMails.length, currentStageIndex + 2);
+  return terminalMails.slice(0, visibleCount);
+}
+
 function isProgress(value: unknown): value is TerminalProgress {
   if (!value || typeof value !== "object") return false;
   const progress = value as TerminalProgress;
@@ -175,6 +201,18 @@ function ObjectSymbolIcon({ symbol, className }: { symbol: string; className?: s
   }
 }
 
+function ChallengeObjectIcon({ symbol, className }: { symbol: string; className?: string }) {
+  if (symbol === "OPEN") return <Shield className={className} />;
+  if (symbol === "CHANNEL") return <TerminalSquare className={className} />;
+  return <ObjectSymbolIcon symbol={symbol} className={className} />;
+}
+
+function getChallengeObjects() {
+  return challengeObjectOrder
+    .map((id) => terminalObjects.find((entry) => entry.id === id))
+    .filter(Boolean) as TerminalObjectEntry[];
+}
+
 export default function TerminalClient() {
   const [progress, setProgress] = useState<TerminalProgress>(() => getInitialProgress());
   const [activeSection, setActiveSection] = useState<Section>("messenger");
@@ -191,9 +229,11 @@ export default function TerminalClient() {
   const timersRef = useRef<number[]>([]);
   const deliveryRequestedRef = useRef(false);
 
+  const visibleMails = useMemo(() => getVisibleMails(progress), [progress]);
+
   const selectedMail = useMemo(
-    () => terminalMails.find((mail) => mail.id === progress.selectedMailId) ?? terminalMails[0],
-    [progress.selectedMailId]
+    () => visibleMails.find((mail) => mail.id === progress.selectedMailId) ?? visibleMails[0],
+    [progress.selectedMailId, visibleMails]
   );
 
   const selectedArchive =
@@ -445,6 +485,7 @@ export default function TerminalClient() {
           <>
             <MessengerList
               selectedMail={selectedMail}
+              visibleMails={visibleMails}
               progress={progress}
               onSelectMail={(mailId) =>
                 setProgress((current) => ({ ...current, selectedMailId: mailId }))
@@ -452,6 +493,7 @@ export default function TerminalClient() {
             />
             <MessengerDetail
               mail={selectedMail}
+              currentStage={progress.currentStage}
               completed={completed}
               selectedObjectIds={selectedObjectIds}
               pinError={pinError}
@@ -863,10 +905,12 @@ function MockQrCode({ value }: { value: string }) {
 
 function MessengerList({
   selectedMail,
+  visibleMails,
   progress,
   onSelectMail,
 }: {
   selectedMail: TerminalMail;
+  visibleMails: TerminalMail[];
   progress: TerminalProgress;
   onSelectMail: (mailId: string) => void;
 }) {
@@ -879,32 +923,38 @@ function MessengerList({
         </p>
       </div>
       <div>
-        {terminalMails.map((mail) => {
-          const unlocked = progress.unlockedMailIds.includes(mail.id);
+        {visibleMails.map((mail) => {
+          const activeChallenge = mail.unlockedStage === progress.currentStage;
+          const completedChallenge = progress.completedChallengeIds.includes(mail.challengeType);
           const active = selectedMail.id === mail.id;
 
           return (
             <button
               key={mail.id}
               type="button"
-              disabled={!unlocked}
               onClick={() => onSelectMail(mail.id)}
               className={cx(
                 "border-terminal-border block min-h-[96px] w-full border-b px-5 py-4 text-left transition",
-                active && unlocked
+                active
                   ? "bg-terminal-accent-strong text-white"
-                  : unlocked
-                    ? "text-terminal-text bg-[#101010] hover:bg-[#181818]"
-                    : "text-terminal-text-dim bg-[#0a0a0a] opacity-45"
+                  : "text-terminal-text bg-[#101010] hover:bg-[#181818]"
               )}
             >
               <div className="mb-2 flex justify-between gap-3 font-mono text-[10px]">
-                <span>{unlocked ? mail.time : "LOCKED"}</span>
-                {active && <span className="text-terminal-accent-muted">ACTIVE</span>}
+                <span>{mail.time}</span>
+                {active ? (
+                  <span className="text-terminal-accent-muted">VIEWING</span>
+                ) : completedChallenge ? (
+                  <span className="text-terminal-accent-muted">CLEARED</span>
+                ) : activeChallenge ? (
+                  <span className="text-terminal-accent-muted">ACTIVE</span>
+                ) : (
+                  <span className="text-terminal-text-dim">QUEUED</span>
+                )}
               </div>
               <h3 className="mb-2 text-sm font-black">{mail.title}</h3>
               <p className="text-terminal-text-muted line-clamp-2 text-xs leading-5">
-                {unlocked ? mail.preview : "상위 단계 완료 후 열람 가능"}
+                {mail.preview}
               </p>
             </button>
           );
@@ -916,6 +966,7 @@ function MessengerList({
 
 function MessengerDetail({
   mail,
+  currentStage,
   completed,
   selectedObjectIds,
   pinError,
@@ -929,6 +980,7 @@ function MessengerDetail({
   onEndingComplete,
 }: {
   mail: TerminalMail;
+  currentStage: TerminalStage;
   completed: Set<string>;
   selectedObjectIds: string[];
   pinError: string;
@@ -941,6 +993,10 @@ function MessengerDetail({
   onCubeComplete: () => void;
   onEndingComplete: () => void;
 }) {
+  const isCurrentChallenge = mail.unlockedStage === currentStage;
+  const isCompletedChallenge =
+    mail.challengeType === "completed" || completed.has(mail.challengeType);
+
   return (
     <section className="min-h-0 overflow-y-auto bg-[#101010]">
       <div className="border-terminal-border border-b px-6 py-7 lg:px-8">
@@ -974,6 +1030,8 @@ function MessengerDetail({
         <div className="bg-terminal-border my-6 h-px" />
         {renderMailChallenge({
           mail,
+          isCurrentChallenge,
+          isCompletedChallenge,
           completed,
           selectedObjectIds,
           pinError,
@@ -1042,6 +1100,8 @@ function SecurityAlert() {
 
 function renderMailChallenge({
   mail,
+  isCurrentChallenge,
+  isCompletedChallenge,
   completed,
   selectedObjectIds,
   pinError,
@@ -1055,6 +1115,8 @@ function renderMailChallenge({
   onEndingComplete,
 }: {
   mail: TerminalMail;
+  isCurrentChallenge: boolean;
+  isCompletedChallenge: boolean;
   completed: Set<string>;
   selectedObjectIds: string[];
   pinError: string;
@@ -1067,6 +1129,10 @@ function renderMailChallenge({
   onCubeComplete: () => void;
   onEndingComplete: () => void;
 }) {
+  if (!isCurrentChallenge && !isCompletedChallenge) {
+    return <QueuedPanel label="NEXT_SECTION_LOCKED" />;
+  }
+
   if (mail.challengeType === "pin-select") {
     return (
       <section className="border-terminal-border border bg-[#101010] p-6">
@@ -1076,13 +1142,13 @@ function renderMailChallenge({
               SECURITY_CHALLENGE
             </p>
             <p className="text-terminal-text-dim mt-1 text-xs">
-              안전한 수송을 위한 보안 승인 아이콘 4개를 선택하십시오.
+              안전한 수송을 위한 보안 승인 코드를 선택하십시오.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {terminalObjects.map((entry) => {
+          {getChallengeObjects().map((entry) => {
             const selected = selectedObjectIds.includes(entry.id);
             const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
 
@@ -1104,7 +1170,7 @@ function renderMailChallenge({
                 aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
                 aria-pressed={selected}
               >
-                <ObjectSymbolIcon symbol={entry.symbol} className="h-5 w-5" />
+                <ChallengeObjectIcon symbol={entry.symbol} className="h-5 w-5" />
               </button>
             );
           })}
@@ -1348,6 +1414,20 @@ function CompletedPanel({ label }: { label: string }) {
       <p className="text-terminal-accent-muted flex items-center gap-3 font-mono text-xs font-black tracking-[0.2em]">
         <Check className="h-4 w-4" />
         {label}
+      </p>
+    </section>
+  );
+}
+
+function QueuedPanel({ label }: { label: string }) {
+  return (
+    <section className="border-terminal-border bg-terminal-panel-deep mt-5 border p-5 opacity-70">
+      <p className="text-terminal-text-dim flex items-center gap-3 font-mono text-xs font-black tracking-[0.2em]">
+        <Lock className="h-4 w-4" />
+        {label}
+      </p>
+      <p className="text-terminal-text-muted mt-3 text-xs leading-6">
+        이전 보안 절차가 완료되면 이 섹션의 상호작용이 활성화됩니다.
       </p>
     </section>
   );
