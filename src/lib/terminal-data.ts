@@ -7,6 +7,7 @@ export type TerminalStage =
   | "completed";
 
 export type TerminalChallengeType =
+  | "none"
   | "pin-select"
   | "cube-hold"
   | "corrupted-command"
@@ -47,7 +48,7 @@ export interface TerminalObjectEntry {
   status: string;
 }
 
-export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v2";
+export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v3";
 
 export const pinChallengeAnswer = ["OBSERVE", "TRACE", "KEY", "LOCK"] as const;
 
@@ -205,29 +206,45 @@ export const terminalMails: TerminalMail[] = [
     to: "(플레이어)",
     preview: "2분기 실적 보고서 pdf 첨부 드립니다. 확인하시고 추후 사내 전체 회의에...",
     tags: ["RESEARCH", "REPORT"],
-    unlockedStage: "cube-hold",
-    challengeType: "cube-hold",
+    unlockedStage: "intro",
+    challengeType: "none",
     body: [
       "2분기 실적 보고서 pdf 첨부 드립니다.",
       "확인하시고 추후 사내 전체 회의에서 공유 부탁드립니다.",
-      "첨부 문서의 일부 페이지는 내부 시스템 오류로 인해 비정상적인 정육면체 도식으로 표시될 수 있습니다.",
-      "앞면 OBSERVE, 뒷면 TRACE, 윗면 KEY, 아랫면 LOCK, 왼쪽면 OPEN, 오른쪽면 FALSE",
+      "첨부 문서의 일부 페이지는 내부 시스템 오류로 인해 비정상적인 이미지 손상이 발생할 수 있습니다.",
+      "사내 전체 회의 전 확인 부탁드립니다.",
+    ],
+  },
+  {
+    id: "urgent-containment",
+    level: "SECURITY // URGENT",
+    time: "18:00:27 ZULU",
+    title: "[긴급] 알립니다.",
+    sender: "제이크_수송팀 리더",
+    to: "(플레이어)",
+    preview: "보안팀 열람 요망_기밀 사항",
+    tags: ["URGENT", "SECURITY"],
+    unlockedStage: "cube-hold",
+    challengeType: "cube-hold",
+    body: [
+      "보안팀 열람 요망_기밀 사항",
+      "운송 도중 개체가 차량을 탈출했으며, 현재 이동 경로상의 통신 지연 및 시스템 로그 누락 현상이 관찰되고 있습니다.",
+      "해당 개체의 문서를 연구팀의 도움 없이 열람하셨나요?",
     ],
   },
   {
     id: "corrupted-command",
     level: "ENCRYPTED // SOURCE UNKNOWN",
-    time: "16:57:44 ZULU",
-    title: "[발신 출처 불명] 언어 해석 실패",
-    sender: "NO_ORIGIN",
+    time: "-0-=0-----10",
+    title: "■■■■■■■■",
+    sender: "UNKNOWN_SOURCE",
     to: "ADMIN_L5@SITE-19.TERMINAL",
-    preview: "특수문자로 치환된 빈칸을 복구해 명령어를 입력하십시오.",
+    preview: "--------------",
     tags: ["UNKNOWN", "COMMAND"],
     unlockedStage: "corrupted-command",
     challengeType: "corrupted-command",
     body: [
-      "특수 문자로 바뀐 빈칸에 알맞은 알파벳들을 나열하십시오.",
-      "TR@CE / OB$ERVE / LO?K / KE! / OP#N / FAL%E",
+      "시각 로그의 문자 잔상을 복구하십시오.",
       "복구된 명령어가 확인되면 다음 문서가 자동으로 열립니다.",
     ],
   },
