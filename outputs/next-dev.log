@@ -1,0 +1,14 @@
+
+> escape-web@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.45.130:3000
+- Environments: .env.local
+✓ Ready in 1036ms
+Creating turbopack project { dir: 'C:\\Users\\hyeonggyu\\escapeWeb', testMode: true }
+
+ GET /portals/security/terminal/pretext 200 in 2.7s (next.js: 591ms, application-code: 2.1s)
+ GET /portals/security/terminal 200 in 2.9s (next.js: 1308ms, application-code: 1587ms)
+[?25h
