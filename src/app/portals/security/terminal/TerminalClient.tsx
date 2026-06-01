@@ -87,6 +87,17 @@ type ContainmentLog = {
   critical?: boolean;
 };
 
+type ContainmentLog = {
+  badge: string;
+  badgeClassName: string;
+  timestamp: string;
+  title: string;
+  summary: string;
+  author: string;
+  locked: boolean;
+  critical?: boolean;
+};
+
 const containmentLogs: ContainmentLog[] = [
   {
     badge: "DECLASSIFIED",
@@ -118,6 +129,15 @@ const containmentLogs: ContainmentLog[] = [
   },
 ];
 
+const criticalPersonnelLog: ContainmentLog = {
+  badge: "CRITICAL",
+  badgeClassName: "border-terminal-accent text-terminal-accent",
+  timestamp: "1988-04-15T00:00:01Z",
+  title: "[LOG-????] ???????????",
+  summary: "“추적” 행동이 시작되었습니다.",
+  author: "AUTO-SYS ALARM",
+  locked: false,
+  critical: true,
 const criticalPersonnelLog: ContainmentLog = {
   badge: "CRITICAL",
   badgeClassName: "border-terminal-accent text-terminal-accent",
@@ -564,7 +584,9 @@ export default function TerminalClient() {
           </>
         ) : activeSection === "containment" ? (
           <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
+          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : activeSection === "person" ? (
+          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
           <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : (
           <>
@@ -729,6 +751,11 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
     ? [...containmentLogs, criticalPersonnelLog]
     : containmentLogs;
 
+function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) {
+  const visibleLogs = showCriticalLog
+    ? [...containmentLogs, criticalPersonnelLog]
+    : containmentLogs;
+
   return (
     <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-12 sm:px-10 lg:px-18 lg:py-16">
       <div className="mx-auto max-w-6xl">
@@ -739,8 +766,15 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
 
         <div className="mt-12 space-y-5">
           {visibleLogs.map((log) => (
+          {visibleLogs.map((log) => (
             <article
               key={log.title}
+              className={cx(
+                "grid gap-5 border border-l-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6",
+                log.critical
+                  ? "border-terminal-accent bg-[#260406]"
+                  : "border-terminal-border bg-[#111]"
+              )}
               className={cx(
                 "grid gap-5 border border-l-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6",
                 log.critical
@@ -772,6 +806,12 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
                       <Redaction width="w-16" /> 및 <Redaction width="w-20" /> 요망.
                     </>
                   ) : log.locked ? (
+                  {log.critical ? (
+                    <>
+                      {log.summary} <Redaction width="w-44" /> <Redaction width="w-24" />{" "}
+                      <Redaction width="w-16" /> 및 <Redaction width="w-20" /> 요망.
+                    </>
+                  ) : log.locked ? (
                     <>
                       보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
                       <Redaction width="w-44" /> <Redaction width="w-12" />{" "}
@@ -796,8 +836,21 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
                       ? "border-terminal-accent text-terminal-accent-text"
                       : "border-terminal-border text-terminal-text-dim"
                   )}
+                  className={cx(
+                    "grid h-11 w-11 place-items-center border bg-[#151515]",
+                    log.critical
+                      ? "border-terminal-accent text-terminal-accent-text"
+                      : "border-terminal-border text-terminal-text-dim"
+                  )}
                   aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
                 >
+                  {log.critical ? (
+                    <TriangleAlert className="h-5 w-5" />
+                  ) : log.locked ? (
+                    <Lock className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                   {log.critical ? (
                     <TriangleAlert className="h-5 w-5" />
                   ) : log.locked ? (
@@ -819,15 +872,19 @@ function Redaction({ width }: { width: string }) {
   return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
 }
 
-function FullscreenEndingVideo({
-  posterSrc,
-  videoSrc,
-  onEnded,
-}: {
-  posterSrc: string;
-  videoSrc: string;
-  onEnded: () => void;
-}) {
+function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded: () => void }) {
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const progress = Math.min(100, (elapsedMs / durationMs) * 100);
+
+  useEffect(() => {
+    const startedAt = window.performance.now();
+    const interval = window.setInterval(() => {
+      setElapsedMs(window.performance.now() - startedAt);
+    }, 120);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
       <video
