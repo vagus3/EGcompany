@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-
 import { getPortal, portals } from "@/lib/portal-data";
 
 export function generateStaticParams() {

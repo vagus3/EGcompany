@@ -8,6 +8,10 @@ const departments = [
   { icon: "🔒", label: "SECURITY", slug: "security" },
 ];
 
+function getDepartmentHref(slug: string) {
+  return slug === "security" ? "/portals/security/terminal" : `/portals/${slug}/detail`;
+}
+
 export default function DepartmentSidebar() {
   return (
     <aside className="space-y-6">
@@ -20,7 +24,7 @@ export default function DepartmentSidebar() {
           {departments.map(({ icon, label, slug }) => (
             <li key={label}>
               <Link
-                href={`/portals/${slug}`}
+                href={getDepartmentHref(slug)}
                 className="flex items-center gap-3 px-3 py-2 text-xs tracking-widest text-gray-600 uppercase transition-colors hover:bg-gray-50 hover:text-black"
               >
                 <span className="text-base">{icon}</span>

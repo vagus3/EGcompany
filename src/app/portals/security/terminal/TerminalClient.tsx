@@ -16,9 +16,11 @@ import {
   Settings,
   Shield,
   Skull,
+  TerminalSquare,
   TriangleAlert,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
@@ -51,6 +53,25 @@ const challengeIds = {
   corrupted: "corrupted-command",
   pretext: "pretext-ending",
 } as const;
+
+const stageOrder: TerminalStage[] = [
+  "pin-select",
+  "cube-hold",
+  "corrupted-command",
+  "pretext-ending",
+  "completed",
+];
+
+const challengeObjectOrder = [
+  "WESEN-106",
+  "WESEN-392",
+  "WESEN-783",
+  "WESEN-0491",
+  "WESEN-1744",
+  "WESEN-096",
+  "WESEN-9428",
+  "WESEN-0101",
+] as const;
 
 const corruptedFragments = [
   { raw: "TR@CE", restored: "TRACE", answer: "A" },
@@ -116,6 +137,12 @@ function getMailForStage(stage: TerminalStage) {
   return terminalMails.find((mail) => mail.unlockedStage === stage) ?? terminalMails[0];
 }
 
+function getVisibleMails(progress: TerminalProgress) {
+  const currentStageIndex = Math.max(stageOrder.indexOf(progress.currentStage), 0);
+  const visibleCount = Math.min(terminalMails.length, currentStageIndex + 2);
+  return terminalMails.slice(0, visibleCount);
+}
+
 function isProgress(value: unknown): value is TerminalProgress {
   if (!value || typeof value !== "object") return false;
   const progress = value as TerminalProgress;
@@ -152,13 +179,7 @@ function getSelectedSymbols(selectedIds: string[]) {
     .filter(Boolean) as string[];
 }
 
-function ObjectSymbolIcon({
-  symbol,
-  className,
-}: {
-  symbol: string;
-  className?: string;
-}) {
+function ObjectSymbolIcon({ symbol, className }: { symbol: string; className?: string }) {
   switch (symbol) {
     case "OBSERVE":
       return <Eye className={className} />;
@@ -181,6 +202,22 @@ function ObjectSymbolIcon({
   }
 }
 
+function ChallengeObjectIcon({ symbol, className }: { symbol: string; className?: string }) {
+  if (symbol === "OPEN") return <Shield className={className} />;
+  if (symbol === "CHANNEL") return <TerminalSquare className={className} />;
+  return <ObjectSymbolIcon symbol={symbol} className={className} />;
+}
+
+function getChallengeObjects() {
+  return challengeObjectOrder
+    .map((id) => terminalObjects.find((entry) => entry.id === id))
+    .filter(Boolean) as TerminalObjectEntry[];
+}
+
+function getWesenImageSrc(entry: TerminalObjectEntry) {
+  return `/eg_png/security_picture/${entry.id.toLowerCase().replace("-", "_")}.png`;
+}
+
 export default function TerminalClient() {
   const [progress, setProgress] = useState<TerminalProgress>(() => getInitialProgress());
   const [activeSection, setActiveSection] = useState<Section>("messenger");
@@ -197,9 +234,11 @@ export default function TerminalClient() {
   const timersRef = useRef<number[]>([]);
   const deliveryRequestedRef = useRef(false);
 
+  const visibleMails = useMemo(() => getVisibleMails(progress), [progress]);
+
   const selectedMail = useMemo(
-    () => terminalMails.find((mail) => mail.id === progress.selectedMailId) ?? terminalMails[0],
-    [progress.selectedMailId]
+    () => visibleMails.find((mail) => mail.id === progress.selectedMailId) ?? visibleMails[0],
+    [progress.selectedMailId, visibleMails]
   );
 
   const selectedArchive =
@@ -366,7 +405,9 @@ export default function TerminalClient() {
   }
 
   const visibleEndFlow =
-    endFlow === "idle" && progress.currentStage === "completed" && completed.has(challengeIds.pretext)
+    endFlow === "idle" &&
+    progress.currentStage === "completed" &&
+    completed.has(challengeIds.pretext)
       ? "survey-qr"
       : endFlow;
 
@@ -394,16 +435,16 @@ export default function TerminalClient() {
   return (
     <main
       className={cx(
-        "min-h-screen overflow-x-hidden bg-[#080808] text-[13px] text-terminal-text",
+        "text-terminal-text min-h-screen overflow-x-hidden bg-[#080808] text-[13px]",
         terminalTheme.page
       )}
     >
-      <header className="flex min-h-[52px] items-center justify-between border-b border-terminal-border bg-[#151515] px-5">
+      <header className="border-terminal-border flex min-h-[52px] items-center justify-between border-b bg-[#151515] px-5">
         <h1 className="font-mono text-xl font-black tracking-[-0.03em] text-white">SECURITY_15</h1>
         <button
           type="button"
           onClick={resetProgress}
-          className="font-mono text-[10px] font-black tracking-[0.42em] text-terminal-accent"
+          className="text-terminal-accent font-mono text-[10px] font-black tracking-[0.42em]"
         >
           DIVISION ACCESS AUTHORIZED
         </button>
@@ -425,10 +466,20 @@ export default function TerminalClient() {
           <>
             <ArchiveList
               selectedArchiveId={selectedArchiveId}
+              selectedObjectIds={selectedObjectIds}
+              isPinSelectionEnabled={
+                progress.currentStage === "pin-select" && !completed.has(challengeIds.pin)
+              }
               onSelect={selectArchiveEntry}
+              onToggleObject={toggleObjectSelection}
             />
             <ArchiveDetail
               entry={selectedArchive}
+              selected={selectedObjectIds.includes(selectedArchive.id)}
+              isPinSelectionEnabled={
+                progress.currentStage === "pin-select" && !completed.has(challengeIds.pin)
+              }
+              onToggleObject={toggleObjectSelection}
             />
           </>
         ) : activeSection === "containment" ? (
@@ -439,6 +490,7 @@ export default function TerminalClient() {
           <>
             <MessengerList
               selectedMail={selectedMail}
+              visibleMails={visibleMails}
               progress={progress}
               onSelectMail={(mailId) =>
                 setProgress((current) => ({ ...current, selectedMailId: mailId }))
@@ -446,6 +498,7 @@ export default function TerminalClient() {
             />
             <MessengerDetail
               mail={selectedMail}
+              currentStage={progress.currentStage}
               completed={completed}
               selectedObjectIds={selectedObjectIds}
               pinError={pinError}
@@ -464,12 +517,12 @@ export default function TerminalClient() {
 
       {overlay && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black font-mono">
-          <div className="absolute inset-0 terminal-noise opacity-30" />
-          <p className="relative text-center text-3xl font-black tracking-[0.42em] text-terminal-accent-text sm:text-5xl">
+          <div className="terminal-noise absolute inset-0 opacity-30" />
+          <p className="text-terminal-accent-text relative text-center text-3xl font-black tracking-[0.42em] sm:text-5xl">
             {overlay === "found" ? "FoUnd." : "UNKNOWN LANGUAGE DETECTED"}
           </p>
           {overlay === "command-warning" && (
-            <p className="absolute bottom-[30%] px-6 text-center text-sm tracking-[0.18em] text-terminal-text-muted">
+            <p className="text-terminal-text-muted absolute bottom-[30%] px-6 text-center text-sm tracking-[0.18em]">
               해당 명령어는 해석 불가능한 형식으로 기록되어 있습니다.
             </p>
           )}
@@ -494,13 +547,13 @@ function TerminalSidebar({
   ];
 
   return (
-    <aside className="flex min-h-0 flex-col border-b border-terminal-border bg-[#0b0b0b] lg:border-b-0 lg:border-r">
-      <section className="flex min-h-[96px] items-center gap-4 border-b border-terminal-border px-5">
-        <div className="grid h-10 w-10 place-items-center bg-terminal-accent-strong">
+    <aside className="border-terminal-border flex min-h-0 flex-col border-b bg-[#0b0b0b] lg:border-r lg:border-b-0">
+      <section className="border-terminal-border flex min-h-[96px] items-center gap-4 border-b px-5">
+        <div className="bg-terminal-accent-strong grid h-10 w-10 place-items-center">
           <Shield className="h-5 w-5 fill-white text-white" />
         </div>
         <div>
-          <p className="font-mono text-[10px] tracking-[0.22em] text-terminal-text-dim">
+          <p className="text-terminal-text-dim font-mono text-[10px] tracking-[0.22em]">
             환영합니다, 클리어아이
           </p>
           <p className="mt-1 font-mono text-xs font-black tracking-[0.12em] text-white">
@@ -528,7 +581,7 @@ function TerminalSidebar({
         ))}
       </nav>
 
-      <div className="mt-auto border-t border-terminal-border px-4 py-5 font-mono text-[10px] font-black tracking-[0.18em] text-terminal-text-dim">
+      <div className="border-terminal-border text-terminal-text-dim mt-auto border-t px-4 py-5 font-mono text-[10px] font-black tracking-[0.18em]">
         <p className="mb-3 flex items-center gap-2">
           <Settings className="h-3.5 w-3.5" />
           SYSTEM SETTINGS
@@ -549,13 +602,13 @@ function ContainmentLogsPage() {
         <h2 className="text-[clamp(2.2rem,5vw,4.4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
           Secure Containment Logs
         </h2>
-        <div className="mt-10 h-px bg-terminal-border" />
+        <div className="bg-terminal-border mt-10 h-px" />
 
         <div className="mt-12 space-y-5">
           {containmentLogs.map((log) => (
             <article
               key={log.title}
-              className="grid gap-5 border border-terminal-border border-l-4 bg-[#111] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6"
+              className="border-terminal-border grid gap-5 border border-l-4 bg-[#111] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-4 font-mono">
@@ -567,14 +620,14 @@ function ContainmentLogsPage() {
                   >
                     {log.badge}
                   </span>
-                  <span className="text-xs font-black tracking-[0.12em] text-terminal-text-dim">
+                  <span className="text-terminal-text-dim text-xs font-black tracking-[0.12em]">
                     TS: {log.timestamp}
                   </span>
                 </div>
                 <h3 className="mt-5 text-[clamp(1.35rem,3vw,2.2rem)] leading-none font-black tracking-[-0.04em] text-white">
                   {log.title}
                 </h3>
-                <p className="mt-4 max-w-4xl text-sm leading-7 text-terminal-text-muted sm:text-base">
+                <p className="text-terminal-text-muted mt-4 max-w-4xl text-sm leading-7 sm:text-base">
                   {log.locked ? (
                     <>
                       보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
@@ -589,12 +642,12 @@ function ContainmentLogsPage() {
 
               <div className="grid grid-cols-[1fr_auto] items-center gap-4 sm:min-w-38">
                 <div className="text-right font-mono">
-                  <p className="text-xs font-black text-terminal-text-dim">AUTHOR</p>
+                  <p className="text-terminal-text-dim text-xs font-black">AUTHOR</p>
                   <p className="mt-2 text-sm font-black text-white">{log.author}</p>
                 </div>
                 <button
                   type="button"
-                  className="grid h-11 w-11 place-items-center border border-terminal-border bg-[#151515] text-terminal-text-dim"
+                  className="border-terminal-border text-terminal-text-dim grid h-11 w-11 place-items-center border bg-[#151515]"
                   aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
                 >
                   {log.locked ? <Lock className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -612,18 +665,18 @@ function PersonnelPage() {
   return (
     <section className="min-h-0 overflow-y-auto bg-[#080808] px-4 py-12 sm:px-8 lg:px-16 lg:py-16">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-6 border-b border-terminal-border pb-8 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="border-terminal-border grid gap-6 border-b pb-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <h2 className="text-[clamp(2rem,4.5vw,4rem)] leading-none font-black tracking-[-0.06em] text-white uppercase">
               Personnel Security Part
             </h2>
-            <p className="mt-5 font-mono text-sm font-black tracking-[0.22em] text-terminal-text-dim uppercase">
+            <p className="text-terminal-text-dim mt-5 font-mono text-sm font-black tracking-[0.22em] uppercase">
               Sector-01 / Response Unit Alpha
             </p>
           </div>
           <div className="font-mono text-sm tracking-[0.12em] lg:text-right">
-            <p className="font-black text-terminal-accent">ACCESS: GRANTED</p>
-            <p className="mt-3 text-terminal-text-dim">TS: 2024.11.23_14:22:09</p>
+            <p className="text-terminal-accent font-black">ACCESS: GRANTED</p>
+            <p className="text-terminal-text-dim mt-3">TS: 2024.11.23_14:22:09</p>
           </div>
         </div>
 
@@ -632,12 +685,12 @@ function PersonnelPage() {
             <PersonnelCard person={personnel.leader} leader />
           </div>
 
-          <div className="mx-auto hidden h-20 w-px bg-terminal-border md:block" />
-          <div className="mx-auto hidden h-px max-w-4xl bg-terminal-border md:block" />
+          <div className="bg-terminal-border mx-auto hidden h-20 w-px md:block" />
+          <div className="bg-terminal-border mx-auto hidden h-px max-w-4xl md:block" />
           <div className="mx-auto hidden max-w-4xl grid-cols-3 md:grid">
-            <span className="mx-auto h-10 w-px bg-terminal-border" />
-            <span className="mx-auto h-10 w-px bg-terminal-border" />
-            <span className="mx-auto h-10 w-px bg-terminal-border" />
+            <span className="bg-terminal-border mx-auto h-10 w-px" />
+            <span className="bg-terminal-border mx-auto h-10 w-px" />
+            <span className="bg-terminal-border mx-auto h-10 w-px" />
           </div>
 
           <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-3">
@@ -646,7 +699,7 @@ function PersonnelPage() {
             ))}
           </div>
 
-          <div className="mx-auto hidden h-16 w-px bg-terminal-border md:block" />
+          <div className="bg-terminal-border mx-auto hidden h-16 w-px md:block" />
           <div className="mt-6 grid gap-5 md:mt-0 md:grid-cols-4">
             {personnel.junior.map((person) => (
               <PersonnelCard key={person.name} person={person} muted />
@@ -659,7 +712,7 @@ function PersonnelPage() {
 }
 
 function Redaction({ width }: { width: string }) {
-  return <span className={cx("mx-1 inline-block h-4 bg-terminal-text-dim align-middle", width)} />;
+  return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
 }
 
 function PersonnelCard({
@@ -683,7 +736,7 @@ function PersonnelCard({
     <article
       className={cx(
         "relative border bg-[#121212] px-6 py-6",
-        leader && "border-t-4 border-t-terminal-accent",
+        leader && "border-t-terminal-accent border-t-4",
         person.highlighted
           ? "border-terminal-accent bg-[#151515]"
           : muted
@@ -692,28 +745,22 @@ function PersonnelCard({
       )}
     >
       <div className="mb-8 flex items-center justify-between gap-4">
-        <p className="font-mono text-[10px] font-black tracking-[0.18em] text-terminal-text-dim uppercase">
+        <p className="text-terminal-text-dim font-mono text-[10px] font-black tracking-[0.18em] uppercase">
           {person.role}
         </p>
-        {Icon && <Icon className="h-4 w-4 text-terminal-text-dim" />}
+        {Icon && <Icon className="text-terminal-text-dim h-4 w-4" />}
       </div>
       <h3 className="text-[clamp(1.25rem,2vw,1.85rem)] leading-none font-black tracking-[-0.04em] text-white">
         {person.name}
       </h3>
-      <p className="mt-5 font-mono text-sm font-black tracking-[0.18em] text-terminal-text-dim">
+      <p className="text-terminal-text-dim mt-5 font-mono text-sm font-black tracking-[0.18em]">
         CALL NUM: {person.callNum}
       </p>
     </article>
   );
 }
 
-function MockEndingVideo({
-  durationMs,
-  onEnded,
-}: {
-  durationMs: number;
-  onEnded: () => void;
-}) {
+function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded: () => void }) {
   const [elapsedMs, setElapsedMs] = useState(0);
   const progress = Math.min(100, (elapsedMs / durationMs) * 100);
 
@@ -729,7 +776,7 @@ function MockEndingVideo({
   return (
     <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
       <div className="absolute inset-0 bg-[linear-gradient(transparent_0_48%,rgb(255_255_255_/_0.055)_50%,transparent_52%),repeating-linear-gradient(0deg,rgb(255_255_255_/_0.045)_0_1px,transparent_1px_5px)] bg-[length:100%_7px,100%_5px] opacity-50" />
-      <div className="absolute inset-0 terminal-noise opacity-35" />
+      <div className="terminal-noise absolute inset-0 opacity-35" />
       <div className="absolute inset-x-0 top-[6%] h-px bg-cyan-300/60 shadow-[0_0_14px_rgba(34,211,238,0.9)]" />
       <div className="absolute inset-x-0 bottom-[6%] h-px bg-red-400/50 shadow-[0_0_16px_rgba(248,113,113,0.8)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_42%,rgb(0_0_0_/_0.72)_78%)]" />
@@ -750,12 +797,12 @@ function MockEndingVideo({
 
       <div className="absolute right-6 bottom-6 left-6 z-20 flex items-center gap-4">
         <div className="h-px flex-1 bg-white/20">
-          <div className="h-px bg-terminal-accent-text" style={{ width: `${progress}%` }} />
+          <div className="bg-terminal-accent-text h-px" style={{ width: `${progress}%` }} />
         </div>
         <button
           type="button"
           onClick={onEnded}
-          className="border border-white/20 px-3 py-2 text-[10px] font-black tracking-[0.24em] text-white/50 transition hover:border-terminal-accent hover:text-white"
+          className="hover:border-terminal-accent border border-white/20 px-3 py-2 text-[10px] font-black tracking-[0.24em] text-white/50 transition hover:text-white"
         >
           SKIP MOCK
         </button>
@@ -785,8 +832,8 @@ function SurveyQrPage({
   return (
     <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-5xl flex-col items-center">
-        <section className="w-full max-w-3xl border border-terminal-accent/55 bg-black px-6 py-10 text-center shadow-[0_0_40px_rgba(176,0,0,0.18)] sm:px-12 sm:py-14">
-          <p className="font-mono text-[clamp(1.1rem,2vw,1.65rem)] tracking-[0.18em] text-terminal-accent-text">
+        <section className="border-terminal-accent/55 w-full max-w-3xl border bg-black px-6 py-10 text-center shadow-[0_0_40px_rgba(176,0,0,0.18)] sm:px-12 sm:py-14">
+          <p className="text-terminal-accent-text font-mono text-[clamp(1.1rem,2vw,1.65rem)] tracking-[0.18em]">
             UNKNOWN SYSTEM
           </p>
           <p className="mt-8 text-[clamp(1.7rem,4vw,3.15rem)] leading-[1.45] font-semibold tracking-normal text-neutral-400">
@@ -809,7 +856,7 @@ function SurveyQrPage({
           <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
             &gt;_ 플레이 후기 설문조사 폼
           </p>
-          <p className="mt-5 break-all font-mono text-[10px] font-bold tracking-[0.12em] text-neutral-400">
+          <p className="mt-5 font-mono text-[10px] font-bold tracking-[0.12em] break-all text-neutral-400">
             {surveyUrl}
           </p>
         </section>
@@ -817,7 +864,7 @@ function SurveyQrPage({
         <button
           type="button"
           onClick={onReset}
-          className="mt-10 border border-white/15 px-5 py-3 font-mono text-[10px] font-black tracking-[0.22em] text-white/35 transition hover:border-terminal-accent hover:text-white"
+          className="hover:border-terminal-accent mt-10 border border-white/15 px-5 py-3 font-mono text-[10px] font-black tracking-[0.22em] text-white/35 transition hover:text-white"
         >
           RESET TERMINAL
         </button>
@@ -863,46 +910,56 @@ function MockQrCode({ value }: { value: string }) {
 
 function MessengerList({
   selectedMail,
+  visibleMails,
   progress,
   onSelectMail,
 }: {
   selectedMail: TerminalMail;
+  visibleMails: TerminalMail[];
   progress: TerminalProgress;
   onSelectMail: (mailId: string) => void;
 }) {
   return (
-    <section className="min-h-0 border-b border-terminal-border bg-[#0d0d0d] lg:border-b-0 lg:border-r">
-      <div className="flex h-[54px] items-center justify-between border-b border-terminal-border px-5">
+    <section className="border-terminal-border min-h-0 border-b bg-[#0d0d0d] lg:border-r lg:border-b-0">
+      <div className="border-terminal-border flex h-[54px] items-center justify-between border-b px-5">
         <h2 className="font-mono text-sm font-black text-white">받은 메일함</h2>
-        <p className="font-mono text-[9px] tracking-[0.18em] text-terminal-accent-muted">LIVE_FEED</p>
+        <p className="text-terminal-accent-muted font-mono text-[9px] tracking-[0.18em]">
+          LIVE_FEED
+        </p>
       </div>
       <div>
-        {terminalMails.map((mail) => {
-          const unlocked = progress.unlockedMailIds.includes(mail.id);
+        {visibleMails.map((mail) => {
+          const activeChallenge = mail.unlockedStage === progress.currentStage;
+          const completedChallenge = progress.completedChallengeIds.includes(mail.challengeType);
           const active = selectedMail.id === mail.id;
 
           return (
             <button
               key={mail.id}
               type="button"
-              disabled={!unlocked}
               onClick={() => onSelectMail(mail.id)}
               className={cx(
-                "block min-h-[96px] w-full border-b border-terminal-border px-5 py-4 text-left transition",
-                active && unlocked
+                "border-terminal-border block min-h-[96px] w-full border-b px-5 py-4 text-left transition",
+                active
                   ? "bg-terminal-accent-strong text-white"
-                  : unlocked
-                    ? "bg-[#101010] text-terminal-text hover:bg-[#181818]"
-                    : "bg-[#0a0a0a] text-terminal-text-dim opacity-45"
+                  : "text-terminal-text bg-[#101010] hover:bg-[#181818]"
               )}
             >
               <div className="mb-2 flex justify-between gap-3 font-mono text-[10px]">
-                <span>{unlocked ? mail.time : "LOCKED"}</span>
-                {active && <span className="text-terminal-accent-muted">ACTIVE</span>}
+                <span>{mail.time}</span>
+                {active ? (
+                  <span className="text-terminal-accent-muted">VIEWING</span>
+                ) : completedChallenge ? (
+                  <span className="text-terminal-accent-muted">CLEARED</span>
+                ) : activeChallenge ? (
+                  <span className="text-terminal-accent-muted">ACTIVE</span>
+                ) : (
+                  <span className="text-terminal-text-dim">QUEUED</span>
+                )}
               </div>
               <h3 className="mb-2 text-sm font-black">{mail.title}</h3>
-              <p className="line-clamp-2 text-xs leading-5 text-terminal-text-muted">
-                {unlocked ? mail.preview : "상위 단계 완료 후 열람 가능"}
+              <p className="text-terminal-text-muted line-clamp-2 text-xs leading-5">
+                {mail.preview}
               </p>
             </button>
           );
@@ -914,6 +971,7 @@ function MessengerList({
 
 function MessengerDetail({
   mail,
+  currentStage,
   completed,
   selectedObjectIds,
   pinError,
@@ -927,6 +985,7 @@ function MessengerDetail({
   onEndingComplete,
 }: {
   mail: TerminalMail;
+  currentStage: TerminalStage;
   completed: Set<string>;
   selectedObjectIds: string[];
   pinError: string;
@@ -939,29 +998,33 @@ function MessengerDetail({
   onCubeComplete: () => void;
   onEndingComplete: () => void;
 }) {
+  const isCurrentChallenge = mail.unlockedStage === currentStage;
+  const isCompletedChallenge =
+    mail.challengeType === "completed" || completed.has(mail.challengeType);
+
   return (
     <section className="min-h-0 overflow-y-auto bg-[#101010]">
-      <div className="border-b border-terminal-border px-6 py-7 lg:px-8">
+      <div className="border-terminal-border border-b px-6 py-7 lg:px-8">
         <div className="mb-5 flex items-center justify-between gap-4">
           <h2 className="text-[clamp(1.6rem,3.2vw,2.35rem)] font-black tracking-[-0.04em] text-white">
             {mail.title}
           </h2>
           <div className="flex shrink-0 gap-2">
-            <button className="grid h-8 w-8 place-items-center border border-terminal-border bg-terminal-tile">
+            <button className="border-terminal-border bg-terminal-tile grid h-8 w-8 place-items-center border">
               <Printer className="h-4 w-4" />
             </button>
-            <button className="grid h-8 w-8 place-items-center border border-terminal-border bg-terminal-tile">
+            <button className="border-terminal-border bg-terminal-tile grid h-8 w-8 place-items-center border">
               <Send className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        <div className="grid gap-4 font-mono text-[10px] text-terminal-text-dim sm:grid-cols-2">
-          <p className="border-l-2 border-terminal-accent pl-4">
-            FROM: <span className="ml-4 text-terminal-copy-strong">{mail.sender}</span>
+        <div className="text-terminal-text-dim grid gap-4 font-mono text-[10px] sm:grid-cols-2">
+          <p className="border-terminal-accent border-l-2 pl-4">
+            FROM: <span className="text-terminal-copy-strong ml-4">{mail.sender}</span>
           </p>
-          <p className="border-l-2 border-terminal-accent pl-4">
-            TO: <span className="ml-4 text-terminal-copy-strong">{mail.to}</span>
+          <p className="border-terminal-accent border-l-2 pl-4">
+            TO: <span className="text-terminal-copy-strong ml-4">{mail.to}</span>
           </p>
         </div>
       </div>
@@ -969,9 +1032,11 @@ function MessengerDetail({
       <div className="mx-auto max-w-[920px] px-6 py-7 lg:px-8">
         <MailBody mail={mail} />
         <SecurityAlert />
-        <div className="my-6 h-px bg-terminal-border" />
+        <div className="bg-terminal-border my-6 h-px" />
         {renderMailChallenge({
           mail,
+          isCurrentChallenge,
+          isCompletedChallenge,
           completed,
           selectedObjectIds,
           pinError,
@@ -986,7 +1051,7 @@ function MessengerDetail({
         })}
       </div>
 
-      <footer className="mt-auto grid gap-3 border-t border-terminal-border px-6 py-3 font-mono text-[9px] tracking-[0.16em] text-terminal-text-dim sm:grid-cols-3 lg:px-8">
+      <footer className="border-terminal-border text-terminal-text-dim mt-auto grid gap-3 border-t px-6 py-3 font-mono text-[9px] tracking-[0.16em] sm:grid-cols-3 lg:px-8">
         <span>ENCRYPTION: AES-256-WES</span>
         <span>SIGNAL: SECURE_CHANNEL_STABLE</span>
         <span>TERMINAL_ID: S15-ADM-001-L5</span>
@@ -997,13 +1062,19 @@ function MessengerDetail({
 
 function MailBody({ mail }: { mail: TerminalMail }) {
   return (
-    <article className="border border-[#211414] bg-[#171111] p-7 text-sm leading-7 text-terminal-copy lg:p-9">
+    <article className="text-terminal-copy border border-[#211414] bg-[#171111] p-7 text-sm leading-7 lg:p-9">
       {mail.body.map((line, index) => (
-        <p key={line} className={index === 3 ? "mt-5 font-mono text-xs leading-7" : "mt-5 first:mt-0"}>
+        <p
+          key={line}
+          className={index === 3 ? "mt-5 font-mono text-xs leading-7" : "mt-5 first:mt-0"}
+        >
           {index === 3 ? (
             <>
               {line.split(", ").map((item) => (
-                <span key={item} className="mb-2 block before:mr-3 before:text-terminal-accent before:content-['▪']">
+                <span
+                  key={item}
+                  className="before:text-terminal-accent mb-2 block before:mr-3 before:content-['▪']"
+                >
                   {item}
                 </span>
               ))}
@@ -1019,14 +1090,14 @@ function MailBody({ mail }: { mail: TerminalMail }) {
 
 function SecurityAlert() {
   return (
-    <aside className="mt-5 border-l-4 border-terminal-accent bg-[#1d1d1d] p-6">
-      <h3 className="font-mono text-sm font-black text-terminal-accent-text">
+    <aside className="border-terminal-accent mt-5 border-l-4 bg-[#1d1d1d] p-6">
+      <h3 className="text-terminal-accent-text font-mono text-sm font-black">
         SECURITY ALERT: INTERNAL SYSTEM ANOMALY
       </h3>
-      <p className="mt-3 text-xs leading-6 text-terminal-copy">
+      <p className="text-terminal-copy mt-3 text-xs leading-6">
         추가로, 최근 내부 시스템에서 일부 관련 문서 접근 로그가 비정상적으로 기록되는 사례가
-        보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서 열람 시 이상 징후가 발생할 경우
-        즉시 관리자에게 보고해 주시기 바랍니다.
+        보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서 열람 시 이상 징후가 발생할 경우 즉시
+        관리자에게 보고해 주시기 바랍니다.
       </p>
     </aside>
   );
@@ -1034,6 +1105,8 @@ function SecurityAlert() {
 
 function renderMailChallenge({
   mail,
+  isCurrentChallenge,
+  isCompletedChallenge,
   completed,
   selectedObjectIds,
   pinError,
@@ -1047,6 +1120,8 @@ function renderMailChallenge({
   onEndingComplete,
 }: {
   mail: TerminalMail;
+  isCurrentChallenge: boolean;
+  isCompletedChallenge: boolean;
   completed: Set<string>;
   selectedObjectIds: string[];
   pinError: string;
@@ -1059,22 +1134,26 @@ function renderMailChallenge({
   onCubeComplete: () => void;
   onEndingComplete: () => void;
 }) {
+  if (!isCurrentChallenge && !isCompletedChallenge) {
+    return <QueuedPanel label="NEXT_SECTION_LOCKED" />;
+  }
+
   if (mail.challengeType === "pin-select") {
     return (
-      <section className="border border-terminal-border bg-[#101010] p-6">
+      <section className="border-terminal-border border bg-[#101010] p-6">
         <div className="mb-5 flex items-center justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] font-black tracking-[0.28em] text-terminal-text-muted">
+            <p className="text-terminal-text-muted font-mono text-[11px] font-black tracking-[0.28em]">
               SECURITY_CHALLENGE
             </p>
-            <p className="mt-1 text-xs text-terminal-text-dim">
-              안전한 수송을 위한 보안 승인 아이콘 4개를 선택하십시오.
+            <p className="text-terminal-text-dim mt-1 text-xs">
+              안전한 수송을 위한 보안 승인 코드를 선택하십시오.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {terminalObjects.map((entry) => {
+          {getChallengeObjects().map((entry) => {
             const selected = selectedObjectIds.includes(entry.id);
             const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
 
@@ -1089,31 +1168,32 @@ function renderMailChallenge({
                   "grid aspect-[1.45] place-items-center border transition-colors",
                   selected
                     ? "border-terminal-accent bg-terminal-accent-soft text-terminal-accent-text"
-                    : "border-[#202020] bg-[#2a2a2a] text-terminal-text-dim hover:border-terminal-accent-muted hover:text-white",
-                  disabled && "cursor-not-allowed opacity-35 hover:border-[#202020] hover:text-terminal-text-dim"
+                    : "text-terminal-text-dim hover:border-terminal-accent-muted border-[#202020] bg-[#2a2a2a] hover:text-white",
+                  disabled &&
+                    "hover:text-terminal-text-dim cursor-not-allowed opacity-35 hover:border-[#202020]"
                 )}
                 aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
                 aria-pressed={selected}
               >
-                <ObjectSymbolIcon symbol={entry.symbol} className="h-5 w-5" />
+                <ChallengeObjectIcon symbol={entry.symbol} className="h-5 w-5" />
               </button>
             );
           })}
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-4">
-          <p className="font-mono text-[10px] tracking-[0.16em] text-terminal-text-dim">
+          <p className="text-terminal-text-dim font-mono text-[10px] tracking-[0.16em]">
             SELECTED: {selectedObjectIds.length}/4
           </p>
           <button
             type="button"
             onClick={onSubmitPin}
-            className="bg-terminal-accent-strong px-5 py-3 font-mono text-[10px] font-black tracking-[0.2em] text-white transition-colors hover:bg-terminal-accent-active"
+            className="bg-terminal-accent-strong hover:bg-terminal-accent-active px-5 py-3 font-mono text-[10px] font-black tracking-[0.2em] text-white transition-colors"
           >
             VERIFY
           </button>
         </div>
-        {pinError && <p className="mt-4 font-mono text-xs text-terminal-accent-text">{pinError}</p>}
+        {pinError && <p className="text-terminal-accent-text mt-4 font-mono text-xs">{pinError}</p>}
         {completed.has(challengeIds.pin) && <CompletedPanel label="PIN_SEQUENCE_CONFIRMED" />}
       </section>
     );
@@ -1131,15 +1211,15 @@ function renderMailChallenge({
     return completed.has(challengeIds.corrupted) ? (
       <CompletedPanel label="UNKNOWN_LANGUAGE_ACCEPTED" />
     ) : (
-      <section className="border border-terminal-border bg-[#101010] p-6">
-        <p className="font-mono text-xs font-black tracking-[0.28em] text-terminal-accent-muted">
+      <section className="border-terminal-border border bg-[#101010] p-6">
+        <p className="text-terminal-accent-muted font-mono text-xs font-black tracking-[0.28em]">
           CORRUPTED_COMMAND
         </p>
         <div className="mt-5 grid gap-2">
           {corruptedFragments.map((fragment) => (
             <div
               key={fragment.raw}
-              className="grid grid-cols-[1fr_auto_auto] items-center gap-4 border border-terminal-border bg-black/30 px-4 py-3 font-mono text-sm"
+              className="border-terminal-border grid grid-cols-[1fr_auto_auto] items-center gap-4 border bg-black/30 px-4 py-3 font-mono text-sm"
             >
               <span className="text-terminal-accent-text">{fragment.raw}</span>
               <span className="text-terminal-text-dim">{fragment.restored}</span>
@@ -1151,7 +1231,7 @@ function renderMailChallenge({
           <input
             value={command}
             onChange={(event) => onCommandChange(event.target.value.toUpperCase())}
-            className="min-h-12 flex-1 border border-terminal-border bg-black px-4 font-mono text-sm tracking-[0.32em] text-terminal-text outline-none focus:border-terminal-accent"
+            className="border-terminal-border text-terminal-text focus:border-terminal-accent min-h-12 flex-1 border bg-black px-4 font-mono text-sm tracking-[0.32em] outline-none"
             placeholder="COMMAND"
             spellCheck={false}
           />
@@ -1160,7 +1240,7 @@ function renderMailChallenge({
           </button>
         </form>
         {commandError && (
-          <p className="mt-4 font-mono text-xs text-terminal-accent-text">{commandError}</p>
+          <p className="text-terminal-accent-text mt-4 font-mono text-xs">{commandError}</p>
         )}
       </section>
     );
@@ -1179,28 +1259,45 @@ function renderMailChallenge({
 
 function ArchiveList({
   selectedArchiveId,
+  selectedObjectIds,
+  isPinSelectionEnabled,
   onSelect,
+  onToggleObject,
 }: {
   selectedArchiveId: string;
+  selectedObjectIds: string[];
+  isPinSelectionEnabled: boolean;
   onSelect: (entry: TerminalObjectEntry) => void;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
 }) {
   return (
-    <section className="min-h-0 border-b border-terminal-border bg-[#111] lg:border-b-0 lg:border-r">
+    <section className="border-terminal-border min-h-0 border-b bg-[#111] lg:border-r lg:border-b-0">
+      {isPinSelectionEnabled && (
+        <div className="border-terminal-border text-terminal-text-dim border-b px-3 py-3 font-mono text-[9px] font-black tracking-[0.16em]">
+          SELECTED: {selectedObjectIds.length}/4
+        </div>
+      )}
       <div className="py-2">
         {terminalObjects.map((entry) => {
           const active = selectedArchiveId === entry.id;
+          const selected = selectedObjectIds.includes(entry.id);
 
           return (
             <button
               key={entry.id}
               type="button"
-              onClick={() => onSelect(entry)}
+              onClick={() => {
+                onSelect(entry);
+                if (isPinSelectionEnabled) onToggleObject(entry);
+              }}
               className={cx(
-                "flex w-full items-center gap-2 px-3 py-3 text-left font-mono text-[11px] font-black transition",
+                "flex w-full items-center gap-2 border-l-2 border-l-transparent px-3 py-3 text-left font-mono text-[11px] font-black transition",
                 active
-                  ? "bg-terminal-accent-strong text-white"
-                  : "text-terminal-text-muted hover:bg-terminal-tile hover:text-white"
+                  ? "border-l-terminal-accent bg-terminal-accent-strong text-white"
+                  : "text-terminal-text-muted hover:bg-terminal-tile hover:text-white",
+                selected && "border-l-terminal-accent text-terminal-accent-text"
               )}
+              aria-pressed={selected}
             >
               <ObjectSymbolIcon symbol={entry.symbol} className="h-4 w-4 shrink-0" />
               <span>{entry.label}</span>
@@ -1212,14 +1309,24 @@ function ArchiveList({
   );
 }
 
-function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
+function ArchiveDetail({
+  entry,
+  selected,
+  isPinSelectionEnabled,
+  onToggleObject,
+}: {
+  entry: TerminalObjectEntry;
+  selected: boolean;
+  isPinSelectionEnabled: boolean;
+  onToggleObject: (entry: TerminalObjectEntry) => void;
+}) {
   return (
     <section className="min-h-0 overflow-y-auto bg-[#0f0f0f] px-6 py-7 lg:px-8">
-      <div className="border border-terminal-border border-l-4 border-l-terminal-accent bg-[#151515] px-8 py-7">
+      <div className="border-terminal-border border-l-terminal-accent border border-l-4 bg-[#151515] px-8 py-7">
         <h2 className="font-mono text-[clamp(2rem,4vw,3rem)] font-black tracking-[0.08em] text-white">
           {entry.label}
         </h2>
-        <p className="mt-2 font-mono text-lg font-black text-terminal-accent">
+        <p className="text-terminal-accent mt-2 font-mono text-lg font-black">
           SAFETY LEVEL: {entry.safetyLevel}
         </p>
       </div>
@@ -1236,7 +1343,10 @@ function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
 
           <ArchiveCard title="SPECIAL CONTAINMENT PROCEDURES">
             {entry.containment.map((line) => (
-              <p key={line} className="mt-3 before:mr-4 before:text-terminal-accent before:content-['▪']">
+              <p
+                key={line}
+                className="before:text-terminal-accent mt-3 before:mr-4 before:content-['▪']"
+              >
                 {line}
               </p>
             ))}
@@ -1248,17 +1358,42 @@ function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
         </div>
 
         <aside className="bg-[#1b1b1b] p-5">
-          <div className="grid aspect-square place-items-center bg-[#222] text-terminal-text-dim">
-            <ObjectSymbolIcon symbol={entry.symbol} className="h-28 w-28 stroke-1" />
-          </div>
-          <p className="mt-3 font-mono text-[9px] font-black text-white">{entry.label}.JPG</p>
+          <button
+            type="button"
+            onClick={() => isPinSelectionEnabled && onToggleObject(entry)}
+            disabled={!isPinSelectionEnabled}
+            className={cx(
+              "text-terminal-text-dim relative block aspect-square w-full overflow-hidden bg-[#222] transition",
+              isPinSelectionEnabled && "hover:bg-terminal-tile cursor-pointer",
+              selected && "ring-terminal-accent ring-2"
+            )}
+            aria-label={`${selected ? "Deselect" : "Select"} ${entry.label} ${entry.symbol}`}
+            aria-pressed={selected}
+          >
+            <Image
+              src={getWesenImageSrc(entry)}
+              alt={`${entry.label} visual archive`}
+              fill
+              sizes="240px"
+              className="object-cover grayscale transition duration-300 hover:grayscale-0"
+            />
+            <span className="pointer-events-none absolute inset-0 border border-white/5" />
+          </button>
+          {isPinSelectionEnabled && (
+            <p className="text-terminal-accent mt-3 font-mono text-[9px] font-black tracking-[0.12em]">
+              {selected ? "SELECTED_FOR_TRANSPORT" : "CLICK_ICON_TO_SELECT"}
+            </p>
+          )}
+          <p className="mt-3 font-mono text-[9px] font-black text-white">
+            {entry.id.toLowerCase().replace("-", "_")}.png
+          </p>
           <div className="mt-8 font-mono text-[9px] tracking-[0.12em]">
-            <p className="mb-5 text-center font-black text-terminal-accent">SECURITY_READOUT</p>
+            <p className="text-terminal-accent mb-5 text-center font-black">SECURITY_READOUT</p>
             <MetaRow label="LAST KNOWN LOCATION" value="SEOUL, KR" />
             <MetaRow label="BEHAVIOR_PROFILE" value={entry.symbol} />
             <MetaRow label="COGNITIVE_THREAT" value="NONE_DETECTED" />
             <MetaRow label="ACCESS_ANOMALY" value="CONFIRMED" danger />
-            <div className="mt-6 h-1 bg-terminal-accent" />
+            <div className="bg-terminal-accent mt-6 h-1" />
           </div>
         </aside>
       </div>
@@ -1268,8 +1403,8 @@ function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
 
 function ArchiveCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <article className="bg-[#1d1d1d] p-7 text-sm leading-7 text-terminal-copy">
-      <h3 className="border-b border-[#604844] pb-3 text-xl font-black text-terminal-accent">
+    <article className="text-terminal-copy bg-[#1d1d1d] p-7 text-sm leading-7">
+      <h3 className="text-terminal-accent border-b border-[#604844] pb-3 text-xl font-black">
         {title}
       </h3>
       <div className="pt-4">{children}</div>
@@ -1279,7 +1414,7 @@ function ArchiveCard({ title, children }: { title: string; children: React.React
 
 function MetaRow({ label, value, danger }: { label: string; value: string; danger?: boolean }) {
   return (
-    <p className="mb-4 flex items-center justify-between gap-3 text-terminal-text-dim">
+    <p className="text-terminal-text-dim mb-4 flex items-center justify-between gap-3">
       <span>{label}</span>
       <span className={danger ? "text-terminal-accent" : "text-white"}>{value}</span>
     </p>
@@ -1288,10 +1423,24 @@ function MetaRow({ label, value, danger }: { label: string; value: string; dange
 
 function CompletedPanel({ label }: { label: string }) {
   return (
-    <section className="mt-5 border border-terminal-border bg-terminal-panel-deep p-5">
-      <p className="flex items-center gap-3 font-mono text-xs font-black tracking-[0.2em] text-terminal-accent-muted">
+    <section className="border-terminal-border bg-terminal-panel-deep mt-5 border p-5">
+      <p className="text-terminal-accent-muted flex items-center gap-3 font-mono text-xs font-black tracking-[0.2em]">
         <Check className="h-4 w-4" />
         {label}
+      </p>
+    </section>
+  );
+}
+
+function QueuedPanel({ label }: { label: string }) {
+  return (
+    <section className="border-terminal-border bg-terminal-panel-deep mt-5 border p-5 opacity-70">
+      <p className="text-terminal-text-dim flex items-center gap-3 font-mono text-xs font-black tracking-[0.2em]">
+        <Lock className="h-4 w-4" />
+        {label}
+      </p>
+      <p className="text-terminal-text-muted mt-3 text-xs leading-6">
+        이전 보안 절차가 완료되면 이 섹션의 상호작용이 활성화됩니다.
       </p>
     </section>
   );

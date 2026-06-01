@@ -1,102 +1,96 @@
 import Link from "next/link";
 import Image from "next/image";
 import { articles } from "@/lib/news-data";
-import DepartmentSidebar from "@/components/layout/DepartmentSidebar";
 
 export default function Page() {
-  const featured = articles.find((a) => a.featured)!;
-  const rest = articles.filter((a) => !a.featured);
+  const featured = articles.find((a) => a.featured) ?? articles[0];
+  const rest = articles.filter((a) => a.slug !== featured.slug);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-14">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-12">
-        {/* Left: Articles */}
-        <div>
-          <p className="mb-4 text-[10px] tracking-[0.3em] text-gray-400 uppercase">
-            Corporate Updates
-          </p>
-          <h1 className="mb-10 text-3xl font-bold text-black">Company News & Announcements</h1>
+    <div className="bg-white">
+      <section className="mx-auto max-w-5xl px-4 pt-14 pb-24 sm:px-6 md:pt-20">
+        <p className="mb-5 text-[10px] tracking-[0.35em] text-gray-400 uppercase">
+          Corporate Updates
+        </p>
 
-          {/* Featured article */}
-          <article className="mb-12">
-            <Link href={`/news/${featured.slug}`} className="group block">
-              <div className="relative mb-4 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
-                <Image
-                  src={featured.imageSrc}
-                  alt={featured.title}
-                  fill
-                  sizes="(min-width: 1024px) 640px, 100vw"
-                  className="object-cover grayscale"
-                  priority
-                />
-              </div>
-            </Link>
-            <div className="mb-2 flex items-center gap-3">
-              {featured.category && (
-                <span className="bg-black px-2 py-0.5 text-[10px] tracking-widest text-white uppercase">
-                  {featured.category}
-                </span>
-              )}
-              <span className="text-[11px] tracking-wider text-gray-400">
-                {featured.dateDisplay}
-              </span>
+        <h1 className="mb-16 text-[clamp(2.4rem,4vw,3.6rem)] leading-tight font-medium tracking-tight text-black">
+          Company News & Announcements
+        </h1>
+
+        {/* Featured Article */}
+        <article className="mb-20">
+          <Link href={`/news/${featured.slug}`} className="group block">
+            <div className="relative mb-6 aspect-[16/7] w-full overflow-hidden bg-gray-300">
+              <Image
+                src={featured.imageSrc}
+                alt={featured.title}
+                fill
+                sizes="(min-width: 1024px) 1024px, 100vw"
+                className="object-cover grayscale transition-opacity group-hover:opacity-90"
+                priority
+              />
             </div>
-            <Link href={`/news/${featured.slug}`} className="group">
-              <h2 className="mb-2 text-xl font-bold text-black underline-offset-2 group-hover:underline">
-                {featured.title}
-              </h2>
-            </Link>
-            <p className="mb-3 text-sm leading-relaxed text-gray-500">{featured.excerpt}</p>
-            <Link
-              href={`/news/${featured.slug}`}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold tracking-widest text-black uppercase transition-all hover:gap-2"
-            >
-              Read Full Report →
-            </Link>
-          </article>
+          </Link>
 
-          {/* Smaller articles */}
-          <div className="grid gap-6 sm:grid-cols-2">
-            {rest.map((article) => (
-              <article key={article.slug}>
-                <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="relative mb-3 aspect-4/3 w-full overflow-hidden bg-gray-200 transition-opacity group-hover:opacity-90">
-                    <Image
-                      src={article.imageSrc}
-                      alt={article.title}
-                      fill
-                      sizes="(min-width: 640px) 50vw, 100vw"
-                      className="object-cover grayscale"
-                    />
-                  </div>
-                  <p className="mb-1 text-[11px] tracking-wider text-gray-400">
-                    {article.dateDisplay}
-                  </p>
-                  <h3 className="text-base leading-snug font-bold text-black underline-offset-2 group-hover:underline">
-                    {article.title}
-                  </h3>
-                </Link>
-              </article>
-            ))}
+          <div className="mb-4 flex items-center gap-4">
+            {featured.category && (
+              <span className="bg-black px-3 py-1 text-[10px] font-bold tracking-[0.18em] text-white uppercase">
+                {featured.category}
+              </span>
+            )}
+
+            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+              {featured.dateDisplay}
+            </span>
           </div>
-        </div>
 
-        {/* Right: Sidebar */}
-        <div className="space-y-6">
-          <DepartmentSidebar />
+          <Link href={`/news/${featured.slug}`} className="group">
+            <h2 className="mb-5 text-2xl font-medium text-black underline-offset-2 group-hover:underline">
+              {featured.title}
+            </h2>
+          </Link>
 
-          {/* Internal Support */}
-          <div className="border border-gray-200 p-5">
-            <p className="mb-1 text-[10px] tracking-widest text-gray-400 uppercase">
-              Internal Support
+          {featured.excerpt && (
+            <p className="mb-8 max-w-3xl text-sm leading-7 text-gray-500">
+              {featured.excerpt}
             </p>
-            <p className="mb-4 text-xs text-gray-500">개발팀에게 커피 한 잔 사 주기.</p>
-            <button className="w-full bg-black py-2.5 text-[11px] tracking-widest text-white uppercase transition-colors hover:bg-gray-800">
-              Get Support
-            </button>
-          </div>
+          )}
+
+          <Link
+            href={`/news/${featured.slug}`}
+            className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-black uppercase transition-all hover:gap-3"
+          >
+            Read Full Report →
+          </Link>
+        </article>
+
+        {/* Other Articles */}
+        <div className="grid gap-x-14 gap-y-20 border-t border-gray-200 pt-14 sm:grid-cols-2">
+          {rest.map((article) => (
+            <article key={article.slug}>
+              <Link href={`/news/${article.slug}`} className="group block">
+                <div className="relative mb-5 aspect-[16/9] w-full overflow-hidden bg-gray-300">
+                  <Image
+                    src={article.imageSrc}
+                    alt={article.title}
+                    fill
+                    sizes="(min-width: 640px) 480px, 100vw"
+                    className="object-cover grayscale transition-opacity group-hover:opacity-90"
+                  />
+                </div>
+
+                <p className="mb-5 text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                  {article.dateDisplay}
+                </p>
+
+                <h3 className="text-xl font-medium text-black underline-offset-2 group-hover:underline">
+                  {article.title}
+                </h3>
+              </Link>
+            </article>
+          ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

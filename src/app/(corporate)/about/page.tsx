@@ -56,6 +56,9 @@ export default function Page() {
               함께 할 것입니다.
             </p>
             <p>우리는 과거를 망각하지 않으며, 그 위에 미래를 구축해 나갑니다.</p>
+            <p className="font-semibold text-black">
+              진실은 언제나 관찰의 반대편에 있습니다.
+            </p>
           </div>
           <p className="mt-8 flex items-center gap-3 text-xs tracking-[0.25em] text-gray-400 uppercase">
             <span className="inline-block h-px w-10 bg-gray-400" />
