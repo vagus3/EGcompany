@@ -33,10 +33,11 @@ export async function POST(request: Request) {
   const fallbackHintPromptCount = normalizeHintPromptCount(
     cookieStore.get(HINT_PROMPT_COUNT_COOKIE_NAME)?.value
   );
-  const hasRequestHintPromptCount =
-    body && typeof body === "object" && "hintPromptCount" in body;
+  const hasRequestHintPromptCount = body && typeof body === "object" && "hintPromptCount" in body;
   const hintPromptCount = normalizeHintPromptCount(
-    parsed.success && hasRequestHintPromptCount ? parsed.data.hintPromptCount : fallbackHintPromptCount
+    parsed.success && hasRequestHintPromptCount
+      ? parsed.data.hintPromptCount
+      : fallbackHintPromptCount
   );
   const email = user.notificationEmail ?? user.email;
   const payload: EmployeeCardPayload = {
@@ -47,14 +48,25 @@ export async function POST(request: Request) {
     rank: getEmployeeCardRank(hintPromptCount),
   };
 
-  const result = await sendEmployeeCardEmail(payload);
+  try {
+    const result = await sendEmployeeCardEmail(payload);
 
-  return NextResponse.json({
-    success: true,
-    deliveryMode: result.mode,
-    email,
-    employeeCode: payload.employeeCode,
-    hintPromptCount,
-    rank: payload.rank,
-  });
+    return NextResponse.json({
+      success: true,
+      deliveryId: result.id,
+      deliveryMode: result.mode,
+      email,
+      employeeCode: payload.employeeCode,
+      hintPromptCount,
+      rank: payload.rank,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "사원증 이메일 발송에 실패했습니다.",
+      },
+      { status: 502 }
+    );
+  }
 }
