@@ -95,17 +95,6 @@ type ContainmentLog = {
   critical?: boolean;
 };
 
-type ContainmentLog = {
-  badge: string;
-  badgeClassName: string;
-  timestamp: string;
-  title: string;
-  summary: string;
-  author: string;
-  locked: boolean;
-  critical?: boolean;
-};
-
 const containmentLogs: ContainmentLog[] = [
   {
     badge: "DECLASSIFIED",
@@ -137,15 +126,6 @@ const containmentLogs: ContainmentLog[] = [
   },
 ];
 
-const criticalPersonnelLog: ContainmentLog = {
-  badge: "CRITICAL",
-  badgeClassName: "border-terminal-accent text-terminal-accent",
-  timestamp: "1988-04-15T00:00:01Z",
-  title: "[LOG-????] ???????????",
-  summary: "“추적” 행동이 시작되었습니다.",
-  author: "AUTO-SYS ALARM",
-  locked: false,
-  critical: true,
 const criticalPersonnelLog: ContainmentLog = {
   badge: "CRITICAL",
   badgeClassName: "border-terminal-accent text-terminal-accent",
@@ -282,11 +262,11 @@ export default function TerminalClient() {
   const [commandError, setCommandError] = useState("");
   const [overlay, setOverlay] = useState<OverlayState>(null);
   const [cubeModalOpen, setCubeModalOpen] = useState(false);
-  const [cubeModalOpen, setCubeModalOpen] = useState(false);
   const [endFlow, setEndFlow] = useState<TerminalEndFlow>("idle");
   const [employeeCardDelivery, setEmployeeCardDelivery] = useState<EmployeeCardDelivery>({
     status: "idle",
   });
+  const progressHydratedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
   const cubeModalTimerRef = useRef<number | null>(null);
   const deliveryRequestedRef = useRef(false);
@@ -331,44 +311,7 @@ export default function TerminalClient() {
       timers.forEach((timer) => window.clearTimeout(timer));
       if (cubeModalTimerRef.current) window.clearTimeout(cubeModalTimerRef.current);
     };
-    return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
-      if (cubeModalTimerRef.current) window.clearTimeout(cubeModalTimerRef.current);
-    };
   }, []);
-
-  useEffect(() => {
-    if (cubeModalTimerRef.current) {
-      window.clearTimeout(cubeModalTimerRef.current);
-      cubeModalTimerRef.current = null;
-    }
-
-    const shouldArmCubeModal =
-      activeSection === "messenger" &&
-      selectedMail.challengeType === "cube-hold" &&
-      progress.currentStage === "cube-hold" &&
-      !completed.has(challengeIds.cube);
-
-    if (!shouldArmCubeModal) return;
-
-    cubeModalTimerRef.current = window.setTimeout(() => {
-      setCubeModalOpen(true);
-      cubeModalTimerRef.current = null;
-    }, 10000);
-
-    return () => {
-      if (cubeModalTimerRef.current) {
-        window.clearTimeout(cubeModalTimerRef.current);
-        cubeModalTimerRef.current = null;
-      }
-    };
-  }, [
-    activeSection,
-    completed,
-    progress.currentStage,
-    selectedMail.challengeType,
-    selectedMail.id,
-  ]);
 
   useEffect(() => {
     if (cubeModalTimerRef.current) {
@@ -484,7 +427,6 @@ export default function TerminalClient() {
     setCommandError("");
     setOverlay(null);
     setCubeModalOpen(false);
-    setCubeModalOpen(false);
     setEndFlow("idle");
     setEmployeeCardDelivery({ status: "idle" });
     deliveryRequestedRef.current = false;
@@ -534,23 +476,6 @@ export default function TerminalClient() {
     await sendEmployeeCard();
   }
 
-  function completeEndingFlow() {
-    const nextMail = getMailForStage("completed");
-    setActiveSection("messenger");
-    setProgress((current) => ({
-      currentStage: "completed",
-      unlockedMailIds: mergeUnlocked(current, nextMail.id),
-      selectedMailId: nextMail.id,
-      completedChallengeIds: current.completedChallengeIds.includes(challengeIds.pretext)
-        ? current.completedChallengeIds
-        : [...current.completedChallengeIds, challengeIds.pretext],
-    }));
-    setEndFlow("mock-video");
-    queueTimer(() => {
-      void finishEndingVideo();
-    }, endingFlowMock.durationMs);
-  }
-
   function completeCubeChallenge() {
     setCubeModalOpen(false);
     unlockStage("corrupted-command", challengeIds.cube);
@@ -562,12 +487,6 @@ export default function TerminalClient() {
     completed.has(challengeIds.pretext)
       ? "survey-qr"
       : endFlow;
-  const shouldShowCubeModal =
-    cubeModalOpen &&
-    activeSection === "messenger" &&
-    selectedMail.challengeType === "cube-hold" &&
-    progress.currentStage === "cube-hold" &&
-    !completed.has(challengeIds.cube);
   const shouldShowCubeModal =
     cubeModalOpen &&
     activeSection === "messenger" &&
@@ -649,9 +568,7 @@ export default function TerminalClient() {
           </>
         ) : activeSection === "containment" ? (
           <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
-          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : activeSection === "person" ? (
-          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
           <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : (
           <>
@@ -675,7 +592,6 @@ export default function TerminalClient() {
               onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}
               onSubmitCommand={submitCommand}
-              onEndingComplete={completeEndingFlow}
             />
           </>
         )}
@@ -719,35 +635,7 @@ export default function TerminalClient() {
       )}
 
       {shouldShowCubeModal && <CubeChallengeModal onComplete={completeCubeChallenge} />}
-
-      {shouldShowCubeModal && <CubeChallengeModal onComplete={completeCubeChallenge} />}
     </main>
-  );
-}
-
-function CubeChallengeModal({ onComplete }: { onComplete: () => void }) {
-  return (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/82 px-4 py-8 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Cube protocol challenge"
-    >
-      <div className="terminal-noise absolute inset-0 opacity-25" />
-      <section className="border-terminal-accent relative w-full max-w-5xl border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/_0.32)]">
-        <div className="border-terminal-accent/50 border-b bg-[#190303] px-5 py-4 font-mono">
-          <p className="text-terminal-accent-text text-xs font-black tracking-[0.34em]">
-            SYSTEM ALERT: ACTIVE
-          </p>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">
-            CUBE_PROTOCOL INTERRUPT
-          </h2>
-        </div>
-        <div className="p-4 sm:p-6">
-          <CubeChallenge onComplete={onComplete} />
-        </div>
-      </section>
-    </div>
   );
 }
 
@@ -845,11 +733,6 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
     ? [...containmentLogs, criticalPersonnelLog]
     : containmentLogs;
 
-function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) {
-  const visibleLogs = showCriticalLog
-    ? [...containmentLogs, criticalPersonnelLog]
-    : containmentLogs;
-
   return (
     <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-12 sm:px-10 lg:px-18 lg:py-16">
       <div className="mx-auto max-w-6xl">
@@ -860,15 +743,8 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
 
         <div className="mt-12 space-y-5">
           {visibleLogs.map((log) => (
-          {visibleLogs.map((log) => (
             <article
               key={log.title}
-              className={cx(
-                "grid gap-5 border border-l-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6",
-                log.critical
-                  ? "border-terminal-accent bg-[#260406]"
-                  : "border-terminal-border bg-[#111]"
-              )}
               className={cx(
                 "grid gap-5 border border-l-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6",
                 log.critical
@@ -900,12 +776,6 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
                       <Redaction width="w-16" /> 및 <Redaction width="w-20" /> 요망.
                     </>
                   ) : log.locked ? (
-                  {log.critical ? (
-                    <>
-                      {log.summary} <Redaction width="w-44" /> <Redaction width="w-24" />{" "}
-                      <Redaction width="w-16" /> 및 <Redaction width="w-20" /> 요망.
-                    </>
-                  ) : log.locked ? (
                     <>
                       보안팀 타 부서 지원 허가. <Redaction width="w-24" /> 연구실로 이동.{" "}
                       <Redaction width="w-44" /> <Redaction width="w-12" />{" "}
@@ -930,21 +800,8 @@ function ContainmentLogsPage({ showCriticalLog }: { showCriticalLog: boolean }) 
                       ? "border-terminal-accent text-terminal-accent-text"
                       : "border-terminal-border text-terminal-text-dim"
                   )}
-                  className={cx(
-                    "grid h-11 w-11 place-items-center border bg-[#151515]",
-                    log.critical
-                      ? "border-terminal-accent text-terminal-accent-text"
-                      : "border-terminal-border text-terminal-text-dim"
-                  )}
                   aria-label={`${log.locked ? "Locked" : "View"} ${log.title}`}
                 >
-                  {log.critical ? (
-                    <TriangleAlert className="h-5 w-5" />
-                  ) : log.locked ? (
-                    <Lock className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
                   {log.critical ? (
                     <TriangleAlert className="h-5 w-5" />
                   ) : log.locked ? (
@@ -966,19 +823,15 @@ function Redaction({ width }: { width: string }) {
   return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
 }
 
-function MockEndingVideo({ durationMs, onEnded }: { durationMs: number; onEnded: () => void }) {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const progress = Math.min(100, (elapsedMs / durationMs) * 100);
-
-  useEffect(() => {
-    const startedAt = window.performance.now();
-    const interval = window.setInterval(() => {
-      setElapsedMs(window.performance.now() - startedAt);
-    }, 120);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
+function FullscreenEndingVideo({
+  posterSrc,
+  videoSrc,
+  onEnded,
+}: {
+  posterSrc: string;
+  videoSrc: string;
+  onEnded: () => void;
+}) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
       <video
@@ -1174,11 +1027,7 @@ function MessengerList({
           const completedChallenge =
             mail.challengeType === "none" ||
             progress.completedChallengeIds.includes(mail.challengeType);
-          const completedChallenge =
-            mail.challengeType === "none" ||
-            progress.completedChallengeIds.includes(mail.challengeType);
           const active = selectedMail.id === mail.id;
-          const isCorruptedCommandMail = mail.challengeType === "corrupted-command";
           const isCorruptedCommandMail = mail.challengeType === "corrupted-command";
 
           return (
@@ -1208,9 +1057,6 @@ function MessengerList({
               <h3 className="mb-2 text-sm font-black">
                 {isCorruptedCommandMail ? <SquareTitle count={8} compact /> : mail.title}
               </h3>
-              <h3 className="mb-2 text-sm font-black">
-                {isCorruptedCommandMail ? <SquareTitle count={8} compact /> : mail.title}
-              </h3>
               <p className="text-terminal-text-muted line-clamp-2 text-xs leading-5">
                 {mail.preview}
               </p>
@@ -1219,22 +1065,6 @@ function MessengerList({
         })}
       </div>
     </section>
-  );
-}
-
-function SquareTitle({ count, compact = false }: { count: number; compact?: boolean }) {
-  return (
-    <span
-      className={cx("inline-flex items-center", compact ? "gap-1.5" : "gap-3")}
-      aria-label="redacted title"
-    >
-      {Array.from({ length: count }).map((_, index) => (
-        <span
-          key={index}
-          className={cx("block bg-[#cfd2d7]", compact ? "h-3.5 w-3.5" : "h-8 w-8 sm:h-10 sm:w-10")}
-        />
-      ))}
-    </span>
   );
 }
 
@@ -1266,7 +1096,6 @@ function MessengerDetail({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
-  onEndingComplete,
 }: {
   mail: TerminalMail;
   currentStage: TerminalStage;
@@ -1279,15 +1108,9 @@ function MessengerDetail({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
-  onEndingComplete: () => void;
 }) {
   const isCurrentChallenge = mail.unlockedStage === currentStage;
   const isCompletedChallenge =
-    mail.challengeType === "none" ||
-    mail.challengeType === "completed" ||
-    completed.has(mail.challengeType);
-  const isUrgentCubeMail = mail.challengeType === "cube-hold";
-  const isCorruptedCommandMail = mail.challengeType === "corrupted-command";
     mail.challengeType === "none" ||
     mail.challengeType === "completed" ||
     completed.has(mail.challengeType);
@@ -1300,18 +1123,7 @@ function MessengerDetail({
         <div className="mb-5 flex items-center justify-between gap-4">
           <h2 className="text-[clamp(1.6rem,3.2vw,2.35rem)] font-black tracking-[-0.04em] text-white">
             {isCorruptedCommandMail ? <SquareTitle count={8} /> : mail.title}
-            {isCorruptedCommandMail ? <SquareTitle count={8} /> : mail.title}
           </h2>
-          {!isCorruptedCommandMail && (
-            <div className="flex shrink-0 gap-2">
-              <button className="border-terminal-border bg-terminal-tile grid h-8 w-8 place-items-center border">
-                <Printer className="h-4 w-4" />
-              </button>
-              <button className="border-terminal-border bg-terminal-tile grid h-8 w-8 place-items-center border">
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
-          )}
           {!isCorruptedCommandMail && (
             <div className="flex shrink-0 gap-2">
               <button className="border-terminal-border bg-terminal-tile grid h-8 w-8 place-items-center border">
@@ -1326,12 +1138,6 @@ function MessengerDetail({
 
         <div className="text-terminal-text-dim grid gap-4 font-mono text-[10px] sm:grid-cols-2">
           <p className="border-terminal-accent border-l-2 pl-4">
-            FROM:{" "}
-            {isCorruptedCommandMail ? (
-              <Redaction width="w-36" />
-            ) : (
-              <span className="text-terminal-copy-strong ml-4">{mail.sender}</span>
-            )}
             FROM:{" "}
             {isCorruptedCommandMail ? (
               <Redaction width="w-36" />
@@ -1355,15 +1161,6 @@ function MessengerDetail({
             <div className="bg-terminal-border my-6 h-px" />
           </>
         ) : null}
-        {isUrgentCubeMail ? (
-          <UrgentAlertBody />
-        ) : !isCorruptedCommandMail ? (
-          <>
-            <MailBody mail={mail} />
-            <SecurityAlert />
-            <div className="bg-terminal-border my-6 h-px" />
-          </>
-        ) : null}
         {renderMailChallenge({
           mail,
           isCurrentChallenge,
@@ -1377,7 +1174,6 @@ function MessengerDetail({
           onSubmitPin,
           onCommandChange,
           onSubmitCommand,
-          onEndingComplete,
         })}
       </div>
 
@@ -1387,73 +1183,6 @@ function MessengerDetail({
         <span>TERMINAL_ID: S15-ADM-001-L5</span>
       </footer>
     </section>
-  );
-}
-
-function UrgentAlertBody() {
-  return (
-    <article className="text-terminal-copy bg-[#202020] px-6 py-8 shadow-[0_22px_80px_rgb(0_0_0_/_0.28)] lg:px-10">
-      <h3 className="text-terminal-accent-muted text-[clamp(1.2rem,2.4vw,1.65rem)] font-medium">
-        보안팀 열람 요망_기밀 사항
-      </h3>
-
-      <div className="mx-auto mt-8 w-full max-w-[250px]">
-        <div className="relative aspect-square overflow-hidden bg-[#333]">
-          <Image
-            src="/eg_png/egcompany_picture/P/P03.png"
-            alt="Last known location map"
-            fill
-            sizes="250px"
-            className="object-cover opacity-55 grayscale"
-            priority
-          />
-          <div className="bg-terminal-accent-strong absolute top-6 left-7 px-4 py-3 font-mono text-[11px] font-black text-white">
-            LAST KNOWN LOC
-          </div>
-          <div className="border-terminal-accent absolute right-6 bottom-6 left-6 border-l-2 bg-black/70 px-4 py-4 font-mono text-[10px] text-white">
-            SECTOR 7G: 37.7749° N, 122.4194° W
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 space-y-7 text-[clamp(1rem,1.8vw,1.35rem)] leading-[1.85] text-[#d7d0cc]">
-        <p>
-          운송 팀장 제이크입니다. 캐나다 지부에서 샌프란시스코 격리 시설로의 개체 운송 도중 심각한
-          격리 실패 사고가 발생했습니다.
-        </p>
-        <p>
-          운송 도중 개체가 차량을 탈출했으며, 현재 이동 경로상의 통신 지연 및 시스템 로그 누락
-          현상이 관찰되고 있습니다. GPS 위치 데이터가 간헐적으로 소실되고 있어 정밀 추적이 불가능한
-          상태입니다.
-        </p>
-      </div>
-
-      <aside className="bg-terminal-accent-strong text-terminal-accent-text mt-8 flex items-center gap-4 px-6 py-5">
-        <TriangleAlert className="h-6 w-6 shrink-0" />
-        <p className="text-lg font-black tracking-[-0.02em]">SECURITY ALERT</p>
-      </aside>
-
-      <p className="mt-8 text-[clamp(1rem,1.8vw,1.35rem)] leading-[1.85] text-[#d7d0cc]">
-        해당 개체의 문서를{" "}
-        <span className="text-terminal-accent-text">연구팀의 도움 없이 열람</span> 하셨나요? 이미
-        WESEN-0101 이 관리자님을 추적하기 시작한 것 같습니다.
-      </p>
-
-      <div className="border-terminal-accent/30 mt-10 border-t pt-8">
-        <p className="text-[clamp(1rem,1.8vw,1.25rem)] leading-[1.85] text-[#d7d0cc]">
-          상황 종료 시까지 해당 구역을 봉쇄하며, 관리자님께서는 즉시 상급자에게 상황 보고
-          부탁드립니다. 또한, 조치가 있을 때까지 자리에서 대기 바랍니다.{" "}
-          <span className="text-[#172fa5]">어떠한 추가 행동도 하지 마십시오.</span>
-        </p>
-      </div>
-
-      <div className="mt-5 flex justify-end">
-        <div className="flex items-center gap-3 bg-[#1c2484] px-6 py-3 font-mono text-sm font-black text-white">
-          <TriangleAlert className="h-5 w-5" />
-          SYSTEM ALERT: ACTIVE?
-        </div>
-      </div>
-    </article>
   );
 }
 
@@ -1580,7 +1309,6 @@ function renderMailChallenge({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
-  onEndingComplete,
 }: {
   mail: TerminalMail;
   isCurrentChallenge: boolean;
@@ -1594,12 +1322,7 @@ function renderMailChallenge({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
-  onEndingComplete: () => void;
 }) {
-  if (mail.challengeType === "none") {
-    return null;
-  }
-
   if (mail.challengeType === "none") {
     return null;
   }
@@ -1673,7 +1396,6 @@ function renderMailChallenge({
     return completed.has(challengeIds.cube) ? (
       <CompletedPanel label="CUBE_PROTOCOL_RESOLVED" />
     ) : null;
-    ) : null;
   }
 
   if (mail.challengeType === "corrupted-command") {
@@ -1700,52 +1422,7 @@ function renderMailChallenge({
               VISUAL LOG: IMAGE 13
             </p>
           </div>
-      <section className="mx-auto max-w-[760px]">
-        <div className="mx-auto max-w-[520px] bg-[#2c2c2c] p-3">
-          <div className="relative aspect-[635/411] overflow-hidden bg-black">
-            <Image
-              src="/eg_png/egcompany_picture/P/P04.png"
-              alt="Visual log image 13"
-              fill
-              sizes="(max-width: 768px) 90vw, 520px"
-              className="object-cover opacity-75"
-              priority
-            />
-            <div className="absolute top-0 left-7 flex gap-1.5">
-              <span className="bg-terminal-accent h-2 w-2" />
-              <span className="bg-terminal-accent/60 h-2 w-2" />
-              <span className="bg-terminal-accent/35 h-2 w-2" />
-            </div>
-            <p className="absolute bottom-7 left-7 font-mono text-[10px] tracking-[0.42em] text-white/45">
-              VISUAL LOG: IMAGE 13
-            </p>
-          </div>
         </div>
-
-        <form
-          onSubmit={onSubmitCommand}
-          className="border-terminal-accent/50 mt-12 border bg-[#2d2d2d] px-6 py-7 shadow-[0_24px_80px_rgb(0_0_0_/_0.38)] sm:px-9"
-        >
-          <label
-            htmlFor="corrupted-command-input"
-            className="text-terminal-accent-muted font-mono text-[11px] font-black tracking-[0.42em]"
-          >
-            ENTER
-          </label>
-          <div className="border-b-terminal-accent mt-5 flex min-h-16 items-center gap-4 border-b bg-[#090909] px-5">
-            <span className="text-terminal-accent font-mono text-xl font-black">&gt;</span>
-            <input
-              id="corrupted-command-input"
-              value={command}
-              onChange={(event) => onCommandChange(event.target.value.toUpperCase())}
-              className="text-terminal-accent-text h-14 min-w-0 flex-1 bg-transparent font-mono text-xl font-black tracking-[0.32em] outline-none"
-              aria-label="Corrupted command answer"
-              spellCheck={false}
-              autoComplete="off"
-            />
-          </div>
-          <button className="text-terminal-accent-muted hover:bg-terminal-accent-strong mt-5 bg-[#3a3a3a] px-14 py-4 font-mono text-xs font-black tracking-[0.22em] transition-colors hover:text-white">
-            ENTER
 
         <form
           onSubmit={onSubmitCommand}
