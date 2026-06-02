@@ -161,6 +161,22 @@ export default function Navbar() {
     setThemeMenuOpen(false);
   }
 
+  async function handleLogout() {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log out.");
+      }
+
+      setCurrentUser(null);
+    } catch {
+      setCurrentUser(null);
+    }
+  }
+
   const activeThemeOption = themeOptions.find((option) => option.value === themeMode);
   const ActiveThemeIcon = activeThemeOption?.icon ?? Sun;
   const currentUserLabel = currentUser?.name ?? currentUser?.email;
@@ -223,16 +239,26 @@ export default function Navbar() {
           />
 
           {currentUserLabel ? (
-            <span
-              className={cx(
-                "max-w-36 truncate border px-3 py-1.5 text-xs font-black",
-                theme.border,
-                theme.text
-              )}
-              title={currentUserLabel}
-            >
-              {currentUserLabel}
-            </span>
+            <>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
+              >
+                Log Out
+              </button>
+
+              <span
+                className={cx(
+                  "max-w-36 truncate border px-3 py-1.5 text-xs font-black",
+                  theme.border,
+                  theme.text
+                )}
+                title={currentUserLabel}
+              >
+                {currentUserLabel}
+              </span>
+            </>
           ) : (
             <>
               <Link
