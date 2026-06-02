@@ -16,6 +16,10 @@ const navLinks = [
 
 type Language = "ko" | "en";
 type ThemeMode = "light" | "dark" | "system";
+type CurrentUser = {
+  email: string;
+  name: string | null;
+};
 
 const languageChangeEvent = "eg-language-change";
 const themeChangeEvent = "eg-theme-change";
@@ -89,6 +93,7 @@ export default function Navbar() {
     getServerLanguageSnapshot
   );
   const themeMode = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -114,6 +119,36 @@ export default function Navbar() {
     return () => window.removeEventListener("pointerdown", handlePointerDown);
   }, []);
 
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadCurrentUser() {
+      try {
+        const response = await fetch("/api/auth/me", { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("Failed to load current user.");
+        }
+
+        const data = (await response.json()) as { user: CurrentUser | null };
+
+        if (!ignore) {
+          setCurrentUser(data.user);
+        }
+      } catch {
+        if (!ignore) {
+          setCurrentUser(null);
+        }
+      }
+    }
+
+    void loadCurrentUser();
+
+    return () => {
+      ignore = true;
+    };
+  }, [pathname]);
+
   function handleLanguageChange(nextLanguage: Language) {
     window.localStorage.setItem("eg-language", nextLanguage);
     window.dispatchEvent(new Event(languageChangeEvent));
@@ -128,6 +163,7 @@ export default function Navbar() {
 
   const activeThemeOption = themeOptions.find((option) => option.value === themeMode);
   const ActiveThemeIcon = activeThemeOption?.icon ?? Sun;
+  const currentUserLabel = currentUser?.name ?? currentUser?.email;
 
   return (
     <header
@@ -193,6 +229,19 @@ export default function Navbar() {
           <Link href="/signup" className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}>
             Sign Up
           </Link>
+
+          {currentUserLabel && (
+            <span
+              className={cx(
+                "max-w-36 truncate border px-3 py-1.5 text-xs font-black",
+                theme.border,
+                theme.text
+              )}
+              title={currentUserLabel}
+            >
+              {currentUserLabel}
+            </span>
+          )}
         </div>
 
         {themeMenuOpen && (
