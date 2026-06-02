@@ -403,7 +403,7 @@ export default function TerminalClient() {
 
   function submitCommand(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (command.trim().toUpperCase() !== "RAOMTMI") {
+    if (command.trim().toUpperCase() !== "RAOMTNI") {
       setCommandError("명령어가 일치하지 않습니다.");
       return;
     }
