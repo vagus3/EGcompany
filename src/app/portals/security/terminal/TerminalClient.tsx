@@ -40,7 +40,7 @@ import CubeChallenge from "./CubeChallenge";
 
 type OverlayState = "found" | "command-warning" | null;
 type Section = "messenger" | "archive" | "containment" | "person";
-type TerminalEndFlow = "idle" | "ending-video" | "survey-qr";
+type TerminalEndFlow = "idle" | "ending-video" | "monster-video" | "survey-qr";
 type EmployeeCardDelivery =
   | { status: "idle" }
   | { status: "sending" }
@@ -74,6 +74,7 @@ const challengeObjectOrder = [
 ] as const;
 
 const endingFlowMock = {
+  monsterVideoSrc: "/eg_png/egcompany_picture/P/ending/monsterending.mp4",
   posterSrc: "/eg_png/egcompany_picture/P/ending/ending.png",
   surveyUrl: "https://forms.gle/eg-play-survey-mock",
   videoSrc: "/eg_png/egcompany_picture/P/ending/ending_v.mp4",
@@ -472,6 +473,10 @@ export default function TerminalClient() {
   }
 
   async function finishEndingVideo() {
+    setEndFlow("monster-video");
+  }
+
+  async function finishMonsterVideo() {
     setEndFlow("survey-qr");
     await sendEmployeeCard();
   }
@@ -501,6 +506,17 @@ export default function TerminalClient() {
         videoSrc={endingFlowMock.videoSrc}
         onEnded={() => {
           void finishEndingVideo();
+        }}
+      />
+    );
+  }
+
+  if (visibleEndFlow === "monster-video") {
+    return (
+      <FullscreenEndingVideo
+        videoSrc={endingFlowMock.monsterVideoSrc}
+        onEnded={() => {
+          void finishMonsterVideo();
         }}
       />
     );
@@ -828,7 +844,7 @@ function FullscreenEndingVideo({
   videoSrc,
   onEnded,
 }: {
-  posterSrc: string;
+  posterSrc?: string;
   videoSrc: string;
   onEnded: () => void;
 }) {
@@ -846,20 +862,6 @@ function FullscreenEndingVideo({
       <div className="absolute inset-0 bg-black/35" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_45%,rgb(0_0_0_/_0.72)_82%)]" />
       <div className="terminal-noise absolute inset-0 opacity-25" />
-
-      <div className="relative z-10 grid min-h-screen place-items-center px-6">
-        <div className="flex items-center gap-8 text-center text-[clamp(2rem,4vw,4.2rem)] font-black tracking-[0.32em] text-white/90">
-          <span
-            className="text-terminal-accent-text"
-            style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}
-          >
-            &gt;_
-          </span>
-          <span style={{ textShadow: "2px 0 #4dd9ff, -2px 0 #ff2b2b" }}>
-            절대 뒤를 돌아보지 마.
-          </span>
-        </div>
-      </div>
 
       <div className="absolute right-6 bottom-6 z-20">
         <button
