@@ -222,15 +222,7 @@ export default function Navbar() {
             themeMenuOpen={themeMenuOpen}
           />
 
-          <Link href="/login" className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}>
-            Sign In
-          </Link>
-
-          <Link href="/signup" className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}>
-            Sign Up
-          </Link>
-
-          {currentUserLabel && (
+          {currentUserLabel ? (
             <span
               className={cx(
                 "max-w-36 truncate border px-3 py-1.5 text-xs font-black",
@@ -241,6 +233,22 @@ export default function Navbar() {
             >
               {currentUserLabel}
             </span>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
+              >
+                Sign In
+              </Link>
+
+              <Link
+                href="/signup"
+                className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}
+              >
+                Sign Up
+              </Link>
+            </>
           )}
         </div>
 
