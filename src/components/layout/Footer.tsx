@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { cx } from "@/theme/classes";
 import { useCorporateTheme } from "@/theme/ThemeProvider";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function Footer() {
+  const lang = useLanguage();
   const { classes: theme } = useCorporateTheme();
 
   return (
@@ -18,13 +21,13 @@ export default function Footer() {
             href="/information"
             className={cx("text-[11px] tracking-widest uppercase", theme.linkMuted)}
           >
-            Company Information
+            {t("footer_company_info", lang)}
           </Link>
           <Link
             href="/contact"
             className={cx("text-[11px] tracking-widest uppercase", theme.linkMuted)}
           >
-            Contact Us
+            {t("footer_contact", lang)}
           </Link>
         </div>
       </div>

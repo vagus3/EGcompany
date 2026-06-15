@@ -7,6 +7,8 @@ import { useActionState, useEffect, useState, useSyncExternalStore } from "react
 import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
 import { adminTestPassedKey, adminTestRequiredKey } from "@/lib/admin-test";
 import { loginAction, type LoginState } from "./actions";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const initialState: LoginState = {
   ok: false,
@@ -28,6 +30,7 @@ function subscribeToAdminTest(onStoreChange: () => void) {
 }
 
 export default function LoginForm() {
+  const lang = useLanguage();
   const router = useRouter();
   const [state, formAction, pending] = useActionState(loginAction, initialState);
   const adminTestRequired = useSyncExternalStore(
@@ -63,7 +66,7 @@ export default function LoginForm() {
             htmlFor="email"
             className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
           >
-            Corporate Email
+            {t("login_email_label", lang)}
           </label>
           <input
             id="email"
@@ -81,7 +84,7 @@ export default function LoginForm() {
             htmlFor="password"
             className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
           >
-            Password
+            {t("login_password_label", lang)}
           </label>
           <input
             id="password"
@@ -100,12 +103,12 @@ export default function LoginForm() {
             disabled={pending}
             className="h-20 w-full bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 sm:h-24 sm:w-36"
           >
-            {pending ? "Checking" : "Sign In"}
+            {pending ? t("login_btn_checking", lang) : t("login_btn_signin", lang)}
           </button>
           <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
-            No account yet?{" "}
+            {t("login_no_account", lang)}{" "}
             <Link href="/signup" className="text-black underline underline-offset-4">
-              Request corporate access
+              {t("login_request_access", lang)}
             </Link>
             .
           </p>
