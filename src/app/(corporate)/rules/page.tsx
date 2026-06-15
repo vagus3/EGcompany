@@ -6,10 +6,13 @@ import { useState } from "react";
 import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
 import { adminTestPassedKey, adminTestRequiredKey } from "@/lib/admin-test";
 import { rules } from "@/lib/rules-data";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const ADMIN_TERMINAL_PATH = "/portals/security/terminal";
 
 export default function Page() {
+  const lang = useLanguage();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,19 +36,19 @@ export default function Page() {
       {/* Header */}
       <section className="mx-auto max-w-4xl px-4 pt-14 pb-12 sm:px-6 sm:pt-20 sm:pb-16">
         <h1 className="mb-6 text-[clamp(2.2rem,4.5vw,3.5rem)] leading-tight font-black tracking-tight text-black">
-          Employee Conduct
-          <br />& Workplace Safety
+          {t("rules_title_line1", lang)}
+          <br />
+          {t("rules_title_line2", lang)}
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-gray-500">
-          EG 컴퍼니 임직원의 안전과 효율적인 업무 환경 조성을 위한 기본 행동 수칙 및 보건
-          가이드라인입니다. 본 규정은 사내 보안 등급에 따라 엄격히 준수되어야 합니다.
+          {t("rules_subtitle", lang)}
         </p>
         <hr className="mt-10 border-gray-200" />
       </section>
 
       {/* Rules list */}
       <section className="mx-auto max-w-4xl space-y-10 px-4 pb-16 sm:space-y-12 sm:px-6 sm:pb-20">
-        {rules.map(({ num, title, body }) => (
+        {rules.map(({ num, title, title_en, body, body_en }) => (
           <div
             key={num}
             className="grid grid-cols-[48px_1fr] gap-4 sm:grid-cols-[72px_1fr] sm:gap-6"
@@ -54,8 +57,12 @@ export default function Page() {
               {num}
             </span>
             <div>
-              <h2 className="mb-2 text-base font-bold text-black">{title}</h2>
-              <p className="text-sm leading-relaxed text-gray-500">{body}</p>
+              <h2 className="mb-2 text-base font-bold text-black">
+                {lang === "en" ? title_en : title}
+              </h2>
+              <p className="text-sm leading-relaxed text-gray-500">
+                {lang === "en" ? body_en : body}
+              </p>
             </div>
           </div>
         ))}
@@ -66,18 +73,16 @@ export default function Page() {
         <div className="flex gap-4 rounded border border-gray-300 p-5 sm:p-6">
           <span className="mt-0.5 text-gray-400">ⓘ</span>
           <div>
-            <p className="mb-2 text-xs font-bold text-black">Notice</p>
+            <p className="mb-2 text-xs font-bold text-black">{t("rules_notice_label", lang)}</p>
             <p className="text-xs leading-relaxed text-gray-500">
-              위 지침은 모든 임직원의 안전을 보장하기 위한 최소한의 조치입니다. 지침 미준수로
-              발생하는 &#39;존재적 불일치&#39;나 &#39;물리적 소실&#39;에 대해 EG 컴퍼니는 법적
-              책임을 지지 않습니다. 모든 임직원은 본 문서를 숙지했음을{" "}
+              {t("rules_notice_pre", lang)}
               <button
                 onClick={handleSignatureClick}
                 className="cursor-pointer font-bold text-black transition-all hover:underline"
               >
-                서명
+                {t("rules_notice_btn", lang)}
               </button>
-              으로 갈음합니다.
+              {t("rules_notice_post", lang)}
             </p>
           </div>
         </div>

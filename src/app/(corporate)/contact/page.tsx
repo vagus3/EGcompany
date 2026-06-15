@@ -3,12 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { departments } from "@/lib/departments-data";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 function getDepartmentHref(slug: string) {
   return slug === "security" ? "/portals/security/terminal" : `/portals/${slug}/detail`;
 }
 
 export default function Page() {
+  const lang = useLanguage();
   const [report, setReport] = useState("");
   const [sent, setSent] = useState(false);
 
@@ -42,23 +45,23 @@ export default function Page() {
             <p className="mt-1 text-sm text-gray-600">{phone}</p>
           </Link>
         ))}
-        {/* Empty cell to fill last row if odd */}
         {departments.length % 2 !== 0 && <div className="hidden bg-white sm:block" />}
       </div>
 
       {/* Report form */}
       <div className="max-w-xl">
-        <h2 className="mb-2 text-3xl font-black tracking-tight text-black">Report</h2>
+        <h2 className="mb-2 text-3xl font-black tracking-tight text-black">
+          {t("contact_report_heading", lang)}
+        </h2>
         <p className="mb-6 text-sm leading-relaxed text-gray-500">
-          무언가 회사 측에 익명의 제보가 필요하거나, 도움이 필요한 사항이 있다면 이곳에 접수 해
-          주세요.
+          {t("contact_report_desc_1", lang)}
           <br />
-          검토 후 인사팀에게 전달됩니다.
+          {t("contact_report_desc_2", lang)}
         </p>
         <textarea
           value={report}
           onChange={(e) => setReport(e.target.value)}
-          placeholder="Enter your report details here..."
+          placeholder={t("contact_placeholder", lang)}
           rows={7}
           className="w-full resize-none border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-black placeholder:text-gray-400 focus:border-black focus:outline-none"
         />
@@ -66,7 +69,7 @@ export default function Page() {
           onClick={handleSend}
           className="mt-4 bg-black px-8 py-3 text-xs tracking-widest text-white uppercase transition-colors hover:bg-gray-800"
         >
-          {sent ? "Sent ✓" : "Send Report"}
+          {sent ? t("contact_sent", lang) : t("contact_send", lang)}
         </button>
       </div>
     </div>

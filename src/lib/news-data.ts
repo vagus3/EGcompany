@@ -20,7 +20,9 @@ export interface Article {
   breadcrumb?: string[];
   dateDisplay: string;
   title: string;
+  title_en?: string;
   excerpt: string;
+  excerpt_en?: string;
   featured: boolean;
   imageSrc: string;
   blocks: Block[];
@@ -32,8 +34,11 @@ export const articles: Article[] = [
     breadcrumb: ["NEWS", "REPORTS", "Q3 REVENUE"],
     dateDisplay: "OCTOBER 24, 2024",
     title: "Q3 전략 보고서: 전략적 성장, 예상 뛰어넘다",
+    title_en: "Q3 Strategy Report: Strategic Growth Exceeds Expectations",
     excerpt:
       "EG Company는 연구 및 운송 부문의 확장에 힘입어, 분기 실적이 전년 대비 14% 상승했다고 밝혔다. 이사회는 특히 자동화 물류 시스템의 성공적인 도입과 정착을 주요 성과로 강조했다.",
+    excerpt_en:
+      "EG Company reported a 14% increase in quarterly performance compared to the previous year, driven by expansion in the research and transport sectors. The board particularly highlighted the successful implementation of automated logistics systems as a key achievement.",
     featured: true,
     imageSrc: "/eg_png/egcompany_picture/News/01.png",
     blocks: [
@@ -77,6 +82,7 @@ export const articles: Article[] = [
     breadcrumb: ["NEWS", "REPORTS", "REGIONAL EXPANSION"],
     dateDisplay: "OCTOBER 21, 2024",
     title: "싱가포르 지역 거점 신설",
+    title_en: "New Singapore Regional Hub Established",
     excerpt: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/02.png",
@@ -126,6 +132,7 @@ export const articles: Article[] = [
     category: "CORPORATE ANNOUNCEMENT",
     dateDisplay: "October 19, 2024",
     title: "IT 시스템 유지보수로 인한 운영 중단",
+    title_en: "Operational Disruption Due to IT System Maintenance",
     excerpt: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/03.png",
@@ -165,6 +172,7 @@ export const articles: Article[] = [
     breadcrumb: ["NEWS", "SECURITY", "RESTRICTED AREA"],
     dateDisplay: "NOVEMBER 28, 2024",
     title: "야간 통행 제한 구역 확대",
+    title_en: "Expansion of Nighttime Restricted Access Zones",
     excerpt: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/04.png",
@@ -211,6 +219,7 @@ export const articles: Article[] = [
     breadcrumb: ["NEWS", "REPORTS", "LANGUAGE PATTERN"],
     dateDisplay: "DECEMBER 03, 2024",
     title: "비인가 언어 패턴 감지 보고",
+    title_en: "Unauthorized Language Pattern Detection Report",
     excerpt: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/05.png",

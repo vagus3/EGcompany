@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { signUpAction, type SignUpState } from "./actions";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const initialState: SignUpState = {
   ok: false,
@@ -12,6 +14,7 @@ const initialState: SignUpState = {
 };
 
 export default function SignUpForm() {
+  const lang = useLanguage();
   const router = useRouter();
   const [state, formAction, pending] = useActionState(signUpAction, initialState);
 
@@ -37,7 +40,7 @@ export default function SignUpForm() {
           htmlFor="name"
           className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
         >
-          Full Name
+          {t("signup_name_label", lang)}
         </label>
         <input
           id="name"
@@ -55,7 +58,7 @@ export default function SignUpForm() {
           htmlFor="email"
           className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
         >
-          Corporate Email
+          {t("signup_email_label", lang)}
         </label>
         <input
           id="email"
@@ -73,7 +76,7 @@ export default function SignUpForm() {
           htmlFor="password"
           className="block text-[12px] font-black tracking-[0.28em] text-black uppercase"
         >
-          Password
+          {t("signup_password_label", lang)}
         </label>
         <input
           id="password"
@@ -89,19 +92,11 @@ export default function SignUpForm() {
 
       <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-5 text-left sm:p-8">
         <h2 className="text-[12px] font-black tracking-[0.24em] text-black uppercase">
-          EG Code of Conduct
+          {t("signup_conduct_title", lang)}
         </h2>
         <div className="mt-7 space-y-5 text-[12px] leading-7 font-semibold tracking-[0.18em] text-neutral-600 uppercase">
-          <p>
-            By accessing the EG monolith system, all employees agree to adhere to the strictest
-            standards of corporate integrity and data security. Any breach of protocol, unauthorized
-            access to restricted partitions, or failure to report anomalies will result in immediate
-            termination of access rights.
-          </p>
-          <p>
-            Usage of proprietary algorithms and data structures for non-corporate purposes is
-            prohibited. All operational activity may be audited for compliance and system safety.
-          </p>
+          <p>{t("signup_conduct_1", lang)}</p>
+          <p>{t("signup_conduct_2", lang)}</p>
         </div>
       </div>
 
@@ -112,7 +107,7 @@ export default function SignUpForm() {
           required
           className="mt-0.5 h-5 w-5 shrink-0 appearance-none border border-black bg-white checked:bg-black sm:mt-0"
         />
-        I acknowledge and agree to the privacy policy and code of conduct.
+        {t("signup_agree", lang)}
       </label>
 
       <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
@@ -121,14 +116,26 @@ export default function SignUpForm() {
           disabled={pending}
           className="h-20 w-full bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400 sm:h-24 sm:w-36"
         >
-          {pending ? "Saving" : "Sign Up"}
+          {pending ? t("signup_btn_saving", lang) : t("signup_btn_signup", lang)}
         </button>
         <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
-          By proceeding, you adhere to the{" "}
-          <Link href="/rules" className="text-black underline underline-offset-4">
-            EG Code of Conduct
-          </Link>
-          .
+          {lang === "ko" ? (
+            <>
+              진행하면{" "}
+              <Link href="/rules" className="text-black underline underline-offset-4">
+                EG 행동 강령
+              </Link>
+              에 동의하는 것입니다.
+            </>
+          ) : (
+            <>
+              By proceeding, you adhere to the{" "}
+              <Link href="/rules" className="text-black underline underline-offset-4">
+                EG Code of Conduct
+              </Link>
+              .
+            </>
+          )}
         </p>
       </div>
 

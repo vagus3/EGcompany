@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore } from "@/store/gameStore";
 import HintBox from "./HintBox";
 import type { PuzzleWithConfig } from "@/types";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface PuzzleModalProps {
   puzzle: PuzzleWithConfig;
@@ -13,6 +15,7 @@ interface PuzzleModalProps {
 }
 
 export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalProps) {
+  const lang = useLanguage();
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
   const [solved, setSolved] = useState(false);
@@ -26,7 +29,7 @@ export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalPro
       setSolved(true);
       setTimeout(onClose, 1500);
     } else {
-      setError("틀렸습니다. 다시 시도해보세요.");
+      setError(t("puzzle_wrong", lang));
       setAnswer("");
     }
   };
@@ -50,7 +53,9 @@ export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalPro
           <p className="mb-6 text-sm text-gray-300 sm:text-base">{puzzle.data.question}</p>
 
           {solved ? (
-            <div className="py-4 text-center text-xl font-bold text-green-400">퍼즐 해결! 🎉</div>
+            <div className="py-4 text-center text-xl font-bold text-green-400">
+              {t("puzzle_solved", lang)}
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
@@ -60,7 +65,7 @@ export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalPro
                   setAnswer(e.target.value);
                   setError("");
                 }}
-                placeholder="정답을 입력하세요"
+                placeholder={t("puzzle_placeholder", lang)}
                 className="w-full rounded-lg border border-gray-600 bg-gray-800 px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
               />
               {error && <p className="text-sm text-red-400">{error}</p>}
@@ -70,14 +75,14 @@ export default function PuzzleModal({ puzzle, onSolve, onClose }: PuzzleModalPro
                   type="submit"
                   className="flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
                 >
-                  확인
+                  {t("puzzle_confirm", lang)}
                 </button>
                 <button
                   type="button"
                   onClick={toggleHint}
                   className="rounded-lg bg-yellow-600 px-4 py-3 text-white transition-colors hover:bg-yellow-700"
                 >
-                  힌트
+                  {t("puzzle_hint", lang)}
                 </button>
               </div>
             </form>
