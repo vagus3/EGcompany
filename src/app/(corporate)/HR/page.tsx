@@ -1,25 +1,66 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Users, Heart, Briefcase, ChevronRight, Mail } from "lucide-react";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function Page() {
+  const lang = useLanguage();
+
+  const cards = [
+    {
+      icon: <Users className="h-6 w-6" />,
+      title: t("hr_card1_title", lang),
+      desc: t("hr_card1_desc", lang),
+    },
+    {
+      icon: <Heart className="h-6 w-6" />,
+      title: t("hr_card2_title", lang),
+      desc: t("hr_card2_desc", lang),
+    },
+    {
+      icon: <Briefcase className="h-6 w-6" />,
+      title: t("hr_card3_title", lang),
+      desc: t("hr_card3_desc", lang),
+    },
+  ];
+
+  const careerSteps = [
+    { role: t("hr_career_1_role", lang), level: t("hr_career_1_level", lang) },
+    { role: t("hr_career_2_role", lang), level: t("hr_career_2_level", lang) },
+    { role: t("hr_career_3_role", lang), level: t("hr_career_3_level", lang) },
+    { role: t("hr_career_4_role", lang), level: t("hr_career_4_level", lang) },
+  ];
+
+  const testimonials = [
+    {
+      name: "Yara Choi",
+      role: t("hr_t1_role", lang),
+      quote: t("hr_t1_quote", lang),
+      imageSrc: "/eg_png/egcompany_picture/card/card_s.png",
+    },
+    {
+      name: "Marc Berg",
+      role: t("hr_t2_role", lang),
+      quote: t("hr_t2_quote", lang),
+      imageSrc: "/eg_png/egcompany_picture/card/card_b.png",
+    },
+  ];
+
   return (
     <div className="bg-white font-sans text-zinc-900">
       {/* 1. Hero Section */}
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:gap-12 md:py-20">
         <div>
           <p className="mb-4 text-sm font-semibold tracking-widest text-zinc-500 uppercase">
-            Department / Human Resources
+            {t("hr_eyebrow", lang)}
           </p>
           <h1 className="mb-6 text-[clamp(3rem,14vw,3.75rem)] leading-tight font-bold">
-            Human
-            <br />
-            Resources.
+            {t("hr_heading", lang)}
           </h1>
-          <p className="max-w-md text-lg leading-relaxed text-zinc-600">
-            We engineer the corporate ecosystem where talent meets performance. Our focus is on
-            growth, inclusivity, and creating a sustainable workplace environment.
-          </p>
+          <p className="max-w-md text-lg leading-relaxed text-zinc-600">{t("hr_desc", lang)}</p>
         </div>
         <div className="relative h-72 w-full overflow-hidden bg-zinc-100 grayscale sm:h-96">
           <Image
@@ -36,25 +77,9 @@ export default function Page() {
       {/* 2. Strategic Overview */}
       <section className="bg-zinc-50 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="mb-12 text-2xl font-bold">Strategic Overview</h2>
+          <h2 className="mb-12 text-2xl font-bold">{t("hr_strategic_overview", lang)}</h2>
           <div className="grid gap-8 md:grid-cols-3">
-            {[
-              {
-                icon: <Users className="h-6 w-6" />,
-                title: "Labor Relations",
-                desc: "Building strong relationships through transparent communication and fair practices.",
-              },
-              {
-                icon: <Heart className="h-6 w-6" />,
-                title: "Employee Welfare",
-                desc: "Prioritizing the mental and physical well-being of every team member.",
-              },
-              {
-                icon: <Briefcase className="h-6 w-6" />,
-                title: "Organizational Dev",
-                desc: "Evolving our structure to meet the challenges of a dynamic global market.",
-              },
-            ].map((item, idx) => (
+            {cards.map((item, idx) => (
               <div
                 key={idx}
                 className="border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-lg sm:p-10"
@@ -80,14 +105,10 @@ export default function Page() {
           />
         </div>
         <div>
-          <h2 className="mb-8 text-3xl font-bold">Company Culture & Values</h2>
-          <p className="mb-6 text-lg leading-relaxed text-zinc-600">
-            Our culture is the backbone of everything we do. It&#39;s built on trust, collaboration,
-            and relentless innovation. We believe in empowering individuals to bring their authentic
-            selves to work every single day.
-          </p>
+          <h2 className="mb-8 text-3xl font-bold">{t("hr_culture_heading", lang)}</h2>
+          <p className="mb-6 text-lg leading-relaxed text-zinc-600">{t("hr_culture_desc", lang)}</p>
           <button className="flex items-center gap-2 border-b-2 border-zinc-900 pb-1 font-bold transition-all hover:gap-4">
-            Learn More <ChevronRight className="h-4 w-4" />
+            {t("hr_learn_more", lang)} <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </section>
@@ -95,14 +116,9 @@ export default function Page() {
       {/* 4. Career Development */}
       <section className="bg-zinc-900 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="mb-16 text-2xl font-bold">Career Development</h2>
+          <h2 className="mb-16 text-2xl font-bold">{t("hr_career_heading", lang)}</h2>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {[
-              { role: "Junior Analyst", level: "Entry Level" },
-              { role: "Senior Strategist", level: "Mid Level" },
-              { role: "Team Lead", level: "Management" },
-              { role: "Director", level: "Executive" },
-            ].map((step, idx) => (
+            {careerSteps.map((step, idx) => (
               <div key={idx} className="border-l border-zinc-700 py-4 pl-6">
                 <p className="mb-2 text-sm text-zinc-500">{step.level}</p>
                 <h4 className="text-xl font-semibold">{step.role}</h4>
@@ -114,24 +130,9 @@ export default function Page() {
 
       {/* 5. Employee Experience */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-        <h2 className="mb-16 text-center text-2xl font-bold">Employee Experience</h2>
+        <h2 className="mb-16 text-center text-2xl font-bold">{t("hr_exp_heading", lang)}</h2>
         <div className="grid gap-12 md:grid-cols-2">
-          {[
-            {
-              name: "Yara Choi",
-              role: "HR Manager",
-              quote:
-                "The support system here is unparalleled. Every day is an opportunity to grow.",
-              imageSrc: "/eg_png/egcompany_picture/card/card_s.png",
-            },
-            {
-              name: "Marc Berg",
-              role: "Tech Recruiter",
-              quote:
-                "I love the freedom to innovate our hiring processes and the culture of trust.",
-              imageSrc: "/eg_png/egcompany_picture/card/card_b.png",
-            },
-          ].map((testimonial, idx) => (
+          {testimonials.map((testimonial, idx) => (
             <div
               key={idx}
               className="flex flex-col items-center gap-6 bg-zinc-50 p-6 sm:p-8 md:flex-row md:gap-8"
@@ -161,17 +162,17 @@ export default function Page() {
       <section className="border-t border-zinc-200 bg-zinc-50 py-16 sm:py-20">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-10 px-4 sm:px-6 md:flex-row md:gap-12">
           <div>
-            <h2 className="mb-6 text-4xl font-bold">Get in Touch.</h2>
+            <h2 className="mb-6 text-4xl font-bold">{t("hr_touch_heading", lang)}</h2>
             <div className="space-y-2 text-zinc-500">
-              <p>Corporate Headquarters</p>
+              <p>{t("hr_location_1", lang)}</p>
               <p>123 Business Ave, Suite 100</p>
-              <p>Seoul, Republic of Korea</p>
+              <p>{t("hr_location_3", lang)}</p>
             </div>
           </div>
           <div className="w-full md:w-auto">
             <Link href="/HR">
               <button className="w-full bg-black px-12 py-5 text-sm font-bold tracking-widest text-white uppercase transition-colors hover:bg-zinc-800 md:w-auto">
-                Work with us
+                {t("hr_cta_btn", lang)}
               </button>
             </Link>
             <div className="mt-8 flex items-center gap-3 text-zinc-400">

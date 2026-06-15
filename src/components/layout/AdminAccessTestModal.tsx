@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 
 import { adminTestQuestions } from "@/lib/admin-test";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type AdminAccessTestModalProps = {
   onClose: () => void;
@@ -10,6 +12,7 @@ type AdminAccessTestModalProps = {
 };
 
 export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModalProps) {
+  const lang = useLanguage();
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
 
@@ -27,12 +30,12 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
 
   function handleSubmitTest() {
     if (!allAnswered) {
-      setError("모든 항목을 선택해야 관리자 테스트를 제출할 수 있습니다.");
+      setError(t("admin_error_incomplete", lang));
       return;
     }
 
     if (!passed) {
-      setError("관리자 접근 테스트를 통과하지 못했습니다. 규정 탭을 다시 확인하십시오.");
+      setError(t("admin_error_failed", lang));
       return;
     }
 
@@ -68,11 +71,10 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
           <div className="grid gap-6 md:grid-cols-[1fr_160px] md:gap-8">
             <div>
               <h3 className="text-xl font-black text-black sm:text-2xl">
-                신규 가입자 관리자 테스트
+                {t("admin_test_heading", lang)}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-500">
-                본 테스트는 신규 가입자의 사내 보안 정책 이해도를 확인하기 위한 필수 과정입니다.
-                모든 문항을 선택한 뒤 제출하면 통과 여부에 따라 관리자 페이지 접근이 처리됩니다.
+                {t("admin_test_desc", lang)}
               </p>
             </div>
 
@@ -103,7 +105,9 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
                 key={question.num}
               >
                 <span className="text-lg font-black text-black">{question.num}</span>
-                <p className="text-sm leading-6 text-black">{question.question}</p>
+                <p className="text-sm leading-6 text-black">
+                  {lang === "en" ? question.question_en : question.question}
+                </p>
                 <div className="flex flex-wrap gap-4 lg:justify-end lg:gap-5">
                   {question.options.map((option) => (
                     <label
@@ -117,7 +121,7 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
                         onChange={() => handleAnswer(question.num, option.value)}
                         type="radio"
                       />
-                      {option.text}
+                      {lang === "en" ? option.text_en : option.text}
                     </label>
                   ))}
                 </div>
@@ -129,8 +133,7 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
             <div className="flex gap-3 border border-yellow-200 bg-yellow-50 p-4">
               <span className="text-yellow-700">!</span>
               <p className="text-xs leading-5 text-neutral-700">
-                규칙 탭의 행동 수칙을 기준으로 답변하십시오. 통과 시 보안 관리자 페이지로 자동
-                접속됩니다.
+                {t("admin_hint_text", lang)}
               </p>
             </div>
 
@@ -140,7 +143,7 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
               onClick={handleSubmitTest}
               type="button"
             >
-              제출하기
+              {t("admin_submit", lang)}
             </button>
           </div>
 
