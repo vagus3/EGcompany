@@ -26,6 +26,7 @@ export interface Article {
   featured: boolean;
   imageSrc: string;
   blocks: Block[];
+  blocks_en?: Block[];
 }
 
 export const articles: Article[] = [
@@ -76,6 +77,41 @@ export const articles: Article[] = [
         text: "결국 이번 분기의 성장은 하나의 결과일 뿐이다. EG Company의 목표는 언제나 동일하다—드러나지 않더라도, 반드시 작동하는 시스템을 만드는 것.",
       },
     ],
+    blocks_en: [
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/01.png" },
+      {
+        type: "blockquote",
+        text: '"During Q3, EG Company recorded growth surpassing projections, simultaneously proving the stability and scalability of our global operations. This performance increase is particularly meaningful as it demonstrates that strategic investments and structural improvements have translated into actual results, going beyond mere revenue growth."',
+      },
+      {
+        type: "paragraph",
+        text: "The expansion of the Research and Transport divisions played a pivotal role. In the Research division, continued investment in next-generation data management and security technologies led to increased wins on high-value projects, strengthening the long-term revenue base. In parallel, the Transport division restructured its existing logistics network and established an operational framework specialized for high-risk, high-value asset transport, securing both profitability and stability.",
+      },
+      {
+        type: "paragraph",
+        text: "The board highlighted the successful integration of automated logistics systems as the quarter's key achievement. This system compensated for the limitations of the existing personnel-centric operational model, significantly improving real-time data-based decision-making and response speed. As a result, transport delays and operational risks decreased noticeably, and overall efficiency improved substantially.",
+      },
+      {
+        type: "stats",
+        title: "QUARTERLY PERFORMANCE METRICS",
+        metrics: [
+          { value: "12.4%", label: "REVENUE GROWTH YOY" },
+          { value: "$4.2M", label: "OPERATING CASH FLOW" },
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "EG Company evaluates these results as more than temporary growth. Rather, they serve as indicators that the foundation for future global expansion and response to an advanced security environment has already been established. Particularly given the nature of the business—handling sensitive data flows and critical infrastructure—stability and reliability are not merely competitive advantages but essential requirements.",
+      },
+      {
+        type: "paragraph",
+        text: "The company plans to continue pursuing technology-driven operational innovation alongside selective expansion, focusing on high-value-added industries. Under a strategy that prioritizes long-term trust building over short-term results, EG Company continues to sustain the most critical systems in 'invisible domains.'",
+      },
+      {
+        type: "paragraph",
+        text: "Ultimately, this quarter's growth is just one result. EG Company's goal has always been the same—creating systems that work exactly when needed, even when they remain unseen.",
+      },
+    ],
   },
   {
     slug: "singapore-expansion",
@@ -84,6 +120,7 @@ export const articles: Article[] = [
     title: "싱가포르 지역 거점 신설",
     title_en: "New Singapore Regional Hub Established",
     excerpt: "",
+    excerpt_en: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/02.png",
     blocks: [
@@ -126,6 +163,46 @@ export const articles: Article[] = [
         text: "보이지 않는 곳에서 흐름을 통제하고, 필요한 순간에 정확히 작동하는 것. 싱가포르 허브는 그 원칙을 아시아 지역 전반으로 확장하기 위한 새로운 출발점이다.",
       },
     ],
+    blocks_en: [
+      {
+        type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/02.png",
+        caption:
+          "FIGURE 2.0: STRATEGIC REGIONAL HUB IN THE HEART OF SINGAPORE'S FINANCIAL DISTRICT.",
+      },
+      {
+        type: "blockquote",
+        text: '"EG Company has established a new regional hub in Singapore as the cornerstone of its Southeast Asian strategy. This expansion is evaluated as a strategic measure to enhance operational efficiency and response speed throughout the Asia-Pacific region, going beyond a mere office opening."',
+      },
+      {
+        type: "paragraph",
+        text: "Singapore is a key city where global logistics, finance, and technology industries intersect, making it a region that can create strong synergies with EG Company's business structure. Through this hub, the company has secured a foundation for more precise control of transportation networks throughout Southeast Asia and rapid response to regional demands.",
+      },
+      {
+        type: "paragraph",
+        text: "In particular, the hub is designed as a complex base that integrates security consulting, infrastructure management, and data operations beyond conventional logistics functions. The core objective is to minimize information silos between divisions and establish a more organic operational framework. Internally, automated systems and real-time monitoring environments have been applied, designed to maintain the same level of control regardless of physical distance.",
+      },
+      {
+        type: "stats",
+        title: "APAC NETWORK INTEGRATION STATUS",
+        metrics: [
+          { value: "100%", label: "CORE SYSTEMS ONLINE" },
+          { value: "< 15ms", label: "DATA LATENCY (REGIONAL)" },
+        ],
+      },
+      {
+        type: "paragraph",
+        text: 'The board evaluates the Singapore hub as "not merely an expansion, but a turning point in the operational paradigm." By transitioning from the existing distributed regional operation model to a concentrated network structure centered on key hubs, more stable and efficient global operations are expected.',
+      },
+      {
+        type: "paragraph",
+        text: "EG Company plans to further expand its presence in the Asian market based on this hub. Simultaneously, by pursuing customized operational strategies that reflect regional characteristics, the company will continue 'precise expansion' rather than mere scale growth.",
+      },
+      {
+        type: "paragraph",
+        text: "Controlling flows from the invisible, operating precisely when needed. The Singapore hub is a new starting point for extending that principle across the Asia-Pacific region.",
+      },
+    ],
   },
   {
     slug: "it-maintenance",
@@ -134,6 +211,7 @@ export const articles: Article[] = [
     title: "IT 시스템 유지보수로 인한 운영 중단",
     title_en: "Operational Disruption Due to IT System Maintenance",
     excerpt: "",
+    excerpt_en: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/03.png",
     blocks: [
@@ -166,14 +244,45 @@ export const articles: Article[] = [
         text: "저희 IT 운영팀은 예정된 시간 내에 작업을 완료하여 신속하게 서비스를 정상화할 수 있도록 최선을 다하겠습니다. 서비스 이용에 불편을 드려 대단히 죄송하며, 더 나은 환경을 제공하기 위한 필수적인 과정임을 널리 양해 부탁드립니다.",
       },
     ],
+    blocks_en: [
+      { type: "hr" },
+      { type: "image", imageSrc: "/eg_png/egcompany_picture/News/03.png" },
+      {
+        type: "paragraph",
+        text: "In order to provide stable IT services and enhance security, we will be conducting regular system inspection and maintenance work as described below.",
+      },
+      {
+        type: "maintenance-table",
+        rows: [
+          { label: "Date", value: "Sunday, November 24, 2024, 01:00 – 06:00" },
+          {
+            label: "Scope",
+            value: "All corporate groupware, customer support systems, and official website",
+          },
+          {
+            label: "Impact",
+            value: "All online services will be inaccessible during maintenance hours",
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "This inspection includes replacement of aging system equipment and database optimization. All digital platforms of EG Company will be temporarily inaccessible during the maintenance window. We kindly ask that all employees and customers review their schedules in advance to avoid any disruption to business operations or service use.",
+      },
+      {
+        type: "paragraph",
+        text: "Our IT operations team will do its utmost to complete the work within the scheduled timeframe and quickly restore services to normal. We sincerely apologize for the inconvenience and appreciate your understanding, as this is a necessary process to provide an improved environment.",
+      },
+    ],
   },
-    {
+  {
     slug: "night-access-restriction",
     breadcrumb: ["NEWS", "SECURITY", "RESTRICTED AREA"],
     dateDisplay: "NOVEMBER 28, 2024",
     title: "야간 통행 제한 구역 확대",
     title_en: "Expansion of Nighttime Restricted Access Zones",
     excerpt: "",
+    excerpt_en: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/04.png",
     blocks: [
@@ -210,7 +319,44 @@ export const articles: Article[] = [
       },
       {
         type: "paragraph",
-        text: "회사 관계자는 “이번 조치는 일시적인 대응이 아닌 장기적인 시설 안정화 계획의 일부”라며, “모든 직원께서는 갱신된 야간 이동 규정을 반드시 숙지해주시기 바란다”고 밝혔습니다.",
+        text: "회사 관계자는 "이번 조치는 일시적인 대응이 아닌 장기적인 시설 안정화 계획의 일부"라며, "모든 직원께서는 갱신된 야간 이동 규정을 반드시 숙지해주시기 바란다"고 밝혔습니다.",
+      },
+    ],
+    blocks_en: [
+      {
+        type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/04.png",
+      },
+      {
+        type: "blockquote",
+        text: '"Due to an increase in recent security incidents, nighttime access to certain areas will be restricted. This measure is part of a preventive response to enhance facility stability and internal operational security."',
+      },
+      {
+        type: "paragraph",
+        text: "EG Company has announced an expansion of nighttime security control scope within the headquarters and select regional hub facilities. This measure is a response to repeated unauthorized access attempts occurring at specific time intervals and an increase in internal security incident reports, with limited access control being applied to certain areas.",
+      },
+      {
+        type: "stats",
+        title: "INTERNAL SECURITY STATUS",
+        metrics: [
+          { value: "22:00 - 05:00", label: "RESTRICTED ACCESS WINDOW" },
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Controlled areas include research storage zones, server management areas, unused logistics corridors, and certain underground facilities. The company explained that the purpose is to minimize unnecessary movement during nighttime hours and improve the efficiency of internal monitoring systems.",
+      },
+      {
+        type: "paragraph",
+        text: "In particular, as unauthorized access records and abnormal entry logs have been repeatedly detected in certain areas over the past few weeks, the security department has commenced a comprehensive review of nighttime operational protocols. It was confirmed that some records showed traces of internal system access even without going through normal authentication procedures.",
+      },
+      {
+        type: "paragraph",
+        text: "Additional surveillance equipment and automatic locking systems have now been applied to all restricted areas, and access after designated hours is not permitted without separate authorization. Internal patrol personnel and monitoring frequency have also been expanded beyond previous levels.",
+      },
+      {
+        type: "paragraph",
+        text: 'A company representative stated, "This measure is not a temporary response, but part of a long-term facility stabilization plan," adding, "All employees must familiarize themselves with the updated nighttime movement regulations."',
       },
     ],
   },
@@ -221,6 +367,7 @@ export const articles: Article[] = [
     title: "비인가 언어 패턴 감지 보고",
     title_en: "Unauthorized Language Pattern Detection Report",
     excerpt: "",
+    excerpt_en: "",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/05.png",
     blocks: [
@@ -255,6 +402,40 @@ export const articles: Article[] = [
       {
         type: "hidden-note",
         text: "일부 기록은 오류처럼 보입니다. 그러나 반복되는 오류는 더 이상 단순한 ERROR III 가 아닙니다. 해당 SIGNAL V 은 특정 SOURCE II 없이 발생하고 있으며, 일부 SYSTEM VI 에서는 동일한 PATTERN IV 이 반복적으로 검출되고 있습니다. 내부 NETWORK I 분석 결과, 일부 ARCHIVE V 기록 역시 비정상적으로 변형된 상태로 확인되었습니다.",
+      },
+    ],
+    blocks_en: [
+      {
+        type: "image",
+        imageSrc: "/eg_png/egcompany_picture/News/05.png",
+      },
+      {
+        type: "blockquote",
+        text: '"Unauthorized language patterns have been repeatedly detected in some internal records. The patterns currently cannot be interpreted by the existing data classification system, and additional analysis is ongoing."',
+      },
+      {
+        type: "paragraph",
+        text: "EG Company's internal monitoring system has confirmed that unauthorized language patterns have been repeatedly appearing in some server records and archived documents. The patterns have been classified as forms that do not match existing operational languages, security codes, or system log grammar.",
+      },
+      {
+        type: "paragraph",
+        text: "Initial analysis results showed that the characters exhibit repetitiveness that is difficult to attribute to simple encoding errors or file corruption. In particular, some records showed the same arrangement reappearing at different time intervals, with a tendency to be detected alongside access logs of specific departments.",
+      },
+      {
+        type: "paragraph",
+        text: "The security department has currently restricted the external release of related documents and has temporarily adjusted access permissions for affected databases. Additionally, records where the patterns were discovered have been moved to a separate isolated storage facility for further analysis.",
+      },
+      {
+        type: "paragraph",
+        text: "The company stated that this phenomenon has not directly caused failures across operational systems, but explained that since the same pattern is repeatedly observed, continuous monitoring and additional verification are necessary.",
+      },
+      {
+        type: "paragraph",
+        text: "The source of this language pattern has not been confirmed to date. Internal reports record both the possibility of a simple error and the possibility that it could be traces of external intervention or an unregistered protocol.",
+      },
+      {
+        type: "hidden-note",
+        text: "Some records appear to be errors. However, repeated errors are no longer simply ERROR III. The SIGNAL V is occurring without a specific SOURCE II, and the same PATTERN IV is being repeatedly detected in some SYSTEM VI. As a result of internal NETWORK I analysis, some ARCHIVE V records have also been confirmed to be abnormally modified.",
       },
     ],
   },

@@ -80,7 +80,7 @@ export default function Page() {
 
       {/* 3. Company Culture & Values */}
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:gap-16 md:py-24">
-        <div className="relative h-80 grayscale sm:h-[500px]">
+        <div className="relative h-80 grayscale sm:h-500px">
           <Image
             src="/eg_png/egcompany_picture/main.png"
             alt="EG Company corporate office facade"

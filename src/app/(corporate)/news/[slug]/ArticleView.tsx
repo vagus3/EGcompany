@@ -10,7 +10,7 @@ function renderBlock(block: Block, idx: number, workDetailsLabel: string) {
     case "image":
       return (
         <figure key={idx} className="my-12">
-          <div className="relative h-[470px] w-full overflow-hidden bg-gray-300">
+          <div className="relative h-470px w-full overflow-hidden bg-gray-300">
             {block.imageSrc && (
               <Image
                 src={block.imageSrc}
@@ -103,10 +103,11 @@ function renderBlock(block: Block, idx: number, workDetailsLabel: string) {
 export default function ArticleView({ article }: { article: Article }) {
   const lang = useLanguage();
   const title = lang === "en" ? (article.title_en ?? article.title) : article.title;
+  const blocks = lang === "en" && article.blocks_en ? article.blocks_en : article.blocks;
 
   return (
     <div className="bg-white">
-      <main className="mx-auto max-w-[930px] px-6 py-20">
+      <main className="mx-auto max-w-232.5 px-6 py-20">
         <article>
           <h1 className="mb-12 text-[clamp(2.8rem,5vw,4.5rem)] leading-tight font-medium tracking-tight text-black">
             {title}
@@ -118,7 +119,7 @@ export default function ArticleView({ article }: { article: Article }) {
             </p>
           </div>
 
-          {article.blocks.map((block, idx) =>
+          {blocks.map((block, idx) =>
             renderBlock(block, idx, t("news_detail_work_details", lang))
           )}
 

@@ -147,12 +147,11 @@ function HeroSection({ lang }: { lang: Lang }) {
   return (
     <section className="relative grid min-h-[calc(100vh-3.5rem)] place-items-center overflow-hidden border-b border-corporate-border">
       <div className="absolute inset-0 grayscale" style={visualStyles.hero} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_28%,rgb(0_0_0_/_0.38)_72%)]" />
       <div className="relative z-10 flex w-full max-w-6xl flex-col items-center px-6 text-center">
         <p className="mb-8 border border-white/25 bg-black/60 px-3 py-1 font-mono text-[9px] font-black tracking-[0.26em] text-white/70 uppercase">
           {t("home_tagline", lang)}
         </p>
-        <h1 className="text-[clamp(3.4rem,13vw,9.5rem)] leading-none font-black tracking-normal text-black/10 uppercase [-webkit-text-stroke:1px_rgb(255_255_255_/_0.54)]">
+        <h1 className="text-[clamp(3.4rem,13vw,9.5rem)] leading-none font-black tracking-normal text-black/10 uppercase [-webkit-text-stroke:1px_rgb(255_255_255_/0.54)]">
           EG Company
         </h1>
         <p className="mt-8 max-w-md border border-white/20 bg-white px-5 py-3 text-[10px] font-semibold tracking-[0.08em] text-black">
@@ -186,7 +185,7 @@ function StrategicCoreSection({ lang }: { lang: Lang }) {
         <div className="mt-8 grid gap-3 md:grid-cols-3">
           <article className="relative min-h-72 overflow-hidden border border-corporate-border bg-black text-white md:col-span-2">
             <div className="absolute inset-0 opacity-85" style={visualStyles.stairs} />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-5">
+            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black via-black/70 to-transparent p-5">
               <p className="text-2xl font-black uppercase">{t("home_strategic_intel", lang)}</p>
               <p className="mt-1 max-w-md text-xs text-white/70">
                 {t("home_strategic_intel_desc", lang)}
@@ -251,7 +250,7 @@ function FootprintSection({
           </p>
         </div>
         <div
-          className="relative mt-8 min-h-[310px] overflow-hidden border border-corporate-border"
+          className="relative mt-8 min-h-310px overflow-hidden border border-corporate-border"
           style={visualStyles.terrain}
         >
           {dots.map((dot) => (
@@ -278,11 +277,11 @@ function FootprintSection({
 
 function FutureSection({ lang }: { lang: Lang }) {
   return (
-    <section className="relative grid min-h-[430px] place-items-center overflow-hidden bg-black px-6 py-20 text-white">
+    <section className="relative grid min-h-430px place-items-center overflow-hidden bg-black px-6 py-20 text-white">
       <div className="absolute inset-0 opacity-75" style={visualStyles.horizon} />
       <div className="absolute inset-0 bg-black/20" />
       <div className="relative z-10 max-w-4xl text-center">
-        <h2 className="text-[clamp(3rem,10vw,8rem)] leading-none font-black tracking-normal text-transparent uppercase [-webkit-text-stroke:1px_rgb(255_255_255_/_0.65)]">
+        <h2 className="text-[clamp(3rem,10vw,8rem)] leading-none font-black tracking-normal text-transparent uppercase [-webkit-text-stroke:1px_rgb(255_255_255_/0.65)]">
           {t("home_future", lang)}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-[clamp(1.2rem,3vw,2.4rem)] leading-none font-black uppercase">
@@ -394,13 +393,13 @@ function InsightCard({
   style: CSSProperties;
 }) {
   return (
-    <Link href={href} className="group block border border-corporate-border bg-corporate-surface">
-      <div className="aspect-[1.65] grayscale transition-opacity group-hover:opacity-80" style={style} />
+    <Link href={href} className="block border border-corporate-border bg-corporate-surface">
+      <div className="aspect-[1.65] grayscale" style={style} />
       <div className="p-5">
         <p className="font-mono text-[9px] tracking-[0.2em] text-corporate-text-muted uppercase">
           {category}
         </p>
-        <h3 className="mt-2 text-xl leading-tight font-semibold group-hover:underline">{title}</h3>
+        <h3 className="mt-2 text-xl leading-tight font-semibold">{title}</h3>
         <p className="mt-5 font-mono text-xs text-corporate-text-muted">{readLabel}</p>
       </div>
     </Link>
