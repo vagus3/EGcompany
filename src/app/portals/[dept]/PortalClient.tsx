@@ -20,10 +20,10 @@ function TerminalInput({
   return (
     <div className="relative mt-1">
       {/* Corner squares */}
-      <span className={`${sq} -top-[3px] -left-[3px]`} />
-      <span className={`${sq} -top-[3px] -right-[3px]`} />
-      <span className={`${sq} -bottom-[3px] -left-[3px]`} />
-      <span className={`${sq} -right-[3px] -bottom-[3px]`} />
+      <span className={`${sq} -top-3px -left-3px`} />
+      <span className={`${sq} -top-3px -right-3px`} />
+      <span className={`${sq} -bottom-3px -left-3px`} />
+      <span className={`${sq} -right-3px -bottom-3px`} />
 
       <input
         type="text"
@@ -74,7 +74,7 @@ export default function PortalClient({ portal }: { portal: PortalConfig }) {
   if (portal.isSecurity) {
     return (
       <main className="min-h-screen overflow-hidden bg-[#101010] text-[#f2f0ec]">
-        <header className="grid h-[74px] grid-cols-[1fr_auto] items-center border-b border-[#2b2b2b] bg-[#151515] px-8">
+        <header className="grid h-74px grid-cols-[1fr_auto] items-center border-b border-[#2b2b2b] bg-[#151515] px-8">
           <h1 className="text-[26px] font-black tracking-[-0.02em]">
             EG COMPANY - {portal.name.toUpperCase()}
           </h1>
@@ -135,7 +135,7 @@ export default function PortalClient({ portal }: { portal: PortalConfig }) {
   /* ── Standard department variant ── */
   return (
     <main className="min-h-screen overflow-hidden bg-[#101010] text-[#f2f0ec]">
-      <header className="grid h-[74px] grid-cols-[1fr_auto] items-center border-b border-[#2b2b2b] bg-[#151515] px-8">
+      <header className="grid h-74px grid-cols-[1fr_auto] items-center border-b border-[#2b2b2b] bg-[#151515] px-8">
         <h1 className="text-[26px] font-black tracking-[-0.02em]">
           EG COMPANY - {portal.name.toUpperCase()}
         </h1>

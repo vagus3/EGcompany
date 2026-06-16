@@ -29,7 +29,7 @@ export default function Page() {
         {/* Featured Article */}
         <article className="mb-20">
           <Link href={`/news/${featured.slug}`} className="group block">
-            <div className="relative mb-6 aspect-[16/7] w-full overflow-hidden bg-gray-300">
+            <div className="relative mb-6 aspect-16/7 w-full overflow-hidden bg-gray-300">
               <Image
                 src={featured.imageSrc}
                 alt={featuredTitle}
@@ -78,7 +78,7 @@ export default function Page() {
             return (
               <article key={article.slug}>
                 <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="relative mb-5 aspect-[16/9] w-full overflow-hidden bg-gray-300">
+                  <div className="relative mb-5 aspect-video w-full overflow-hidden bg-gray-300">
                     <Image
                       src={article.imageSrc}
                       alt={articleTitle}

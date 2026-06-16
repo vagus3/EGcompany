@@ -90,13 +90,13 @@ function Hero() {
           Department of Security
         </div>
 
-        <h1 className="max-w-[672px] text-[96px] font-black leading-none tracking-[-4.8px]">
+        <h1 className="max-w-672px text-[96px] font-black leading-none tracking-[-4.8px]">
           Asset
           <br />
           Protection.
         </h1>
 
-        <p className="mt-10 max-w-[672px] text-xl font-medium leading-7 tracking-[-0.5px] text-neutral-500">
+        <p className="mt-10 max-w-672px text-xl font-medium leading-7 tracking-[-0.5px] text-neutral-500">
           Safeguarding human capital and physical infrastructure through rigorous
           protocol, continuous threat assessment, and immediate tactical response.
         </p>
@@ -108,7 +108,7 @@ function Hero() {
 function OperationalDirectives() {
   return (
     <section className="bg-neutral-100 px-6 py-24">
-      <div className="mx-auto w-full max-w-[1080px] px-6">
+      <div className="mx-auto w-full max-w-1080px px-6">
         <h2 className="mb-16 text-3xl font-black tracking-[-1.5px]">
           Operational Directives
         </h2>
@@ -132,7 +132,7 @@ function DirectiveCard({ directive }: { directive: Directive }) {
   return (
     <article
       className={[
-        "min-h-[330px] bg-white px-14 py-16",
+        "min-h-330px bg-white px-14 py-16",
         directive.wide ? "col-span-2" : "col-span-1",
       ].join(" ")}
     >
@@ -142,11 +142,11 @@ function DirectiveCard({ directive }: { directive: Directive }) {
         {directive.title}
       </h3>
 
-      <p className="max-w-[560px] text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
+      <p className="max-w-560px text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
         {directive.description}
       </p>
 
-      <p className="mt-14 text-[10px] font-bold uppercase leading-[15px] tracking-[1px]">
+      <p className="mt-14 text-[10px] font-bold uppercase leading-15px tracking-[1px]">
         {directive.label}
       </p>
     </article>
@@ -155,7 +155,7 @@ function DirectiveCard({ directive }: { directive: Directive }) {
 
 function EmergencyCard() {
   return (
-    <article className="col-span-3 grid min-h-[290px] grid-cols-[1.4fr_0.75fr] items-center gap-16 bg-white px-14 py-14">
+    <article className="col-span-3 grid min-h-290px grid-cols-[1.4fr_0.75fr] items-center gap-16 bg-white px-14 py-14">
       <div>
         <Icon name="diamond" />
 
@@ -163,7 +163,7 @@ function EmergencyCard() {
           Emergency Resolution Protocols
         </h3>
 
-        <p className="max-w-[620px] text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
+        <p className="max-w-620px text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
           Rapid-response escalation frameworks designed for immediate containment
           and neutralization of active threats, localized crises, or widespread
           systemic failures.
@@ -177,7 +177,7 @@ function EmergencyCard() {
 
 function ThreatLandscape() {
   return (
-    <article className="min-h-[370px] bg-white px-12 py-14">
+    <article className="min-h-370px bg-white px-12 py-14">
       <Icon name="radar" />
 
       <h3 className="mt-8 mb-9 text-2xl font-black leading-7 tracking-[-1px]">
@@ -195,7 +195,7 @@ function ThreatLandscape() {
 
 function TechnologyStack() {
   return (
-    <article className="min-h-[370px] bg-white px-12 py-14">
+    <article className="min-h-370px bg-white px-12 py-14">
       <h3 className="mb-10 text-2xl font-black leading-7 tracking-[-1px]">
         Technology Stack
       </h3>
@@ -216,7 +216,7 @@ function TechnologyStack() {
 
 function GlobalResponseUnits() {
   return (
-    <article className="min-h-[370px] bg-white px-12 py-14">
+    <article className="min-h-370px bg-white px-12 py-14">
       <Icon name="glonpmbe" />
 
       <h3 className="mt-8 mb-8 text-2xl font-black leading-7 tracking-[-1px]">
@@ -239,7 +239,7 @@ function GlobalResponseUnits() {
 
 function ServerImage() {
   return (
-    <div className="h-[150px] w-full max-w-[300px] justify-self-end overflow-hidden bg-neutral-300">
+    <div className="h-150px w-full max-w-300px justify-self-end overflow-hidden bg-neutral-300">
       <div className="grid h-full grid-cols-5 gap-px opacity-70">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
@@ -255,13 +255,13 @@ function ServerImage() {
 function ContactSection() {
   return (
     <section className="bg-neutral-50 px-6 py-36">
-      <div className="mx-auto grid w-full max-w-[1080px] grid-cols-2 gap-32 border-t border-neutral-300 px-6 pt-16">
+      <div className="mx-auto grid w-full max-w-1080px grid-cols-2 gap-32 border-t border-neutral-300 px-6 pt-16">
         <div>
           <h2 className="mb-10 text-4xl font-black leading-10 tracking-[-1.8px]">
             Direct Line.
           </h2>
 
-          <p className="mb-8 max-w-[370px] text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
+          <p className="mb-8 max-w-370px text-base font-medium leading-7 tracking-[-0.4px] text-neutral-500">
             For immediate security concerns or to schedule a comprehensive risk
             assessment, contact the global dispatch center.
           </p>
@@ -300,7 +300,7 @@ Metropolis, NY 10001`}
 function ContactInfo({ label, main, sub, large = false }: ContactInfoProps) {
   return (
     <div>
-      <p className="mb-2 text-[10px] font-bold uppercase leading-[15px] tracking-[1px] text-neutral-500">
+      <p className="mb-2 text-[10px] font-bold uppercase leading-15px tracking-[1px] text-neutral-500">
         {label}
       </p>
 

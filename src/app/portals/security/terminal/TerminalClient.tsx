@@ -539,7 +539,7 @@ export default function TerminalClient() {
         terminalTheme.page
       )}
     >
-      <header className="border-terminal-border flex min-h-[52px] items-center justify-between border-b bg-[#151515] px-5">
+      <header className="border-terminal-border flex min-h-52px items-center justify-between border-b bg-[#151515] px-5">
         <h1 className="font-mono text-xl font-black tracking-[-0.03em] text-white">SECURITY_15</h1>
         <button
           type="button"
@@ -664,7 +664,7 @@ function CubeChallengeModal({ onComplete }: { onComplete: () => void }) {
       aria-label="Cube protocol challenge"
     >
       <div className="terminal-noise absolute inset-0 opacity-25" />
-      <section className="border-terminal-accent relative w-full max-w-5xl border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/_0.32)]">
+      <section className="border-terminal-accent relative w-full max-w-5xl border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/0.32)]">
         <div className="border-terminal-accent/50 border-b bg-[#190303] px-5 py-4 font-mono">
           <p className="text-terminal-accent-text text-xs font-black tracking-[0.34em]">
             SYSTEM ALERT: ACTIVE
@@ -697,7 +697,7 @@ function TerminalSidebar({
 
   return (
     <aside className="border-terminal-border flex min-h-0 flex-col border-b bg-[#0b0b0b] lg:border-r lg:border-b-0">
-      <section className="border-terminal-border flex min-h-[96px] items-center gap-4 border-b px-5">
+      <section className="border-terminal-border flex min-h-96px items-center gap-4 border-b px-5">
         <div className="bg-terminal-accent-strong grid h-10 w-10 place-items-center">
           <Shield className="h-5 w-5 fill-white text-white" />
         </div>
@@ -860,7 +860,7 @@ function FullscreenEndingVideo({
         onEnded={onEnded}
       />
       <div className="absolute inset-0 bg-black/35" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_45%,rgb(0_0_0_/_0.72)_82%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0_45%,rgb(0_0_0_/0.72)_82%)]" />
       <div className="terminal-noise absolute inset-0 opacity-25" />
 
       <div className="absolute right-6 bottom-6 z-20">
@@ -908,8 +908,8 @@ function SurveyQrPage({
   return (
     <main className="min-h-screen bg-[#111] px-4 py-14 text-white sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-5xl flex-col items-center">
-        <section className="mb-12 w-full max-w-[320px] sm:mb-14 sm:max-w-[380px]">
-          <div className="border-terminal-accent/45 relative aspect-[638/1016] overflow-hidden border bg-black shadow-[0_0_60px_rgba(176,0,0,0.22)]">
+        <section className="mb-12 w-full max-w-[320px] sm:mb-14 sm:max-w-380px">
+          <div className="border-terminal-accent/45 relative aspect-638/1016 overflow-hidden border bg-black shadow-[0_0_60px_rgba(176,0,0,0.22)]">
             {rewardCardSrc ? (
               <Image
                 src={rewardCardSrc}
@@ -947,7 +947,7 @@ function SurveyQrPage({
           </p>
         </section>
 
-        <section className="mt-20 w-full max-w-[520px] bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
+        <section className="mt-20 w-full max-w-520px bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
           <MockQrCode value={surveyUrl} />
           <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
             &gt;_ 플레이 후기 설문조사 폼
@@ -993,7 +993,7 @@ function MockQrCode({ value }: { value: string }) {
 
   return (
     <div
-      className="mx-auto grid aspect-square w-full max-w-[270px] gap-[2px] bg-white p-2"
+      className="mx-auto grid aspect-square w-full max-w-270px gap-2px bg-white p-2"
       style={{ gridTemplateColumns: "repeat(29, minmax(0, 1fr))" }}
       aria-label="Mock survey QR code"
     >
@@ -1017,7 +1017,7 @@ function MessengerList({
 }) {
   return (
     <section className="border-terminal-border min-h-0 border-b bg-[#0d0d0d] lg:border-r lg:border-b-0">
-      <div className="border-terminal-border flex h-[54px] items-center justify-between border-b px-5">
+      <div className="border-terminal-border flex h-54px items-center justify-between border-b px-5">
         <h2 className="font-mono text-sm font-black text-white">받은 메일함</h2>
         <p className="text-terminal-accent-muted font-mono text-[9px] tracking-[0.18em]">
           LIVE_FEED
@@ -1038,7 +1038,7 @@ function MessengerList({
               type="button"
               onClick={() => onSelectMail(mail.id)}
               className={cx(
-                "border-terminal-border block min-h-[96px] w-full border-b px-5 py-4 text-left transition",
+                "border-terminal-border block min-h-96px w-full border-b px-5 py-4 text-left transition",
                 active
                   ? "bg-terminal-accent-strong text-white"
                   : "text-terminal-text bg-[#101010] hover:bg-[#181818]"
@@ -1153,7 +1153,7 @@ function MessengerDetail({
         </div>
       </div>
 
-      <div className="mx-auto max-w-[920px] px-6 py-7 lg:px-8">
+      <div className="mx-auto max-w-920px px-6 py-7 lg:px-8">
         {isUrgentCubeMail ? (
           <UrgentAlertBody />
         ) : !isCorruptedCommandMail ? (
@@ -1190,12 +1190,12 @@ function MessengerDetail({
 
 function UrgentAlertBody() {
   return (
-    <article className="text-terminal-copy bg-[#202020] px-6 py-8 shadow-[0_22px_80px_rgb(0_0_0_/_0.28)] lg:px-10">
+    <article className="text-terminal-copy bg-[#202020] px-6 py-8 shadow-[0_22px_80px_rgb(0_0_0_/0.28)] lg:px-10">
       <h3 className="text-terminal-accent-muted text-[clamp(1.2rem,2.4vw,1.65rem)] font-medium">
         보안팀 열람 요망_기밀 사항
       </h3>
 
-      <div className="mx-auto mt-8 w-full max-w-[250px]">
+      <div className="mx-auto mt-8 w-full max-w-250px">
         <div className="relative aspect-square overflow-hidden bg-[#333]">
           <Image
             src="/eg_png/egcompany_picture/P/P03.png"
@@ -1404,9 +1404,9 @@ function renderMailChallenge({
     return completed.has(challengeIds.corrupted) ? (
       <CompletedPanel label="UNKNOWN_LANGUAGE_ACCEPTED" />
     ) : (
-      <section className="mx-auto max-w-[760px]">
-        <div className="mx-auto max-w-[520px] bg-[#2c2c2c] p-3">
-          <div className="relative aspect-[635/411] overflow-hidden bg-black">
+      <section className="mx-auto max-w-760px">
+        <div className="mx-auto max-w-520px bg-[#2c2c2c] p-3">
+          <div className="relative aspect-635/411 overflow-hidden bg-black">
             <Image
               src="/eg_png/egcompany_picture/P/P04.png"
               alt="Visual log image 13"
@@ -1428,7 +1428,7 @@ function renderMailChallenge({
 
         <form
           onSubmit={onSubmitCommand}
-          className="border-terminal-accent/50 mt-12 border bg-[#2d2d2d] px-6 py-7 shadow-[0_24px_80px_rgb(0_0_0_/_0.38)] sm:px-9"
+          className="border-terminal-accent/50 mt-12 border bg-[#2d2d2d] px-6 py-7 shadow-[0_24px_80px_rgb(0_0_0_/0.38)] sm:px-9"
         >
           <label
             htmlFor="corrupted-command-input"
