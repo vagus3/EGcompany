@@ -34,21 +34,6 @@ export default function Page() {
     { role: t("hr_career_4_role", lang), level: t("hr_career_4_level", lang) },
   ];
 
-  const testimonials = [
-    {
-      name: "Yara Choi",
-      role: t("hr_t1_role", lang),
-      quote: t("hr_t1_quote", lang),
-      imageSrc: "/eg_png/egcompany_picture/card/card_s.png",
-    },
-    {
-      name: "Marc Berg",
-      role: t("hr_t2_role", lang),
-      quote: t("hr_t2_quote", lang),
-      imageSrc: "/eg_png/egcompany_picture/card/card_b.png",
-    },
-  ];
-
   return (
     <div className="bg-white font-sans text-zinc-900">
       {/* 1. Hero Section */}
@@ -128,37 +113,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 5. Employee Experience */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-        <h2 className="mb-16 text-center text-2xl font-bold">{t("hr_exp_heading", lang)}</h2>
-        <div className="grid gap-12 md:grid-cols-2">
-          {testimonials.map((testimonial, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col items-center gap-6 bg-zinc-50 p-6 sm:p-8 md:flex-row md:gap-8"
-            >
-              <div className="flex-shrink-linear-0 h-32 w-32 overflow-hidden rounded-full bg-zinc-300 grayscale">
-                <Image
-                  src={testimonial.imageSrc}
-                  alt={`${testimonial.name} employee card`}
-                  width={128}
-                  height={128}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="mb-6 font-serif text-lg text-zinc-600 italic">
-                  &#34;{testimonial.quote}&#34;
-                </p>
-                <p className="font-bold">{testimonial.name}</p>
-                <p className="text-sm text-zinc-400">{testimonial.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. Footer / Get in Touch */}
+      {/* 5. Footer / Get in Touch */}
       <section className="border-t border-zinc-200 bg-zinc-50 py-16 sm:py-20">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-10 px-4 sm:px-6 md:flex-row md:gap-12">
           <div>

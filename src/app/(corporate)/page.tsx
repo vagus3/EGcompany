@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 
 import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
 import {
@@ -360,12 +361,14 @@ function InsightsSection({ lang }: { lang: Lang }) {
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <InsightCard
+            href="/news/q3-strategy-report"
             title={t("home_insight_a_title", lang)}
             category={t("home_insight_a_cat", lang)}
             readLabel={t("home_read", lang)}
             style={visualStyles.insightA}
           />
           <InsightCard
+            href="/news/unauthorized-language-pattern"
             title={t("home_insight_b_title", lang)}
             category={t("home_insight_b_cat", lang)}
             readLabel={t("home_read", lang)}
@@ -378,27 +381,29 @@ function InsightsSection({ lang }: { lang: Lang }) {
 }
 
 function InsightCard({
+  href,
   title,
   category,
   readLabel,
   style,
 }: {
+  href: string;
   title: string;
   category: string;
   readLabel: string;
   style: CSSProperties;
 }) {
   return (
-    <article className="border border-corporate-border bg-corporate-surface">
-      <div className="aspect-[1.65] grayscale" style={style} />
+    <Link href={href} className="group block border border-corporate-border bg-corporate-surface">
+      <div className="aspect-[1.65] grayscale transition-opacity group-hover:opacity-80" style={style} />
       <div className="p-5">
         <p className="font-mono text-[9px] tracking-[0.2em] text-corporate-text-muted uppercase">
           {category}
         </p>
-        <h3 className="mt-2 text-xl leading-tight font-semibold">{title}</h3>
+        <h3 className="mt-2 text-xl leading-tight font-semibold group-hover:underline">{title}</h3>
         <p className="mt-5 font-mono text-xs text-corporate-text-muted">{readLabel}</p>
       </div>
-    </article>
+    </Link>
   );
 }
 
