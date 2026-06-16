@@ -19,6 +19,7 @@ model User {
   notificationEnabled Boolean  @default(true)
   language            String   @default("ko")
   theme               String   @default("light")
+  consentedAt         DateTime?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 

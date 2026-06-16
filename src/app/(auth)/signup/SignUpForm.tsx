@@ -92,6 +92,38 @@ export default function SignUpForm() {
 
       <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-5 text-left sm:p-8">
         <h2 className="text-[12px] font-black tracking-[0.24em] text-black uppercase">
+          {t("signup_privacy_title", lang)}
+        </h2>
+        <div className="mt-7 space-y-5 text-[12px] leading-7 font-semibold tracking-[0.18em] text-neutral-600 uppercase">
+          <div>
+            <p className="text-black">{t("signup_privacy_section1_title", lang)}</p>
+            <p>{t("signup_privacy_section1_body", lang)}</p>
+          </div>
+          <div>
+            <p className="text-black">{t("signup_privacy_section2_title", lang)}</p>
+            <p>{t("signup_privacy_section2_body1", lang)}</p>
+            <p>{t("signup_privacy_section2_body2", lang)}</p>
+            <p>{t("signup_privacy_section2_body3", lang)}</p>
+          </div>
+          <div>
+            <p className="text-black">{t("signup_privacy_section3_title", lang)}</p>
+            <p>{t("signup_privacy_section3_body1", lang)}</p>
+            <p>{t("signup_privacy_section3_body2", lang)}</p>
+          </div>
+          <div>
+            <p className="text-black">{t("signup_privacy_section4_title", lang)}</p>
+            <p>{t("signup_privacy_section4_body1", lang)}</p>
+            <p>{t("signup_privacy_section4_body2", lang)}</p>
+          </div>
+          <div>
+            <p className="text-black">{t("signup_privacy_section5_title", lang)}</p>
+            <p>{t("signup_privacy_section5_body", lang)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-5 text-left sm:p-8">
+        <h2 className="text-[12px] font-black tracking-[0.24em] text-black uppercase">
           {t("signup_conduct_title", lang)}
         </h2>
         <div className="mt-7 space-y-5 text-[12px] leading-7 font-semibold tracking-[0.18em] text-neutral-600 uppercase">
