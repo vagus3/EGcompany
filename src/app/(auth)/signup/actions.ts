@@ -52,6 +52,7 @@ async function createUserWithEmployeeCode({
           language,
           theme,
           passwordHash: await hashPassword(password),
+          consentedAt: new Date(),
         },
       });
     } catch (error) {
