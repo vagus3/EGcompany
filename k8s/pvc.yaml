@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: escape-web-db
+  namespace: escape-web
+spec:
+  accessModes:
+    - ReadWriteOnce   # SQLite는 단일 노드 접근만 지원
+  resources:
+    requests:
+      storage: 2Gi

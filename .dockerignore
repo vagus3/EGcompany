@@ -1,0 +1,16 @@
+.git
+.gitignore
+.next
+.env*
+node_modules
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db-wal
+prisma/*.db-shm
+outputs
+coverage
+*.tsbuildinfo
+README.md
+CLAUDE.md
+AGENTS.md
+k8s

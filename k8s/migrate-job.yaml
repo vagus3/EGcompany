@@ -1,0 +1,28 @@
+# 새 버전 배포 전에 마이그레이션을 실행하는 Job
+# kubectl apply -f k8s/migrate-job.yaml && kubectl wait --for=condition=complete job/db-migrate -n escape-web --timeout=120s
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  namespace: escape-web
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: ghcr.io/YOUR_ORG/escape-web:latest  # 실제 이미지 경로로 변경
+          command: ["npx", "prisma", "migrate", "deploy"]
+          envFrom:
+            - secretRef:
+                name: escape-web-secret
+            - configMapRef:
+                name: escape-web-config
+          volumeMounts:
+            - name: db-data
+              mountPath: /app/data
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: escape-web-db
