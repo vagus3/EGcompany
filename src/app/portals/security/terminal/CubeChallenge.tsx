@@ -131,7 +131,7 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
   return (
     <section className="border-terminal-border border bg-black/40">
       <div className="grid gap-5 p-5 lg:grid-cols-[1fr_230px]">
-        <div className="border-terminal-border h-[360px] min-h-[320px] border bg-[#020202] sm:h-[430px]">
+        <div className="border-terminal-border h-360px min-h-320px border bg-[#020202] sm:h-430x]">
           <Canvas camera={{ position: [3.2, 2.7, 4.2], fov: 43 }} gl={{ antialias: true }}>
             <color attach="background" args={["#020202"]} />
             <ambientLight intensity={1.2} />

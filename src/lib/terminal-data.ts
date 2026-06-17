@@ -35,6 +35,12 @@ export interface TerminalProgress {
   completedChallengeIds: string[];
 }
 
+export interface SecurityReadoutRow {
+  label: string;
+  value: string;
+  danger?: boolean;
+}
+
 export interface TerminalObjectEntry {
   id: string;
   label: string;
@@ -45,10 +51,10 @@ export interface TerminalObjectEntry {
   note: string;
   description: string[];
   containment: string[];
-  status: string;
+  status: string[];
+  imageLabel: string;
+  securityReadout: SecurityReadoutRow[];
 }
-
-export const TERMINAL_PROGRESS_STORAGE_KEY = "eg-terminal-progress-v3";
 
 export const pinChallengeAnswer = ["OBSERVE", "TRACE", "KEY", "LOCK"] as const;
 
@@ -62,26 +68,69 @@ export const terminalObjects: TerminalObjectEntry[] = [
     classCode: "VISUAL-02",
     note: "관찰 대상. 직접 응시 기록이 반복됩니다.",
     description: [
-      "WESEN-096은 직접적인 시선 접촉 기록에 반응하는 관찰형 개체다.",
-      "기록자는 대상이 시야에서 사라진 후에도 관찰이 계속되는 느낌을 보고했다.",
+      "WESEN-096은  검은 유리 앰플 형태로 보관되는 미확인 독성 개체다.",
+      "내부 물질은 액체처럼 보이지만, 실제로는 끊임없이 미세 증발을 반복하는 반기체 상태에 가깝다.",
+      " ",
+      "해당 개체의 가장 위험한 특징은 &#34;흡입 사실을 인지할 수 없다&#34; 는 점이다",
+      "노출자는 대부분 자신이 오염되었다는 사실을 자각하지 못하며, 초기 단계에서는",
+      "단순 피로, 금속 냄새, 호흡 곤란 정도만 보고된다. 그러나 일정시간이 경과하면",
+      "감염자는 주변 인물들에게 동일 증상을 확산시키기 시작한다",
+      " ",
+      "현재까지 정확한 감염 원리는 밝혀지지 않았다",
     ],
-    containment: ["직접 응시 금지", "시각 자료는 저해상도 사본으로만 열람"],
-    status: "시각 접촉 기록 3건 보류 중",
+    containment: [
+      "WESEN-096 보관 구역은 허가되지 않은 환기 시스템 접근 금지",
+      "노출 의심자는 격리 후 최소 12시간 관찰한다",
+      "보호 장비 제거는 지정된 소독실 내부에서만 허용된다",
+    ],
+    status: [
+      "시각 접촉 기록 3건 보류 중",
+      "3차 누출 사고 이후 관련 연구 자료 대부분 폐기 처리되었으며,",
+      "현재 연구 접근 권한은 SENIOR 이상 인원으로 제한된다.",
+    ],
+    imageLabel: "WES_096.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "SEOUL" },
+      { label: "BEHAVIOR_PROFILE", value: "AIRBORNE-TOXIC", danger: true },
+      { label: "COGNITIVE_THREAT", value: "NONE_DETECTED" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-783",
     label: "WESEN-783",
     symbol: "OBSERVE",
-    title: "The Static Observer",
-    safetyLevel: 2,
+    title: "The Watcher's Eye",
+    safetyLevel: 3,
     classCode: "OBSERVE-04",
     note: "고정 카메라와 관찰 로그에만 반응합니다.",
     description: [
-      "WESEN-783은 감시 장비가 켜져 있을 때만 위치가 확정되는 관찰형 개체다.",
-      "관찰이 중단되면 이전 프레임과 현재 프레임 사이의 기록이 비어 있게 된다.",
+      "WESEN-783은 인간의 안구아 유사한 형태의 감시성 개체다.",
+      "표면은 유릴처럼 매끄럽지만 실제 촉감은 생체 조직과 유사하며,",
+      "빛을 받지 않아도 내부 동공이 미세하게 움직이는 현상이 보고된다.",
+      " ",
+      "해당 개체는 &#34;관측&#34; 자체에 반응한다. 누군가 WESEN-783을 일정 시간 이상",
+      "바라 볼 경우, 이후 주변 전자기기 거울 CCTV 화면 등에서 동일한 눈 형태가 반복적으로",
+      "출현하기 시작한다.",
+      " ",
+      "현재까지 직접적인 물리 피해는 확인되지 않았으나, 장기 노출자 다수가",
+      "심각한 수면 장애아 피해망상 증세를 보였다."
     ],
-    containment: ["감시 장비 2대 이상 동시 운용", "관찰 로그 30초 이상 공백 금지"],
-    status: "카메라 02-B 동기화 필요",
+    containment: [
+      "WESEN-783 보관실 내부에는 반사 가능한 재질 사용 금지",
+      "개체 이동 시 반드시 암전 상태 유지",
+    ],
+    status: [
+      "최근 보관실 로그에서 무인 상태임에도 내부 감시 카메라 초점이 자동으로 개체 방향으로 조정되는 현상이 확인됨.",
+      "원인 불명, 추후 연구 필요.",
+    ],
+    imageLabel: "WES_783.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "CANADA" },
+      { label: "BEHAVIOR_PROFILE", value: "OBSERVATION-REACTIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "MODERATE" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-1744",
@@ -97,84 +146,197 @@ export const terminalObjects: TerminalObjectEntry[] = [
     ],
     containment: [
       "실제 자물쇠가 없어도 작동하며, 디지털 시스템에도 적용된다.",
-      "사용 시, 열리는 대상은 항상 하나로 고정되지 않는다.",
+      "사용 시, 열리는 대상은 항상 하나로 고정되지 않는다. 사용 시 주의를 요함",
     ],
-    status: "현재 EG Log 03-27 창고에 보관 중",
+    status: [
+      "현재 EG Log 03-27 창고에 보관 중 필요 시 담당자에게 권한 요청 바람.",
+      "(하급 사원이 해당 개체를 이용해서 부적절한 상급 부서 접촉 적발 시, 징계 처리함."
+    ],
+    imageLabel: "WES_1744.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "SEOUL" },
+      { label: "BEHAVIOR_PROFILE", value: "KEY-RESPONSIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "NONE_DETECTED" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-0491",
     label: "WESEN-0491",
     symbol: "LOCK",
-    title: "The Sealed Door",
+    title: "The Silent Lock",
     safetyLevel: 3,
     classCode: "SEAL-09",
     note: "격리 절차 중단을 방지하는 잠금 장치입니다.",
     description: [
-      "WESEN-0491은 열 수 없는 문처럼 보이지만, 잠금의 원인이 문이 아니라 접근자에게 있는 개체다.",
-      "허가되지 않은 접근자는 같은 복도를 반복해서 통과하게 된다.",
+      "WESEN-0491은 오래된 산업용 자물쇠 형태의 개체다.",
+      "표면에는 제조사 정보나 열쇠 구멍 구조가 존재하지 않으며,",
+      "강한 부식 흔적에도 불구하고 물리적 손상이 발생하지 않는다.",
+      " ",
+      "해당 개체는 단순 문 금고뿐 아니라 파일, 기억, 공간, 통신 기록 등",
+      "사용자가 &#34;숨기고 싶다&#34;고 인식한 대상에도 영향을 미친다.",
+      "일부 실험에서는 특정 데이터 자체가 완전히 소실되는 현상이 확인되었다.",
     ],
-    containment: ["승인된 관리자 카드 없이 접근 금지", "물리적 개방 시도 금지"],
-    status: "잠금 루프 안정",
+    containment: [
+      "승인된 관리자 카드 없이 접근 금지",
+      "시험 시 봉인 대상 지정 오류 발생 가능성 존재. 사용 전 대상 명칭을 반복 확인할 것.",
+    ],
+    status: [
+      "직전 실험 도중 방탈출 경험이 다수한 연구원 앞에서 자동으로 봉인이 해제된 사례가 있음.",
+      "긴급해제가 필요할 시 해당 사원 호출 요망"
+    ],
+    imageLabel: "WES_0491.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "SAN FRANCISCO" },
+      { label: "BEHAVIOR_PROFILE", value: "SEAL-ACTIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "NONE_DETECTED" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-106",
     label: "WESEN-106",
     symbol: "OPEN",
-    title: "The Open Place",
-    safetyLevel: 2,
+    title: "The Last Exposure",
+    safetyLevel: 3,
     classCode: "BREACH-04",
     note: "개방 상태가 감지되면 즉시 보고해야 합니다.",
     description: [
-      "WESEN-106은 닫힌 공간을 열린 장소로 오인하게 만드는 인지형 개체다.",
-      "대상 주변의 표지판과 방향 감각이 동시에 불안정해진다.",
+      "WESEN-106은 구형 필름 카메라 형태의 기록형 개체다.",
+      "이형은 손상된 80년대 휴대용 카메라와 유사하지만,",
+      "내부 필름 배터리 저장 장치는 존재하지 않는다.",
+      " ",
+      "해당 개체로 촬영된 대상은 단순 이미지가 아닌 &#34;정보 자체&#34;가 기록된다.",
+      "사진을 열람한 인원은 대상의 이름, 구조, 상태, 일부 기억 등을 직관적으로 인지하게 되며,",
+      "경우에 따라 대상이 숨기고 있던 정보까지 노출되는 사례가 보고되었다."
     ],
-    containment: ["출입문 2중 잠금 유지", "개방 상태 보고 자동화"],
-    status: "개방 감지 없음",
+    containment: [
+      "WESEN-106으로 촬영된 사진은 비인가 인원의 열람 금지.",
+      "개체 사용 이후 촬영자는 반드시 기억 안정화 검사를 실시한다.",
+    ],
+    status: [
+      "실험 도중 연구원 1명이 동료를 촬영",
+      "이후 사진을 확인한 모든 인원이 대상의 어린 시절 기억 일부를 동일하게 진술했다.",
+      " ",
+      "문제는 진술 내용 중 당사자 본인조차 기억하지 못하던 정보가 포함되어 있었다는 점이다.",
+      " ",
+      "현재 해당 사진은 폐기 처리되었으나, 관련 인원 일부가 동일한 꿈을 반복 보고 중."
+    ],
+    imageLabel: "WES_106.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "CANADA" },
+      { label: "BEHAVIOR_PROFILE", value: "RECORD-ACTIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "HIGH" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-392",
     label: "WESEN-392",
     symbol: "TRACE",
     classCode: "TRACE-11",
-    title: "The Red Trail",
-    safetyLevel: 3,
+    title: "The Bastion",
+    safetyLevel: 5,
     note: "이동 경로와 접근 로그를 역추적합니다.",
     description: [
-      "WESEN-392는 접근자의 경로 뒤에만 나타나는 잔류 기록형 개체다.",
-      "실제 이동하지 않은 경로도 로그에는 남을 수 있다.",
+      "WESEN-392는 방패 형태의 대형 금속 개체다.",
+      "표면은 정체 불명의 흑색 합금으로 구성되어 있으며, 충격화염고열폭발 등",
+      "대부분의 물리적 손상에 영향을 받지 않는다.",
+      " ",
+      "해당 개체는 사용자가 &#34;지켜야 한다&#34;고 인식한 대상을 중심으로",
+      "주변 공간 자체를 방어구조로 재구성한다. 실험 과정에서 출입문이 봉쇄되거나, 복도가 변형되며,",
+      "감시 시스템 접근이 차단되는 현상이 반복 보고되었다.",
     ],
-    containment: ["접근 로그 실시간 비교", "동일 경로 2회 반복 금지"],
-    status: "추적 로그 검증 대기",
+    containment: [
+      "개체 활성화 이후 비정상적인 방법으로 내부 진입 시도 금지. 자동 적대 판정 가능성 존재",
+      "주 관리 부서를 보안팀으로 지정할 것",
+    ],
+    status: [
+      "WESEN-392는 현재 EG Company 본사 보안 시스템 일부에 실제 활용 중이다.",
+      " ",
+      "본사 지하 Defense Sector에서는 WESEN-392 기반 공간 방어 프로토콜이",
+      "상시 활성화되어 있으며, Level-4 이상 보안 경보 발생 시 자동으로",
+      "주요 복도 및 출입구 구조가 재배치된다.",
+      " ",
+      "외부인 오인 방지를 위해 모든 사원은 반드시 등록 절차를 거쳐야 함."
+    ],
+    imageLabel: "WES_392.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "SEOUL" },
+      { label: "BEHAVIOR_PROFILE", value: "DEFENSE-ACTIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "NONE_DETECTED" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-9428",
     label: "WESEN-9428",
     symbol: "ARCHIVE",
     classCode: "DOC-19",
-    title: "The Missing Index",
-    safetyLevel: 2,
+    title: "The Red Zone",
+    safetyLevel: 8,
     note: "보관 문서와 승인 이력을 열람합니다.",
     description: [
-      "WESEN-9428은 존재하지 않는 문서 색인을 생성하는 기록형 개체다.",
-      "색인된 문서 중 일부는 실제 문서보다 먼저 발견된다.",
+      "WESEN-9428은 특정 형태가 존재하지 않는 재난성 개체다.",
+      "현재까지 관측 기록에 따르면 경고 표식 비상 방송 안전 프로토콜 재난 안내 체계",
+      "내부에서 반복적으로 출현한다.",
+      " ",
+      "목적이 없는 위험 경고를 주변으로 전파하는 특성을 가지고 있다.",
+      "경고를 인지한 대상은 일정 시간 이후 동일한 경고 문구를 반ㅂ고 생성하기 시작하며,",
+      "주변 시스템 역시 연쇄적으로 오작동한다.",
     ],
-    containment: ["색인 자동 동기화 중지", "수동 승인 후 열람"],
-    status: "문서 8건 격리",
+    containment: [
+      "WESEN-9428 관련 경고 문구는 반드시 승인된 수화 방식으로만 전달할 것.",
+      "자동 경보 시스템 연결 금지.",
+      "반드시 형태가 있는 물체에 담아서 이동시켜야 함.",
+    ],
+    status: [
+      "WESEN-9428은 위험도가 지나치게 높아 모든 연구가 중단된 상태다.",
+      "임시로 플라스틱 사이렌에 담아서 보관 중. 절대 사내 시스템에 연결하지 말 것."
+    ],
+    imageLabel: "WES_9428.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "CANADA" },
+      { label: "BEHAVIOR_PROFILE", value: "BROADCAST-HAZARD", danger: true },
+      { label: "COGNITIVE_THREAT", value: "CRITICAL" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
   {
     id: "WESEN-0101",
     label: "WESEN-0101",
     symbol: "CHANNEL",
     classCode: "COMMS-07",
-    title: "The Return Channel",
-    safetyLevel: 5,
+    title: "CoMpUtEr",
+    safetyLevel: 10,
     note: "내부 송신 채널과 긴급 메일 큐입니다.",
     description: [
-      "WESEN-0101은 발신자가 사라진 뒤에도 답장을 계속 생성하는 통신형 개체다.",
-      "회신 내용은 수신자가 아직 알지 못하는 정보를 포함할 수 있다.",
+      "WESEN-0101은 인간과 유사한 크기의 개체로,",
+      "신체가 다양한 컴퓨터 부품으로 구성되어 있다.",
+      " ",
+      "[확인된 구성 요소]",
+      "두부: 중앙 처리 장치(CPU) 구조",
+      "상지: 메모리 모듈(RAM) 형태",
+      "흉부: 그래픽 처리 장치(GPU) 유사 구조",
+      "척추: 케이블 및 회로 형태",
+      " ",
+      "해당 개체는 물리적 개체이면서 동시에 디지털 네트워크 상에서의 존재를",
+      "인식할 수 있는 특성을 가진다. 0101에 대한 정보를 검색, 열람, 또는 추적하려는",
+      "행위가 발생할 경우, 해당 행위자의 위치를 역으로 추적한다.",
+      " ",
+      "네트워크가 연결된 모든 장치를 통해 빠른 속도로 접근할 수 있으니 주의 요망.",
     ],
-    containment: ["자동 회신 차단", "긴급 큐 격리"],
-    status: "송신 채널 안정",
+    containment: [
+      "긴급 큐 격",
+    ],
+    status: ["송신 채널 안정"],
+    imageLabel: "WES_0101.JPG",
+    securityReadout: [
+      { label: "LAST KNOWN LOCATION", value: "CANADA" },
+      { label: "BEHAVIOR_PROFILE", value: "TRACE-ACTIVE", danger: true },
+      { label: "COGNITIVE_THREAT", value: "EXTREME" },
+      { label: "ACCESS_ANOMALY", value: "CONFIRMED", danger: true },
+    ],
   },
 ];
 
