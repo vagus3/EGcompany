@@ -7,7 +7,7 @@ const COLS = 21;
 const ROWS = 13;
 
 const GARBLED_POOL = Array.from(
-  "뷁뭵뺑뽥뿡쀄쁭웳쀘뻥뻘뺙뼁뽁뿜뾰뻒뾹뿩뽑뼙뺼★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬"
+  "★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬"
 );
 
 const PATH_TEXT =
@@ -113,6 +113,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       Array.from({ length: COLS }, (_, c) => (r * COLS + c) * 0.41)
     )
   );
+  const prevMousePixelRef = useRef<{ x: number; y: number } | null>(null);
   const [collisions, setCollisions] = useState(0);
   const [phase, setPhase] = useState<"playing" | "complete">("playing");
   const [size, setSize] = useState({ width: 1280, height: 720 });
@@ -157,40 +158,65 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     fieldRef.current.targetX = mx;
     fieldRef.current.targetY = my;
 
-    if (completedRef.current) return;
+    if (completedRef.current) {
+      prevMousePixelRef.current = { x: mx, y: my };
+      return;
+    }
 
     const cellSize = Math.min(Math.floor(size.width / COLS), Math.floor(size.height / ROWS));
     const ox = (size.width - cellSize * COLS) / 2;
     const oy = (size.height - cellSize * ROWS) / 2;
-    const col = Math.floor((mx - ox) / cellSize);
-    const row = Math.floor((my - oy) / cellSize);
 
-    if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
+    const prevPixel = prevMousePixelRef.current;
+    prevMousePixelRef.current = { x: mx, y: my };
 
-    const prev = prevCellRef.current;
-    if (prev && prev.col === col && prev.row === row) return;
-    prevCellRef.current = { col, row };
+    // 이전 위치가 없으면 현재 위치만 체크
+    const fromX = prevPixel?.x ?? mx;
+    const fromY = prevPixel?.y ?? my;
 
-    if (MAZE[row][col] === 1) {
-      const wasInPath = prev !== null && MAZE[prev.row][prev.col] === 0;
-      if (wasInPath) {
-        const next = collisionRef.current + 1;
-        collisionRef.current = next;
-        flashRef.current = 1.0;
-        setCollisions(next);
-        if (next >= 3) {
-          collisionRef.current = 0;
-          setCollisions(0);
-          playerCellRef.current = { col: 0, row: 1 };
-          prevCellRef.current = null;
+    // 이전→현재 픽셀 사이를 세밀하게 보간하여 건너뛴 셀을 모두 감지
+    const dx = mx - fromX;
+    const dy = my - fromY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const stepSize = Math.max(4, cellSize * 0.3);
+    const steps = Math.max(1, Math.ceil(dist / stepSize));
+
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      const ix = fromX + dx * t;
+      const iy = fromY + dy * t;
+
+      const col = Math.floor((ix - ox) / cellSize);
+      const row = Math.floor((iy - oy) / cellSize);
+
+      if (row < 0 || row >= ROWS || col < 0 || col >= COLS) continue;
+
+      const prevCell = prevCellRef.current;
+      if (prevCell && prevCell.col === col && prevCell.row === row) continue;
+
+      const oldCell = prevCellRef.current;
+      prevCellRef.current = { col, row };
+
+      if (MAZE[row][col] === 1) {
+        const wasInPath = oldCell !== null && MAZE[oldCell.row][oldCell.col] === 0;
+        if (wasInPath) {
+          const next = collisionRef.current + 1;
+          collisionRef.current = next;
+          flashRef.current = 1.0;
+          setCollisions(next);
+          if (next >= 3) {
+            window.location.reload();
+          }
+          return;
         }
-      }
-    } else {
-      playerCellRef.current = { col, row };
-      if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
-        completedRef.current = true;
-        setPhase("complete");
-        setTimeout(onComplete, 1800);
+      } else {
+        playerCellRef.current = { col, row };
+        if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
+          completedRef.current = true;
+          setPhase("complete");
+          setTimeout(onComplete, 1800);
+          return;
+        }
       }
     }
   }
@@ -365,6 +391,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       onPointerEnter={handlePointerMove}
       onPointerLeave={() => {
         fieldRef.current.active = false;
+        prevMousePixelRef.current = null;
       }}
       className="relative min-h-screen cursor-crosshair overflow-hidden bg-black text-white"
     >
