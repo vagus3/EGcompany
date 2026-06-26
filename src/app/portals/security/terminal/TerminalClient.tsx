@@ -16,6 +16,7 @@ import CubeChallenge from "./CubeChallenge";
 import TerminalSidebar, { type Section } from "./TerminalSidebar";
 import { FullscreenEndingVideo, SurveyQrPage, type EmployeeCardDelivery } from "./EndingFlow";
 import { ContainmentLogsPage } from "./sections/ContainmentSection";
+import { PersonSection } from "./sections/PersonSection";
 import { ArchiveList, ArchiveDetail } from "./sections/ArchiveSection";
 import { MessengerList, MessengerDetail } from "./sections/MessengerSection";
 
@@ -136,6 +137,7 @@ export default function TerminalClient() {
   const [employeeCardDelivery, setEmployeeCardDelivery] = useState<EmployeeCardDelivery>({
     status: "idle",
   });
+  const [userName, setUserName] = useState("(플레이어)");
   const progressHydratedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
   const cubeModalTimerRef = useRef<number | null>(null);
@@ -155,6 +157,16 @@ export default function TerminalClient() {
     () => new Set(progress.completedChallengeIds),
     [progress.completedChallengeIds]
   );
+
+  useEffect(() => {
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data: { user: { name: string | null; email: string } | null } | null) => {
+        const name = data?.user?.name ?? data?.user?.email ?? null;
+        if (name) setUserName(name);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -439,7 +451,7 @@ export default function TerminalClient() {
         ) : activeSection === "containment" ? (
           <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
         ) : activeSection === "person" ? (
-          <ContainmentLogsPage showCriticalLog={completed.has(challengeIds.pin)} />
+          <PersonSection userName={userName} />
         ) : (
           <>
             <MessengerList
@@ -458,6 +470,7 @@ export default function TerminalClient() {
               pinError={pinError}
               command={command}
               commandError={commandError}
+              userName={userName}
               onToggleObject={toggleObjectSelection}
               onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}

@@ -6,7 +6,6 @@ import {
   Camera,
   Eye,
   FileBox,
-  IdCard,
   KeyRound,
   Lock,
   Shield,
@@ -34,7 +33,7 @@ export function ObjectSymbolIcon({ symbol, className }: { symbol: string; classN
     case "ARCHIVE":
       return <TriangleAlert className={className} />;
     case "CHANNEL":
-      return <IdCard className={className} />;
+      return <TerminalSquare className={className} />;
     default:
       return <Archive className={className} />;
   }
