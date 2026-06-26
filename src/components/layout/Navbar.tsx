@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
+import { ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -23,6 +23,11 @@ type CurrentUser = {
 
 const languageChangeEvent = "eg-language-change";
 const themeChangeEvent = "eg-theme-change";
+
+const languageOptions: Array<{ value: Language; label: string }> = [
+  { value: "ko", label: "한국어" },
+  { value: "en", label: "English" },
+];
 
 const themeOptions: Array<{
   icon: typeof Sun;
@@ -86,7 +91,6 @@ function applyThemeMode(mode: ThemeMode, persist = true) {
 export default function Navbar() {
   const pathname = usePathname();
   const { classes: theme } = useCorporateTheme();
-  const themeMenuRef = useRef<HTMLDivElement>(null);
   const language = useSyncExternalStore(
     subscribeToLanguage,
     getLanguageSnapshot,
@@ -94,7 +98,6 @@ export default function Navbar() {
   );
   const themeMode = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -103,21 +106,6 @@ export default function Navbar() {
   useEffect(() => {
     applyThemeMode(themeMode, false);
   }, [themeMode]);
-
-  useEffect(() => {
-    function handlePointerDown(event: PointerEvent) {
-      if (
-        themeMenuRef.current &&
-        event.target instanceof Node &&
-        !themeMenuRef.current.contains(event.target)
-      ) {
-        setThemeMenuOpen(false);
-      }
-    }
-
-    window.addEventListener("pointerdown", handlePointerDown);
-    return () => window.removeEventListener("pointerdown", handlePointerDown);
-  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -151,14 +139,7 @@ export default function Navbar() {
 
   function handleLanguageChange(nextLanguage: Language) {
     window.localStorage.setItem("eg-language", nextLanguage);
-    window.dispatchEvent(new Event(languageChangeEvent));
-    document.documentElement.lang = nextLanguage;
-  }
-
-  function handleThemeChange(nextTheme: ThemeMode) {
-    applyThemeMode(nextTheme);
-    window.dispatchEvent(new Event(themeChangeEvent));
-    setThemeMenuOpen(false);
+    window.location.reload();
   }
 
   async function handleLogout() {
@@ -177,8 +158,6 @@ export default function Navbar() {
     }
   }
 
-  const activeThemeOption = themeOptions.find((option) => option.value === themeMode);
-  const ActiveThemeIcon = activeThemeOption?.icon ?? Sun;
   const currentUserLabel = currentUser?.name ?? currentUser?.email;
 
   return (
@@ -196,13 +175,10 @@ export default function Navbar() {
 
           <div className="flex min-w-0 items-center justify-end gap-2 lg:hidden">
             <HeaderControls
-              activeThemeIcon={ActiveThemeIcon}
-              activeThemeLabel={activeThemeOption?.label}
               language={language}
+              themeMode={themeMode}
               onLanguageChange={handleLanguageChange}
-              onThemeButtonClick={() => setThemeMenuOpen((open) => !open)}
               theme={theme}
-              themeMenuOpen={themeMenuOpen}
             />
           </div>
         </div>
@@ -229,13 +205,10 @@ export default function Navbar() {
 
         <div className="hidden items-center justify-end gap-2 lg:flex">
           <HeaderControls
-            activeThemeIcon={ActiveThemeIcon}
-            activeThemeLabel={activeThemeOption?.label}
             language={language}
+            themeMode={themeMode}
             onLanguageChange={handleLanguageChange}
-            onThemeButtonClick={() => setThemeMenuOpen((open) => !open)}
             theme={theme}
-            themeMenuOpen={themeMenuOpen}
           />
 
           {currentUserLabel ? (
@@ -277,12 +250,139 @@ export default function Navbar() {
             </>
           )}
         </div>
+      </nav>
+    </header>
+  );
+}
+
+function HeaderControls({
+  language,
+  themeMode,
+  onLanguageChange,
+  theme,
+}: {
+  language: Language;
+  themeMode: ThemeMode;
+  onLanguageChange: (language: Language) => void;
+  theme: ReturnType<typeof useCorporateTheme>["classes"];
+}) {
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        langMenuRef.current &&
+        event.target instanceof Node &&
+        !langMenuRef.current.contains(event.target)
+      ) {
+        setLangMenuOpen(false);
+      }
+      if (
+        themeMenuRef.current &&
+        event.target instanceof Node &&
+        !themeMenuRef.current.contains(event.target)
+      ) {
+        setThemeMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  function handleThemeChange(nextTheme: ThemeMode) {
+    applyThemeMode(nextTheme);
+    window.dispatchEvent(new Event(themeChangeEvent));
+    setThemeMenuOpen(false);
+  }
+
+  const activeThemeOption = themeOptions.find((o) => o.value === themeMode);
+  const ActiveThemeIcon = activeThemeOption?.icon ?? Sun;
+  const activeLangOption = languageOptions.find((o) => o.value === language);
+
+  return (
+    <>
+      {/* 언어 커스텀 드롭다운 */}
+      <div className="relative" ref={langMenuRef}>
+        <button
+          type="button"
+          onClick={() => setLangMenuOpen((open) => !open)}
+          className={cx(
+            "flex items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold",
+            theme.border,
+            theme.textMuted
+          )}
+          aria-label="Language selector"
+          aria-expanded={langMenuOpen}
+          aria-haspopup="menu"
+        >
+          <Languages className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">{activeLangOption?.label}</span>
+          <ChevronDown
+            className={cx("h-3.5 w-3.5 transition-transform", langMenuOpen && "rotate-180")}
+            aria-hidden="true"
+          />
+        </button>
+
+        {langMenuOpen && (
+          <div
+            className={cx(
+              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-full border shadow-lg",
+              theme.border
+            )}
+            role="menu"
+          >
+            {languageOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => {
+                  onLanguageChange(option.value);
+                  setLangMenuOpen(false);
+                }}
+                className={cx(
+                  "hover:bg-corporate-surface-muted flex w-full items-center gap-3 px-4 py-3 text-left text-[11px] font-bold transition-colors",
+                  theme.textMuted,
+                  option.value === language && theme.surfaceMuted
+                )}
+                role="menuitemradio"
+                aria-checked={option.value === language}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 테마 커스텀 드롭다운 */}
+      <div className="relative" ref={themeMenuRef}>
+        <button
+          type="button"
+          onClick={() => setThemeMenuOpen((open) => !open)}
+          className={cx(
+            "flex items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold",
+            theme.border,
+            theme.linkMuted
+          )}
+          aria-label="Theme selector"
+          aria-expanded={themeMenuOpen}
+          aria-haspopup="menu"
+        >
+          <ActiveThemeIcon className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">{activeThemeOption?.label}</span>
+          <ChevronDown
+            className={cx("h-3.5 w-3.5 transition-transform", themeMenuOpen && "rotate-180")}
+            aria-hidden="true"
+          />
+        </button>
 
         {themeMenuOpen && (
           <div
-            ref={themeMenuRef}
             className={cx(
-              "bg-corporate-surface absolute top-[calc(100%-4px)] right-4 z-20 min-w-48 border shadow-lg sm:right-6 lg:top-14",
+              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-full border shadow-lg",
               theme.border
             )}
             role="menu"
@@ -301,76 +401,11 @@ export default function Navbar() {
               >
                 <option.icon className="h-4 w-4" aria-hidden="true" />
                 {option.label}
-                {option.value === themeMode && (
-                  <Check className="ml-auto h-4 w-4" aria-hidden="true" />
-                )}
               </button>
             ))}
           </div>
         )}
-      </nav>
-    </header>
-  );
-}
-
-function HeaderControls({
-  activeThemeIcon: ActiveThemeIcon,
-  activeThemeLabel,
-  language,
-  onLanguageChange,
-  onThemeButtonClick,
-  theme,
-  themeMenuOpen,
-}: {
-  activeThemeIcon: typeof Sun;
-  activeThemeLabel?: string;
-  language: Language;
-  onLanguageChange: (language: Language) => void;
-  onThemeButtonClick: () => void;
-  theme: ReturnType<typeof useCorporateTheme>["classes"];
-  themeMenuOpen: boolean;
-}) {
-  return (
-    <>
-      <label
-        className={cx(
-          "flex items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold",
-          theme.border,
-          theme.textMuted
-        )}
-      >
-        <Languages className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="sr-only">Language</span>
-        <select
-          value={language}
-          onChange={(event) => onLanguageChange(event.target.value as Language)}
-          className="max-w-20 bg-transparent text-[11px] font-bold outline-none sm:max-w-none"
-          aria-label="Language"
-        >
-          <option value="ko">한국어</option>
-          <option value="en">English</option>
-        </select>
-      </label>
-
-      <button
-        type="button"
-        onClick={onThemeButtonClick}
-        className={cx(
-          "flex items-center gap-1.5 border px-2 py-1.5 text-[11px] font-bold",
-          theme.border,
-          theme.linkMuted
-        )}
-        aria-label="Theme selector"
-        aria-expanded={themeMenuOpen}
-        aria-haspopup="menu"
-      >
-        <ActiveThemeIcon className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">{activeThemeLabel}</span>
-        <ChevronDown
-          className={cx("h-3.5 w-3.5 transition-transform", themeMenuOpen && "rotate-180")}
-          aria-hidden="true"
-        />
-      </button>
+      </div>
     </>
   );
 }

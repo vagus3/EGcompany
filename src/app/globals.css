@@ -47,6 +47,30 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+/* ── Section content animations ─────────────────────────────────────────── */
+@keyframes eg-fade-up {
+  from { opacity: 0; transform: translateY(52px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes eg-fade-out-up {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-36px); }
+}
+
+[data-anim] {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+[data-anim].anim-in {
+  animation: eg-fade-up 0.72s cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+
+[data-anim].anim-out {
+  animation: eg-fade-out-up 0.42s ease var(--anim-delay, 0s) both;
+}
+
 .terminal-theme-lock {
   color-scheme: dark;
   background: var(--eg-terminal-bg);
