@@ -129,14 +129,7 @@ export function AdminAccessTestModal({ onClose, onPassed }: AdminAccessTestModal
             ))}
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-6">
-            <div className="flex gap-3 border border-yellow-200 bg-yellow-50 p-4">
-              <span className="text-yellow-700">!</span>
-              <p className="text-xs leading-5 text-neutral-700">
-                {t("admin_hint_text", lang)}
-              </p>
-            </div>
-
+          <div className="mt-6 flex justify-end">
             <button
               className="h-12 w-full bg-black px-8 text-[12px] font-black tracking-[0.18em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 md:w-auto"
               disabled={!allAnswered}
