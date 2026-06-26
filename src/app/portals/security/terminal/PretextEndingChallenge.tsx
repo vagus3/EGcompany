@@ -212,29 +212,9 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
         playerCellRef.current = { col, row };
         if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
           completedRef.current = true;
-          setPhase("complete");
-          setTimeout(onComplete, 1800);
+          onComplete();
           return;
         }
-    if (MAZE[row][col] === 1) {
-      const wasInPath = prev !== null && MAZE[prev.row][prev.col] === 0;
-      if (wasInPath) {
-        const next = collisionRef.current + 1;
-        collisionRef.current = next;
-        flashRef.current = 1.0;
-        setCollisions(next);
-        if (next >= 3) {
-          collisionRef.current = 0;
-          setCollisions(0);
-          playerCellRef.current = { col: 0, row: 1 };
-          prevCellRef.current = null;
-        }
-      }
-    } else {
-      playerCellRef.current = { col, row };
-      if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
-        completedRef.current = true;
-        onComplete();
       }
     }
   }
