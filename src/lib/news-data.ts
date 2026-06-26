@@ -119,8 +119,10 @@ export const articles: Article[] = [
     dateDisplay: "OCTOBER 21, 2024",
     title: "싱가포르 지역 거점 신설",
     title_en: "New Singapore Regional Hub Established",
-    excerpt: "",
-    excerpt_en: "",
+    excerpt:
+      "EG Company가 동남아시아 전략의 핵심 거점으로 싱가포르에 새로운 지역 허브를 설립했다. 물류, 보안 컨설팅, 데이터 운영을 통합한 복합 거점으로 아시아 태평양 전역의 운영 효율성 강화를 목표로 한다.",
+    excerpt_en:
+      "EG Company has established a new regional hub in Singapore as the cornerstone of its Southeast Asian strategy. The hub integrates logistics, security consulting, and data operations to enhance operational efficiency across the Asia-Pacific region.",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/02.png",
     blocks: [
@@ -210,8 +212,10 @@ export const articles: Article[] = [
     dateDisplay: "October 19, 2024",
     title: "IT 시스템 유지보수로 인한 운영 중단",
     title_en: "Operational Disruption Due to IT System Maintenance",
-    excerpt: "",
-    excerpt_en: "",
+    excerpt:
+      "2024년 11월 24일 새벽, EG Company는 시스템 안정성 강화 및 보안 업그레이드를 위한 정기 유지보수를 실시한다. 해당 시간 동안 전사 온라인 서비스 접속이 일시 제한된다.",
+    excerpt_en:
+      "EG Company will conduct scheduled maintenance for system stability and security upgrades on November 24, 2024. All online services will be temporarily inaccessible during the maintenance window.",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/03.png",
     blocks: [
@@ -281,8 +285,10 @@ export const articles: Article[] = [
     dateDisplay: "NOVEMBER 28, 2024",
     title: "야간 통행 제한 구역 확대",
     title_en: "Expansion of Nighttime Restricted Access Zones",
-    excerpt: "",
-    excerpt_en: "",
+    excerpt:
+      "내부 보안 사고 증가에 대응해 EG Company는 본사 및 주요 시설의 야간 출입 통제 구역을 확대 운영한다. 오후 10시부터 오전 5시까지 지정 구역은 별도 승인 없이 접근이 금지된다.",
+    excerpt_en:
+      "In response to rising internal security incidents, EG Company is expanding nighttime access restrictions at its headquarters and key facilities. Entry to designated zones is prohibited without separate authorization between 22:00 and 05:00.",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/04.png",
     blocks: [
@@ -366,8 +372,10 @@ export const articles: Article[] = [
     dateDisplay: "DECEMBER 03, 2024",
     title: "비인가 언어 패턴 감지 보고",
     title_en: "Unauthorized Language Pattern Detection Report",
-    excerpt: "",
-    excerpt_en: "",
+    excerpt:
+      "EG Company 내부 모니터링 시스템이 일부 서버 기록에서 기존 분류 체계로 해석되지 않는 비인가 언어 패턴을 반복 감지했다. 해당 기록은 격리 저장소로 이전되었으며 추가 분석이 진행 중이다.",
+    excerpt_en:
+      "EG Company's internal monitoring system has repeatedly detected unauthorized language patterns in server records that cannot be interpreted by existing classification systems. The affected records have been moved to isolated storage, with additional analysis ongoing.",
     featured: false,
     imageSrc: "/eg_png/egcompany_picture/News/05.png",
     blocks: [

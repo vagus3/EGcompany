@@ -2,44 +2,6 @@ import type { Language } from "@/hooks/useLanguage";
 
 const translations = {
   ko: {
-    // ── Home ──────────────────────────────────────────────────────────────
-    home_tagline: "인프라 / 제어 / 규모",
-    home_hero_desc: "우리는 속도, 위기, 규모에서 작동하는 시스템을 설계합니다.",
-    home_manifesto_label: "선언",
-    home_manifesto:
-      "우리는 구조를 믿습니다. 정밀함을 믿습니다. 소음의 세계에서 우리는 침묵과 확실성을 공학으로 만들어냅니다. 우리의 방법론은 브루탈리스트이고, 실행은 완벽합니다.",
-    home_strategic_core: "전략적 핵심",
-    home_strategic_intel: "전략적 정보",
-    home_strategic_intel_desc: "운영 깊이와 데이터 채널 전반의 정밀 아키텍처.",
-    home_fiscal_control: "재정 통제",
-    home_fiscal_control_desc: "자본 배분, 내부 감사, 리스크 균형, 격리 금융.",
-    home_fiscal_dashboard: "분석 대시보드",
-    home_human_capital: "인적 자본",
-    home_human_capital_desc: "운영 인력 시스템과 정밀 채용.",
-    home_logistics: "물류 & 기동성",
-    home_global_footprint: "글로벌 발자국",
-    home_footprint_desc: "다대륙 노드 전반의 운영 통제. 제조, 정보, 압력.",
-    home_metric_data: "보안된 글로벌 데이터 포인트",
-    home_metric_systems: "운영 시스템",
-    home_metric_nodes: "활성 시설 노드",
-    home_foot_sites: "사이트",
-    home_foot_employees: "임직원",
-    home_foot_assets: "자산",
-    home_foot_continuity: "연속성",
-    home_future: "미래 지평",
-    home_future_desc:
-      "우리는 미래를 예측하지 않습니다. 우리는 그것을 구축합니다. 다음 10년을 위한 우리의 아키텍처는 이미 움직이고 있습니다.",
-    home_impact: "성과 지표",
-    home_ecosystem: "생태계",
-    home_ecosystem_desc: "절대적 통제와 레버리지에 대한 우리의 헌신을 공유하는 기업들과 맺은 동맹.",
-    home_insights: "인사이트",
-    home_view_all: "전체 보고서 보기",
-    home_insight_a_title: "시장 통합의 아키텍처",
-    home_insight_b_title: "글로벌 공급망의 공학적 회복력",
-    home_insight_a_cat: "백서",
-    home_insight_b_cat: "연구",
-    home_read: "읽기",
-
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "글로벌 인프라.",
     about_subtitle_2: "고요한 탁월함.",
@@ -202,46 +164,6 @@ const translations = {
   },
 
   en: {
-    // ── Home ──────────────────────────────────────────────────────────────
-    home_tagline: "Infrastructure / Control / Scale",
-    home_hero_desc: "We design systems that operate at velocity, severity, and scale.",
-    home_manifesto_label: "Manifesto",
-    home_manifesto:
-      "We believe in structure. We believe in precision. In a world of noise, we engineer silence and certainty. Our methodology is brutalist; our execution is flawless.",
-    home_strategic_core: "Strategic Core",
-    home_strategic_intel: "Strategic Intelligence",
-    home_strategic_intel_desc: "Precision architecture across operational depth and data channels.",
-    home_fiscal_control: "Fiscal Control",
-    home_fiscal_control_desc: "Capital allocation, internal audit, risk balance, and containment finance.",
-    home_fiscal_dashboard: "Analysis Dashboard",
-    home_human_capital: "Human Capital",
-    home_human_capital_desc: "Operational personnel systems and precision recruitment.",
-    home_logistics: "Logistics & Mobility",
-    home_global_footprint: "Global Footprint",
-    home_footprint_desc:
-      "Operational control across multi-continental nodes. Manufacturing, intelligence, pressure.",
-    home_metric_data: "Global data points secured",
-    home_metric_systems: "Operational systems",
-    home_metric_nodes: "Active facility nodes",
-    home_foot_sites: "Sites",
-    home_foot_employees: "Employees",
-    home_foot_assets: "Assets",
-    home_foot_continuity: "Continuity",
-    home_future: "Future Horizon",
-    home_future_desc:
-      "We do not predict the future. We construct it. Our architecture for the next decade is already in motion.",
-    home_impact: "Impact Metrics",
-    home_ecosystem: "Ecosystem",
-    home_ecosystem_desc:
-      "Alliance forged with entities that share our commitment to absolute control and leverage.",
-    home_insights: "Insights",
-    home_view_all: "View All Report",
-    home_insight_a_title: "The Architecture of Market Consolidation",
-    home_insight_b_title: "Engineered Resilience in Global Supply Chains",
-    home_insight_a_cat: "White Paper",
-    home_insight_b_cat: "Research",
-    home_read: "Read",
-
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "Global Infrastructure.",
     about_subtitle_2: "Silent Excellence.",

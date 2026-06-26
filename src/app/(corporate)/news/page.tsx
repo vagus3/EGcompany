@@ -28,16 +28,19 @@ export default function Page() {
 
         {/* Featured Article */}
         <article className="mb-20">
-          <Link href={`/news/${featured.slug}`} className="group block">
-            <div className="relative mb-6 aspect-16/7 w-full overflow-hidden bg-gray-300">
-              <Image
-                src={featured.imageSrc}
-                alt={featuredTitle}
-                fill
-                sizes="(min-width: 1024px) 1024px, 100vw"
-                className="object-cover grayscale transition-opacity group-hover:opacity-90"
-                priority
-              />
+          <Link href={`/news/${featured.slug}`} className="group/feat block mb-6">
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-0 translate-x-3 translate-y-3 bg-black/35 blur-xl opacity-0 transition-opacity duration-300 group-hover/feat:opacity-100" />
+              <div className="relative aspect-16/7 w-full overflow-hidden bg-gray-300 transition-transform duration-300 ease-out group-hover/feat:-translate-x-2 group-hover/feat:-translate-y-2">
+                <Image
+                  src={featured.imageSrc}
+                  alt={featuredTitle}
+                  fill
+                  sizes="(min-width: 1024px) 1024px, 100vw"
+                  className="object-cover grayscale"
+                  priority
+                />
+              </div>
             </div>
           </Link>
 
@@ -53,7 +56,7 @@ export default function Page() {
           </div>
 
           <Link href={`/news/${featured.slug}`} className="group">
-            <h2 className="mb-5 text-2xl font-medium text-black underline-offset-2 group-hover:underline">
+            <h2 className="mb-5 text-2xl font-medium text-black underline-offset-4 decoration-[1.5px] hover:underline transition-all">
               {featuredTitle}
             </h2>
           </Link>
@@ -64,7 +67,7 @@ export default function Page() {
 
           <Link
             href={`/news/${featured.slug}`}
-            className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-black uppercase transition-all hover:gap-3"
+            className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-black uppercase underline-offset-4 decoration-[1.5px] hover:underline transition-all hover:gap-3"
           >
             {t("news_read_full", lang)}
           </Link>
@@ -75,24 +78,32 @@ export default function Page() {
           {rest.map((article) => {
             const articleTitle =
               lang === "en" ? (article.title_en ?? article.title) : article.title;
+            const articleExcerpt =
+              lang === "en" ? (article.excerpt_en ?? article.excerpt) : article.excerpt;
             return (
               <article key={article.slug}>
-                <Link href={`/news/${article.slug}`} className="group block">
-                  <div className="relative mb-5 aspect-video w-full overflow-hidden bg-gray-300">
-                    <Image
-                      src={article.imageSrc}
-                      alt={articleTitle}
-                      fill
-                      sizes="(min-width: 640px) 480px, 100vw"
-                      className="object-cover grayscale transition-opacity group-hover:opacity-90"
-                    />
+                <Link href={`/news/${article.slug}`} className="group/card block">
+                  <div className="relative mb-5">
+                    <div className="pointer-events-none absolute inset-0 translate-x-3 translate-y-3 bg-black/35 blur-xl opacity-0 transition-opacity duration-300 group-hover/card:opacity-100" />
+                    <div className="relative aspect-video w-full overflow-hidden bg-gray-300 transition-transform duration-300 ease-out group-hover/card:-translate-x-2 group-hover/card:-translate-y-2">
+                      <Image
+                        src={article.imageSrc}
+                        alt={articleTitle}
+                        fill
+                        sizes="(min-width: 640px) 480px, 100vw"
+                        className="object-cover grayscale"
+                      />
+                    </div>
                   </div>
-                  <p className="mb-5 text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                  <p className="mb-3 text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
                     {article.dateDisplay}
                   </p>
-                  <h3 className="text-xl font-medium text-black underline-offset-2 group-hover:underline">
+                  <h3 className="text-xl font-medium text-black underline-offset-4 decoration-[1.5px] hover:underline transition-all">
                     {articleTitle}
                   </h3>
+                  {articleExcerpt && (
+                    <p className="mt-3 text-sm leading-6 text-gray-500">{articleExcerpt}</p>
+                  )}
                 </Link>
               </article>
             );
