@@ -213,6 +213,7 @@ export function MessengerDetail({
   pinError,
   command,
   commandError,
+  userName,
   onToggleObject,
   onSubmitPin,
   onCommandChange,
@@ -225,6 +226,7 @@ export function MessengerDetail({
   pinError: string;
   command: string;
   commandError: string;
+  userName: string;
   onToggleObject: (entry: TerminalObjectEntry) => void;
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
@@ -267,7 +269,10 @@ export function MessengerDetail({
             )}
           </p>
           <p className="border-terminal-accent border-l-2 pl-4">
-            TO: <span className="text-terminal-copy-strong ml-4">{mail.to}</span>
+            TO:{" "}
+            <span className="text-terminal-copy-strong ml-4">
+              {mail.to === "(플레이어)" ? userName : mail.to}
+            </span>
           </p>
         </div>
       </div>

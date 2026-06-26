@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, TerminalSquare } from "lucide-react";
+import { Shield } from "lucide-react";
 import { pinChallengeAnswer, terminalObjects, type TerminalObjectEntry } from "@/lib/terminal-data";
 import { ObjectSymbolIcon } from "../sections/ArchiveSection";
 import { CompletedPanel } from "../ui/TerminalPanels";
@@ -19,7 +19,6 @@ const challengeObjectOrder = [
 
 function ChallengeObjectIcon({ symbol, className }: { symbol: string; className?: string }) {
   if (symbol === "OPEN") return <Shield className={className} />;
-  if (symbol === "CHANNEL") return <TerminalSquare className={className} />;
   return <ObjectSymbolIcon symbol={symbol} className={className} />;
 }
 
