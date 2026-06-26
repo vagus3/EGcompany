@@ -115,7 +115,6 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   );
   const prevMousePixelRef = useRef<{ x: number; y: number } | null>(null);
   const [collisions, setCollisions] = useState(0);
-  const [phase, setPhase] = useState<"playing" | "complete">("playing");
   const [size, setSize] = useState({ width: 1280, height: 720 });
 
   const lines = useMemo<TextLine[]>(() => {
@@ -217,6 +216,25 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
           setTimeout(onComplete, 1800);
           return;
         }
+    if (MAZE[row][col] === 1) {
+      const wasInPath = prev !== null && MAZE[prev.row][prev.col] === 0;
+      if (wasInPath) {
+        const next = collisionRef.current + 1;
+        collisionRef.current = next;
+        flashRef.current = 1.0;
+        setCollisions(next);
+        if (next >= 3) {
+          collisionRef.current = 0;
+          setCollisions(0);
+          playerCellRef.current = { col: 0, row: 1 };
+          prevCellRef.current = null;
+        }
+      }
+    } else {
+      playerCellRef.current = { col, row };
+      if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
+        completedRef.current = true;
+        onComplete();
       }
     }
   }
@@ -405,15 +423,6 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center pb-4 font-mono text-[10px] font-black tracking-[0.18em] text-white/20">
         <span>MOVE THROUGH THE PATH — 3 COLLISIONS RESETS POSITION</span>
       </div>
-      {phase === "complete" && (
-        <div className="absolute inset-0 z-20 grid place-items-center bg-black font-mono">
-          <div className="terminal-noise absolute inset-0 opacity-35" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,255,136,0.14),transparent_50%)]" />
-          <p className="relative px-6 text-center text-[clamp(2rem,6vw,5rem)] font-black tracking-[0.34em] text-green-400">
-            탈출 성공
-          </p>
-        </div>
-      )}
     </main>
   );
 }

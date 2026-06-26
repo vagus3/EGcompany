@@ -1,9 +1,9 @@
 "use client";
 
 import { OrbitControls, Text } from "@react-three/drei";
-import { Canvas, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-import { DoubleSide } from "three";
+import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BoxGeometry, DoubleSide, EdgesGeometry, type LineBasicMaterial } from "three";
 
 type CubeFace = {
   label: string;
@@ -22,6 +22,56 @@ const cubeFaces: CubeFace[] = [
   { label: "OPEN", position: [-1.01, 0, 0], rotation: [0, -Math.PI / 2, 0], color: "#101010" },
   { label: "FALSE", position: [1.01, 0, 0], rotation: [0, Math.PI / 2, 0], color: "#101010" },
 ];
+
+const CORNER_POSITIONS: [number, number, number][] = [
+  [1, 1, 1], [1, 1, -1], [1, -1, 1], [1, -1, -1],
+  [-1, 1, 1], [-1, 1, -1], [-1, -1, 1], [-1, -1, -1],
+];
+
+function CubeWireframe({ active }: { active: boolean }) {
+  const coreRef = useRef<LineBasicMaterial>(null);
+  const glow1Ref = useRef<LineBasicMaterial>(null);
+  const glow2Ref = useRef<LineBasicMaterial>(null);
+
+  const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(2, 2, 2)), []);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const pulse = 0.5 + 0.5 * Math.sin(t * 1.6);
+    const boost = active ? 0.35 : 0;
+
+    if (coreRef.current) coreRef.current.opacity = 0.72 + pulse * 0.25 + boost;
+    if (glow1Ref.current) glow1Ref.current.opacity = 0.22 + pulse * 0.14 + boost * 0.5;
+    if (glow2Ref.current) glow2Ref.current.opacity = 0.07 + pulse * 0.06;
+  });
+
+  const coreColor = active ? "#ff3333" : "#c0392b";
+  const glowColor = active ? "#cc0000" : "#7a0000";
+
+  return (
+    <>
+      {/* 코어 엣지 */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial ref={coreRef} color={coreColor} transparent opacity={0.85} />
+      </lineSegments>
+      {/* 글로우 레이어 1 */}
+      <lineSegments geometry={edges} scale={1.014}>
+        <lineBasicMaterial ref={glow1Ref} color={glowColor} transparent opacity={0.3} />
+      </lineSegments>
+      {/* 글로우 레이어 2 (넓게 퍼짐) */}
+      <lineSegments geometry={edges} scale={1.032}>
+        <lineBasicMaterial ref={glow2Ref} color={glowColor} transparent opacity={0.1} />
+      </lineSegments>
+      {/* 코너 마커 */}
+      {CORNER_POSITIONS.map((pos, i) => (
+        <mesh key={i} position={pos}>
+          <boxGeometry args={[0.06, 0.06, 0.06]} />
+          <meshBasicMaterial color={active ? "#ff4444" : "#cc2222"} />
+        </mesh>
+      ))}
+    </>
+  );
+}
 
 function CubeFacePanel({
   face,
@@ -54,10 +104,10 @@ function CubeFacePanel({
         <planeGeometry args={[1.92, 1.92]} />
         <meshStandardMaterial
           color={active ? "#8b0000" : face.color}
-          emissive={active ? "#5a0000" : "#050505"}
-          emissiveIntensity={active ? 0.7 : 0.2}
-          roughness={0.82}
-          metalness={0.08}
+          emissive={active ? "#5a0000" : "#0a0202"}
+          emissiveIntensity={active ? 0.9 : 0.35}
+          roughness={0.55}
+          metalness={0.28}
           side={DoubleSide}
         />
       </mesh>
@@ -147,6 +197,7 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
                   onHoldCancel={cancelHold}
                 />
               ))}
+              <CubeWireframe active={heldFace === "TRACE"} />
             </group>
             <OrbitControls enablePan={false} minDistance={3.2} maxDistance={7} />
           </Canvas>
