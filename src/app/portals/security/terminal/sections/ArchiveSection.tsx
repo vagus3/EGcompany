@@ -146,7 +146,7 @@ export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
               alt={`${entry.label} visual archive`}
               fill
               sizes="240px"
-              className="object-cover grayscale transition duration-300 hover:grayscale-0"
+              className="object-cover transition duration-300"
             />
             <span className="pointer-events-none absolute inset-0 border border-white/5" />
           </div>
