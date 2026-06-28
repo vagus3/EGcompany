@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -167,10 +168,17 @@ export default function Navbar() {
         theme.border
       )}
     >
-      <nav className="relative mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 lg:grid lg:min-h-14 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:py-0">
+      <nav className="relative mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:py-0">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className={cx("text-lg font-black tracking-tight sm:text-xl", theme.text)}>
-            EG Company
+          <Link href="/" className={cx("flex items-center gap-2.5 font-black tracking-tight", theme.text)}>
+            <Image
+              src="/eg_png/egcompany_picture/EGCompanyLOGO.png"
+              alt="EG Company"
+              width={64}
+              height={64}
+              className="h-16 w-auto shrink-0 object-contain"
+            />
+            <span className="text-lg sm:text-xl">EG Company</span>
           </Link>
 
           <div className="flex min-w-0 items-center justify-end gap-2 lg:hidden">

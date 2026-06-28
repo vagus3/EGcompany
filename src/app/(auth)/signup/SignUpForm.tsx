@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { signUpAction, type SignUpState } from "./actions";
 import { t } from "@/lib/i18n";
@@ -17,6 +17,7 @@ export default function SignUpForm() {
   const lang = useLanguage();
   const router = useRouter();
   const [state, formAction, pending] = useActionState(signUpAction, initialState);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     if (!state.ok) {
@@ -137,6 +138,8 @@ export default function SignUpForm() {
           name="conduct"
           type="checkbox"
           required
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
           className="mt-0.5 h-5 w-5 shrink-0 appearance-none border border-black bg-white checked:bg-black sm:mt-0"
         />
         {t("signup_agree", lang)}
@@ -145,7 +148,7 @@ export default function SignUpForm() {
       <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || !agreed}
           className="h-20 w-full bg-black text-[13px] font-black tracking-[0.28em] text-white uppercase transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400 sm:h-24 sm:w-36"
         >
           {pending ? t("signup_btn_saving", lang) : t("signup_btn_signup", lang)}

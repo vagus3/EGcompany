@@ -231,12 +231,14 @@ function StatementSection() {
   return (
     <section data-snap className="snap-start snap-always bg-corporate-bg border-b border-corporate-border px-6 py-10 min-h-[calc(100vh-3.5rem)] flex items-center overflow-y-auto">
       <div className="mx-auto max-w-4xl">
-        <p data-anim className="mb-8 text-center font-mono text-[9px] tracking-[0.24em] text-corporate-text-subtle uppercase">
+        <p data-anim className="mb-8 font-mono text-[9px] tracking-[0.24em] text-corporate-text-subtle uppercase">
           Manifesto
         </p>
-        <h2 data-anim className="mx-auto max-w-3xl text-center text-[clamp(1.6rem,4vw,3.2rem)] leading-[0.95] font-black tracking-normal uppercase">
-          We believe in structure. We believe in precision. In a world of noise, we engineer silence
-          and certainty. Our methodology is brutalist; our execution is flawless.
+        <h2 data-anim className="text-center text-[clamp(1.6rem,4vw,3.2rem)] leading-[1.05] font-black tracking-normal uppercase">
+          We believe in structure.<br />
+          We believe in precision.<br />
+          In a world of noise, we engineer silence and certainty.<br />
+          Our methodology is brutalist; our execution is flawless.
         </h2>
       </div>
     </section>
@@ -413,9 +415,12 @@ function InsightsSection() {
       <div className="mx-auto max-w-6xl">
         <div data-anim className="flex items-end justify-between gap-6">
           <SectionHeading title="Insights" compact />
-          <p className="font-mono text-[9px] tracking-[0.22em] text-corporate-text-muted uppercase">
+          <Link
+            href="/news"
+            className="font-mono text-[9px] tracking-[0.22em] text-corporate-text-muted uppercase underline-offset-4 decoration-1 hover:underline transition-all"
+          >
             View All Report
-          </p>
+          </Link>
         </div>
         <div data-anim className="mt-4 sm:mt-8 grid gap-3 md:grid-cols-2">
           <InsightCard
