@@ -1,6 +1,7 @@
 "use client";
 
 import { pinChallengeAnswer, terminalObjects, type TerminalObjectEntry } from "@/lib/terminal-data";
+import { useLanguage } from "@/hooks/useLanguage";
 import { ObjectSymbolIcon } from "../sections/ArchiveSection";
 import { CompletedPanel } from "../ui/TerminalPanels";
 import { cx } from "@/theme/classes";
@@ -39,6 +40,8 @@ export function PinSelectChallenge({
   onToggleObject: (entry: TerminalObjectEntry) => void;
   onSubmitPin: () => void;
 }) {
+  const lang = useLanguage();
+
   return (
     <section className="border-terminal-border border bg-[#101010] p-6">
       <div className="mb-5 flex items-center justify-between gap-4">
@@ -47,7 +50,9 @@ export function PinSelectChallenge({
             SECURITY_CHALLENGE
           </p>
           <p className="text-terminal-text-dim mt-1 text-xs">
-            안전한 수송을 위한 보안 승인 코드를 선택하십시오.
+            {lang === "en"
+              ? "Select the security authorization code for safe transport."
+              : "안전한 수송을 위한 보안 승인 코드를 선택하십시오."}
           </p>
         </div>
       </div>

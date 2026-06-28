@@ -102,29 +102,28 @@ export default function Page() {
   );
 }
 
-const TERMINAL_LINES: { text: string; delay: number }[] = [
-  { text: "EG COMPANY SECURITY SYSTEM  v2.4.1", delay: 0 },
-  { text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", delay: 180 },
-  { text: "> INITIATING AUTHENTICATION PROTOCOL...", delay: 500 },
-  { text: "> SCANNING CLEARANCE DATABASE...", delay: 950 },
-  { text: "> RETRIEVING PERSONNEL RECORD...", delay: 1380 },
-  { text: "> USER IDENTITY VERIFIED", delay: 1780 },
-  { text: "> CHECKING SECURITY CLEARANCE LEVEL...", delay: 2200 },
-  { text: "> CLEARANCE LEVEL: CONFIRMED", delay: 2700 },
-  { text: "> LOADING ACCESS PERMISSIONS...", delay: 3100 },
-  { text: "> ACTIVATING SECURITY PROTOCOLS...", delay: 3500 },
-  { text: "> PREPARING TERMINAL ENVIRONMENT...", delay: 3900 },
-  { text: "> ALL SYSTEMS NOMINAL", delay: 4300 },
-  { text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", delay: 4600 },
-];
-const FINAL_TEXT = "ACCESS GRANTED";
-const REDIRECT_LINE = "> REDIRECTING TO SECURITY TERMINAL...";
-const FINAL_START = 4900;
-const CHAR_SPEED = 32;
-const REDIRECT_DELAY = FINAL_START + FINAL_TEXT.length * CHAR_SPEED + 400;
-const TOTAL_DURATION = 7000;
-
 function AccessTerminal({ onComplete }: { onComplete: () => void }) {
+  const TERMINAL_LINES = [
+    { text: "EG COMPANY SECURITY SYSTEM  v2.4.1", delay: 0 },
+    { text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", delay: 180 },
+    { text: "> INITIATING AUTHENTICATION PROTOCOL...", delay: 500 },
+    { text: "> SCANNING CLEARANCE DATABASE...", delay: 950 },
+    { text: "> RETRIEVING PERSONNEL RECORD...", delay: 1380 },
+    { text: "> USER IDENTITY VERIFIED", delay: 1780 },
+    { text: "> CHECKING SECURITY CLEARANCE LEVEL...", delay: 2200 },
+    { text: "> CLEARANCE LEVEL: CONFIRMED", delay: 2700 },
+    { text: "> LOADING ACCESS PERMISSIONS...", delay: 3100 },
+    { text: "> ACTIVATING SECURITY PROTOCOLS...", delay: 3500 },
+    { text: "> PREPARING TERMINAL ENVIRONMENT...", delay: 3900 },
+    { text: "> ALL SYSTEMS NOMINAL", delay: 4300 },
+    { text: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", delay: 4600 },
+  ] as const;
+  const FINAL_TEXT = "ACCESS GRANTED";
+  const REDIRECT_LINE = "> REDIRECTING TO SECURITY TERMINAL...";
+  const FINAL_START = 4900;
+  const CHAR_SPEED = 32;
+  const REDIRECT_DELAY = FINAL_START + FINAL_TEXT.length * CHAR_SPEED + 400;
+  const TOTAL_DURATION = 7000;
   const [lines, setLines] = useState<string[]>([]);
   const [finalText, setFinalText] = useState("");
   const [showRedirect, setShowRedirect] = useState(false);

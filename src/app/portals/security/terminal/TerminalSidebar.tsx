@@ -1,6 +1,7 @@
 "use client";
 
 import { Archive, Mail, Shield, User } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 import { cx } from "@/theme/classes";
 
 export type Section = "messenger" | "archive" | "containment" | "person";
@@ -12,6 +13,7 @@ export default function TerminalSidebar({
   activeSection: Section;
   onSectionChange: (section: Section) => void;
 }) {
+  const lang = useLanguage();
   const navItems = [
     { id: "messenger" as const, label: "MESSENGER", icon: Mail },
     { id: "archive" as const, label: "ARCHIVE", icon: Archive },
@@ -27,7 +29,7 @@ export default function TerminalSidebar({
         </div>
         <div>
           <p className="text-terminal-text-dim font-mono text-[10px] tracking-[0.22em]">
-            환영합니다, 클리어아이
+            {lang === "en" ? "Welcome, ClearEye" : "환영합니다, 클리어아이"}
           </p>
           <p className="mt-1 font-mono text-xs font-black tracking-[0.12em] text-white">
             SITE-15 SECTOR-01

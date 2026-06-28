@@ -51,10 +51,14 @@ const containmentLogs: ContainmentLog[] = [
   },
 ];
 
+function getNowIso() {
+  return new Date().toISOString().replace("T", "T").split(".")[0] + "Z";
+}
+
 const criticalPersonnelLog: ContainmentLog = {
   badge: "CRITICAL",
   badgeClassName: "border-terminal-accent text-terminal-accent",
-  timestamp: "1988-04-15T00:00:01Z",
+  timestamp: getNowIso(),
   title: "[LOG-????] ???????????",
   summary: '"추적" 행동이 시작되었습니다.',
   summary_en: '"Tracking" behavior has commenced.',

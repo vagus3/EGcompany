@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 import { cx } from "@/theme/classes";
 
 type Person = {
@@ -16,6 +17,7 @@ type Person = {
   clearance: string;
   status: string;
   bio: string;
+  bio_en: string;
   imageSrc?: string;
 };
 
@@ -29,7 +31,8 @@ const leader: Person = {
   clearance: "LEVEL 5",
   status: "ACTIVE",
   bio: "Site-15 전체 격리 운영을 총괄. 1982년 EG Company 합류 후 보안 부문 최고위직 역임. 격리 실패 사고 대응 및 내부 보안 프로토콜 설계의 핵심 책임자.",
-  imageSrc: "/eg_png/personnel/daniel_weber.png",
+  bio_en: "Oversees all containment operations at Site-15. Has held the highest security position since joining EG Company in 1982. Key responsible officer for containment failure response and internal security protocol design.",
+  imageSrc: "/person_section_image/DANIEL_K_WEBER.png",
 };
 
 const seniorStaff: Person[] = [
@@ -43,7 +46,8 @@ const seniorStaff: Person[] = [
     clearance: "LEVEL 4",
     status: "ACTIVE",
     bio: "격리 절차 설계 및 개체 행동 패턴 분석 전문가. WESEN-783 최초 보고자. 장기 격리 대상 전담 연구를 수행 중.",
-    imageSrc: "/eg_png/personnel/lee_so_yeon.png",
+    bio_en: "Expert in containment procedure design and entity behavioral pattern analysis. First to report WESEN-783. Currently conducting dedicated research on long-term containment subjects.",
+    imageSrc: "/person_section_image/LEE_SOYEON.png",
   },
   {
     id: "marcus_hale",
@@ -55,7 +59,8 @@ const seniorStaff: Person[] = [
     clearance: "LEVEL 4",
     status: "ACTIVE",
     bio: "개체 접촉 로그 및 인지 위협 데이터 통합 관리 담당. 3차 누출 사고 이후 데이터 폐기 절차를 직접 집행했으며, 해당 기록 일부 열람 권한 보유.",
-    imageSrc: "/eg_png/personnel/marcus_hale.png",
+    bio_en: "Responsible for integrated management of entity contact logs and cognitive threat data. Personally executed data destruction procedures following the third containment breach, and retains partial access to those records.",
+    imageSrc: "/person_section_image/MARCUS_HALE.png",
   },
   {
     id: "park_min_ho",
@@ -67,7 +72,8 @@ const seniorStaff: Person[] = [
     clearance: "LEVEL 4",
     status: "ACTIVE",
     bio: "현장 대응 팀 지휘 및 개체 수송 보안 총괄. 캐나다 지부 운송 사고 당시 현장 지원 인원 파견을 승인한 책임자.",
-    imageSrc: "/eg_png/personnel/park_min_ho.png",
+    bio_en: "Commands the field response team and oversees entity transport security. The officer who authorized the dispatch of field support personnel during the Canada branch transport incident.",
+    imageSrc: "/person_section_image/PARK_MINHO.png",
   },
 ];
 
@@ -82,7 +88,8 @@ const juniorStaff: Person[] = [
     clearance: "LEVEL 2",
     status: "ACTIVE",
     bio: "격리 데이터 분석 및 일일 상태 보고서 작성 담당. 최근 내부 시스템 접근 로그 비정상 기록 건으로 보안팀 조사 대상.",
-    imageSrc: "/eg_png/personnel/kim_do_yun.png",
+    bio_en: "Responsible for containment data analysis and daily status report preparation. Currently under security team investigation for anomalous internal system access log records.",
+    imageSrc: "/person_section_image/KIM_DOHYEON.png",
   },
   {
     id: "han_ji_woo",
@@ -94,7 +101,8 @@ const juniorStaff: Person[] = [
     clearance: "LEVEL 2",
     status: "ACTIVE",
     bio: "내부 감시 시스템 및 CCTV 운영 담당. WESEN-783 보관실 카메라 자동 초점 이상 현상을 최초 보고.",
-    imageSrc: "/eg_png/personnel/han_ji_woo.png",
+    bio_en: "Operates internal surveillance systems and CCTV. First to report the automatic focus anomaly of the surveillance camera in the WESEN-783 containment room.",
+    imageSrc: "/person_section_image/HAN_JIWOO.png",
   },
   {
     id: "player",
@@ -107,7 +115,8 @@ const juniorStaff: Person[] = [
     clearance: "LEVEL 2",
     status: "MONITORING",
     bio: "신규 관리자 테스트 통과 후 배치. 현재 내부 보안 시스템 열람 권한 부여 상태. 접근 이력 모니터링 중.",
-    imageSrc: "/eg_png/personnel/player.png",
+    bio_en: "Assigned after passing the new administrator test. Currently granted access to internal security systems. Access history under monitoring.",
+    imageSrc: "/person_section_image/PLAYER.png",
   },
   {
     id: "elena_kovac",
@@ -119,7 +128,8 @@ const juniorStaff: Person[] = [
     clearance: "LEVEL 2",
     status: "ACTIVE",
     bio: "개체 문서화 및 아카이브 관리 담당. WESEN-0101 관련 내부 기록 접근 이력 보유. 최근 위치 데이터 이상 보고 접수.",
-    imageSrc: "/eg_png/personnel/elena_kovac.png",
+    bio_en: "Responsible for entity documentation and archive management. Has a history of accessing internal records related to WESEN-0101. A location data anomaly report has recently been received.",
+    imageSrc: "/person_section_image/ELENA_KOVAC.png",
   },
 ];
 
@@ -187,9 +197,11 @@ function PersonModal({
   userName: string;
   onClose: () => void;
 }) {
+  const lang = useLanguage();
   const overlayRef = useRef<HTMLDivElement>(null);
   const isPlayer = !!person.isPlayer;
   const displayName = isPlayer ? (userName || "(PLAYER)") : person.name;
+  const bio = lang === "en" ? person.bio_en : person.bio;
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -334,7 +346,7 @@ function PersonModal({
               <p className="text-terminal-text-dim mb-2 font-mono text-[9px] tracking-[0.22em]">
                 PERSONNEL_NOTE
               </p>
-              <p className="text-terminal-text-muted text-xs leading-6">{person.bio}</p>
+              <p className="text-terminal-text-muted text-xs leading-6">{bio}</p>
             </div>
           </div>
         </div>
@@ -343,8 +355,24 @@ function PersonModal({
   );
 }
 
+function useNow() {
+  const [now, setNow] = useState("");
+  useEffect(() => {
+    function fmt() {
+      const d = new Date();
+      const pad = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}_${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    setNow(fmt());
+    const id = setInterval(() => setNow(fmt()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return now;
+}
+
 export function PersonSection({ userName }: { userName: string }) {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const now = useNow();
 
   return (
     <section className="min-h-0 overflow-y-auto bg-[#080808] px-5 py-8 lg:px-10">
@@ -363,7 +391,7 @@ export function PersonSection({ userName }: { userName: string }) {
             ACCESS: GRANTED
           </p>
           <p className="text-terminal-text-dim mt-1 text-[9px] tracking-[0.12em]">
-            TS: 2024.11.23_14:22:09
+            TS: {now}
           </p>
         </div>
       </div>
