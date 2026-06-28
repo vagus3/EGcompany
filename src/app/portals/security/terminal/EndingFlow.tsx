@@ -124,7 +124,13 @@ export function SurveyQrPage({
         </section>
 
         <section className="mt-20 w-full max-w-520px bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
-          <MockQrCode value={surveyUrl} />
+          <Image
+            src="/eg_png/egcompany_picture/P/ending/ending_qr.png"
+            alt="Survey QR code"
+            width={120}
+            height={120}
+            className="mx-auto"
+          />
           <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
             &gt;_ 플레이 후기 설문조사 폼
           </p>
@@ -145,37 +151,3 @@ export function SurveyQrPage({
   );
 }
 
-function MockQrCode({ value }: { value: string }) {
-  const size = 29;
-  const cells = Array.from({ length: size * size }, (_, index) => {
-    const x = index % size;
-    const y = Math.floor(index / size);
-    const inTopLeft = x < 7 && y < 7;
-    const inTopRight = x >= size - 7 && y < 7;
-    const inBottomLeft = x < 7 && y >= size - 7;
-    const inFinder = inTopLeft || inTopRight || inBottomLeft;
-
-    if (inFinder) {
-      const localX = inTopRight ? x - (size - 7) : x;
-      const localY = inBottomLeft ? y - (size - 7) : y;
-      const border = localX === 0 || localX === 6 || localY === 0 || localY === 6;
-      const center = localX >= 2 && localX <= 4 && localY >= 2 && localY <= 4;
-      return border || center;
-    }
-
-    const code = value.charCodeAt((x * 7 + y * 11) % value.length);
-    return (x * 3 + y * 5 + code) % 7 < 3;
-  });
-
-  return (
-    <div
-      className="mx-auto grid aspect-square w-full max-w-270px gap-2px bg-white p-2"
-      style={{ gridTemplateColumns: "repeat(29, minmax(0, 1fr))" }}
-      aria-label="Mock survey QR code"
-    >
-      {cells.map((active, index) => (
-        <span key={index} className={active ? "bg-black" : "bg-white"} />
-      ))}
-    </div>
-  );
-}
