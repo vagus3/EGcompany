@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Printer, Send, TriangleAlert } from "lucide-react";
 import { type TerminalMail, type TerminalObjectEntry, type TerminalProgress, type TerminalStage } from "@/lib/terminal-data";
+import { useLanguage } from "@/hooks/useLanguage";
 import { PinSelectChallenge } from "../challenges/PinSelectChallenge";
 import { CorruptedCommandChallenge } from "../challenges/CorruptedCommandChallenge";
 import { PretextChallenge } from "../challenges/PretextChallenge";
@@ -30,9 +31,12 @@ function SquareTitle({ count, compact = false }: { count: number; compact?: bool
 }
 
 function MailBody({ mail }: { mail: TerminalMail }) {
+  const lang = useLanguage();
+  const body = (lang === "en" && mail.body_en) ? mail.body_en : mail.body;
+
   return (
     <article className="text-terminal-copy border border-[#211414] bg-[#171111] p-7 text-sm leading-7 lg:p-9">
-      {mail.body.map((line, index) => (
+      {body.map((line, index) => (
         <p
           key={index}
           className={index === 3 ? "mt-5 font-mono text-xs leading-7" : "mt-5 first:mt-0"}
@@ -58,25 +62,28 @@ function MailBody({ mail }: { mail: TerminalMail }) {
 }
 
 function SecurityAlert() {
+  const lang = useLanguage();
   return (
     <aside className="border-terminal-accent mt-5 border-l-4 bg-[#1d1d1d] p-6">
       <h3 className="text-terminal-accent-text font-mono text-sm font-black">
         SECURITY ALERT: INTERNAL SYSTEM ANOMALY
       </h3>
       <p className="text-terminal-copy mt-3 text-xs leading-6">
-        추가로, 최근 내부 시스템에서 일부 관련 문서 접근 로그가 비정상적으로 기록되는 사례가
-        보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서 열람 시 이상 징후가 발생할 경우 즉시
-        관리자에게 보고해 주시기 바랍니다.
+        {lang === "en"
+          ? "Additionally, cases of abnormal access log recording for some related documents have been reported in the internal system recently. This is currently assessed as a simple error, but if any anomalous signs occur when viewing related documents, please report to the administrator immediately."
+          : "추가로, 최근 내부 시스템에서 일부 관련 문서 접근 로그가 비정상적으로 기록되는 사례가 보고되었습니다. 단순 오류로 판단되고 있으나, 관련 문서 열람 시 이상 징후가 발생할 경우 즉시 관리자에게 보고해 주시기 바랍니다."}
       </p>
     </aside>
   );
 }
 
 function UrgentAlertBody() {
+  const lang = useLanguage();
+  const isEn = lang === "en";
   return (
     <article className="text-terminal-copy bg-[#202020] px-6 py-8 shadow-[0_22px_80px_rgb(0_0_0_/0.28)] lg:px-10">
       <h3 className="text-terminal-accent-muted text-[clamp(1.2rem,2.4vw,1.65rem)] font-medium">
-        보안팀 열람 요망_기밀 사항
+        {isEn ? "SECURITY TEAM ACCESS REQUIRED_CLASSIFIED" : "보안팀 열람 요망_기밀 사항"}
       </h3>
 
       <div className="mx-auto mt-8 w-full max-w-250px">
@@ -99,15 +106,17 @@ function UrgentAlertBody() {
       </div>
 
       <div className="mt-8 space-y-7 text-[clamp(1rem,1.8vw,1.35rem)] leading-[1.85] text-[#d7d0cc]">
-        <p>
-          운송 팀장 제이크입니다. 캐나다 지부에서 샌프란시스코 격리 시설로의 개체 운송 도중 심각한
-          격리 실패 사고가 발생했습니다.
-        </p>
-        <p>
-          운송 도중 개체가 차량을 탈출했으며, 현재 이동 경로상의 통신 지연 및 시스템 로그 누락
-          현상이 관찰되고 있습니다. GPS 위치 데이터가 간헐적으로 소실되고 있어 정밀 추적이 불가능한
-          상태입니다.
-        </p>
+        {isEn ? (
+          <>
+            <p>This is Transport Team Lead Jake. A serious containment failure occurred during the transfer of an object from the Canada branch to the San Francisco containment facility.</p>
+            <p>The object escaped the vehicle during transport. Communication delays and missing system logs are currently being observed along the travel route. GPS location data is intermittently lost, making precise tracking impossible.</p>
+          </>
+        ) : (
+          <>
+            <p>운송 팀장 제이크입니다. 캐나다 지부에서 샌프란시스코 격리 시설로의 개체 운송 도중 심각한 격리 실패 사고가 발생했습니다.</p>
+            <p>운송 도중 개체가 차량을 탈출했으며, 현재 이동 경로상의 통신 지연 및 시스템 로그 누락 현상이 관찰되고 있습니다. GPS 위치 데이터가 간헐적으로 소실되고 있어 정밀 추적이 불가능한 상태입니다.</p>
+          </>
+        )}
       </div>
 
       <aside className="bg-terminal-accent-strong text-terminal-accent-text mt-8 flex items-center gap-4 px-6 py-5">
@@ -116,16 +125,20 @@ function UrgentAlertBody() {
       </aside>
 
       <p className="mt-8 text-[clamp(1rem,1.8vw,1.35rem)] leading-[1.85] text-[#d7d0cc]">
-        해당 개체의 문서를{" "}
-        <span className="text-terminal-accent-text">연구팀의 도움 없이 열람</span> 하셨나요? 이미
-        WESEN-0101 이 관리자님을 추적하기 시작한 것 같습니다.
+        {isEn ? (
+          <>Did you view this object&apos;s documents{" "}<span className="text-terminal-accent-text">without the assistance of the research team</span>? It appears that WESEN-0101 has already begun tracking you.</>
+        ) : (
+          <>해당 개체의 문서를{" "}<span className="text-terminal-accent-text">연구팀의 도움 없이 열람</span> 하셨나요? 이미 WESEN-0101 이 관리자님을 추적하기 시작한 것 같습니다.</>
+        )}
       </p>
 
       <div className="border-terminal-accent/30 mt-10 border-t pt-8">
         <p className="text-[clamp(1rem,1.8vw,1.25rem)] leading-[1.85] text-[#d7d0cc]">
-          상황 종료 시까지 해당 구역을 봉쇄하며, 관리자님께서는 즉시 상급자에게 상황 보고
-          부탁드립니다. 또한, 조치가 있을 때까지 자리에서 대기 바랍니다.{" "}
-          <span className="text-[#172fa5]">어떠한 추가 행동도 하지 마십시오.</span>
+          {isEn ? (
+            <>The area will remain sealed until the situation is resolved. Please report the situation to your superior immediately and remain at your post until further notice.{" "}<span className="text-[#172fa5]">Take no additional action whatsoever.</span></>
+          ) : (
+            <>상황 종료 시까지 해당 구역을 봉쇄하며, 관리자님께서는 즉시 상급자에게 상황 보고 부탁드립니다. 또한, 조치가 있을 때까지 자리에서 대기 바랍니다.{" "}<span className="text-[#172fa5]">어떠한 추가 행동도 하지 마십시오.</span></>
+          )}
         </p>
       </div>
 
@@ -150,10 +163,14 @@ export function MessengerList({
   progress: TerminalProgress;
   onSelectMail: (mailId: string) => void;
 }) {
+  const lang = useLanguage();
+
   return (
     <section className="border-terminal-border min-h-0 border-b bg-[#0d0d0d] lg:border-r lg:border-b-0">
       <div className="border-terminal-border flex h-54px items-center justify-between border-b px-5">
-        <h2 className="font-mono text-sm font-black text-white">받은 메일함</h2>
+        <h2 className="font-mono text-sm font-black text-white">
+          {lang === "en" ? "INBOX" : "받은 메일함"}
+        </h2>
         <p className="text-terminal-accent-muted font-mono text-[9px] tracking-[0.18em]">
           LIVE_FEED
         </p>
@@ -166,6 +183,8 @@ export function MessengerList({
             progress.completedChallengeIds.includes(mail.challengeType);
           const active = selectedMail.id === mail.id;
           const isCorruptedCommandMail = mail.challengeType === "corrupted-command";
+          const title = (lang === "en" && mail.title_en) ? mail.title_en : mail.title;
+          const preview = (lang === "en" && mail.preview_en) ? mail.preview_en : mail.preview;
 
           return (
             <button
@@ -192,10 +211,10 @@ export function MessengerList({
                 )}
               </div>
               <h3 className="mb-2 text-sm font-black">
-                {isCorruptedCommandMail ? <SquareTitle count={8} compact /> : mail.title}
+                {isCorruptedCommandMail ? <SquareTitle count={8} compact /> : title}
               </h3>
               <p className="text-terminal-text-muted line-clamp-2 text-xs leading-5">
-                {mail.preview}
+                {preview}
               </p>
             </button>
           );
@@ -232,6 +251,7 @@ export function MessengerDetail({
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
 }) {
+  const lang = useLanguage();
   const isCurrentChallenge = mail.unlockedStage === currentStage;
   const isCompletedChallenge =
     mail.challengeType === "none" ||
@@ -239,13 +259,15 @@ export function MessengerDetail({
     completed.has(mail.challengeType);
   const isUrgentCubeMail = mail.challengeType === "cube-hold";
   const isCorruptedCommandMail = mail.challengeType === "corrupted-command";
+  const mailTitle = (lang === "en" && mail.title_en) ? mail.title_en : mail.title;
+  const mailSender = (lang === "en" && mail.sender_en) ? mail.sender_en : mail.sender;
 
   return (
     <section className="min-h-0 overflow-y-auto bg-[#101010]">
       <div className="border-terminal-border border-b px-6 py-7 lg:px-8">
         <div className="mb-5 flex items-center justify-between gap-4">
           <h2 className="text-[clamp(1.6rem,3.2vw,2.35rem)] font-black tracking-[-0.04em] text-white">
-            {isCorruptedCommandMail ? <SquareTitle count={8} /> : mail.title}
+            {isCorruptedCommandMail ? <SquareTitle count={8} /> : mailTitle}
           </h2>
           {!isCorruptedCommandMail && (
             <div className="flex shrink-0 gap-2">
@@ -265,7 +287,7 @@ export function MessengerDetail({
             {isCorruptedCommandMail ? (
               <Redaction width="w-36" />
             ) : (
-              <span className="text-terminal-copy-strong ml-4">{mail.sender}</span>
+              <span className="text-terminal-copy-strong ml-4">{mailSender}</span>
             )}
           </p>
           <p className="border-terminal-accent border-l-2 pl-4">

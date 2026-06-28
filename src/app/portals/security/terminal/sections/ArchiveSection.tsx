@@ -13,6 +13,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { terminalObjects, type TerminalObjectEntry } from "@/lib/terminal-data";
+import { useLanguage } from "@/hooks/useLanguage";
 import { cx } from "@/theme/classes";
 
 export function ObjectSymbolIcon({ symbol, className }: { symbol: string; className?: string }) {
@@ -98,6 +99,11 @@ export function ArchiveList({
 }
 
 export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
+  const lang = useLanguage();
+  const description = (lang === "en" && entry.description_en) ? entry.description_en : entry.description;
+  const containment = (lang === "en" && entry.containment_en) ? entry.containment_en : entry.containment;
+  const status = (lang === "en" && entry.status_en) ? entry.status_en : entry.status;
+
   return (
     <section className="min-h-0 overflow-y-auto bg-[#0f0f0f] px-6 py-7 lg:px-8">
       <div className="border-terminal-border border-l-terminal-accent border border-l-4 bg-[#151515] px-8 py-7">
@@ -112,7 +118,7 @@ export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
       <div className="mt-8 grid gap-7 xl:grid-cols-[minmax(0,1fr)_240px]">
         <div className="space-y-7">
           <ArchiveCard title={entry.title}>
-            {entry.description.map((line, index) => (
+            {description.map((line, index) => (
               <p key={index} className="mt-4 first:mt-0">
                 {line}
               </p>
@@ -120,7 +126,7 @@ export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
           </ArchiveCard>
 
           <ArchiveCard title="SPECIAL CONTAINMENT PROCEDURES">
-            {entry.containment.map((line, index) => (
+            {containment.map((line, index) => (
               <p
                 key={index}
                 className="before:text-terminal-accent mt-3 before:mr-4 before:content-['▪']"
@@ -131,7 +137,7 @@ export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
           </ArchiveCard>
 
           <ArchiveCard title="Containment Status">
-            {entry.status.map((line, index) => (
+            {status.map((line, index) => (
               <p key={index} className="mt-4 first:mt-0">
                 {line}
               </p>

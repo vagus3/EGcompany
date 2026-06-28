@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, LogOut, Mail, Settings, Shield, User } from "lucide-react";
+import { Archive, Mail, Shield, User } from "lucide-react";
 import { cx } from "@/theme/classes";
 
 export type Section = "messenger" | "archive" | "containment" | "person";
@@ -54,16 +54,6 @@ export default function TerminalSidebar({
         ))}
       </nav>
 
-      <div className="border-terminal-border text-terminal-text-dim mt-auto border-t px-4 py-5 font-mono text-[10px] font-black tracking-[0.18em]">
-        <p className="mb-3 flex items-center gap-2">
-          <Settings className="h-3.5 w-3.5" />
-          SYSTEM SETTINGS
-        </p>
-        <p className="flex items-center gap-2">
-          <LogOut className="h-3.5 w-3.5" />
-          LOGOUT
-        </p>
-      </div>
     </aside>
   );
 }

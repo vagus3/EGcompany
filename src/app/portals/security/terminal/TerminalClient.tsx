@@ -138,6 +138,11 @@ export default function TerminalClient() {
     status: "idle",
   });
   const [userName, setUserName] = useState("(플레이어)");
+  const [glitching, setGlitching] = useState(false);
+  const [heavyGlitching, setHeavyGlitching] = useState(false);
+  const turbulenceRef = useRef<SVGFETurbulenceElement>(null);
+  const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
+  const glitchRafRef = useRef<number>(0);
   const progressHydratedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
   const cubeModalTimerRef = useRef<number | null>(null);
@@ -227,6 +232,99 @@ export default function TerminalClient() {
     selectedMail.challengeType,
     selectedMail.id,
   ]);
+
+  // pin-select 클리어 후 → 불규칙 micro-burst 글리치
+  const pinCompleted = completed.has(challengeIds.pin);
+  useEffect(() => {
+    if (!pinCompleted) return;
+
+    const timers: number[] = [];
+
+    function triggerBurstCycle() {
+      cancelAnimationFrame(glitchRafRef.current);
+
+      // 한 사이클당 3~6개의 micro-burst를 불규칙 간격으로 발생
+      const numBursts = 3 + Math.floor(Math.random() * 4);
+      let offset = 0;
+
+      for (let i = 0; i < numBursts; i++) {
+        const burstDelay    = offset + Math.random() * 120;
+        const burstDuration = 35 + Math.random() * 90; // burst 지속: 35~125ms
+
+        // burst 시작
+        timers.push(window.setTimeout(() => {
+          const scale = 12 + Math.random() * 40;
+          const seed  = Math.floor(Math.random() * 200);
+          // 수평 노이즈 빈도를 랜덤하게 → 넓은 슬라이스 vs 좁은 슬라이스
+          const freq  = Math.random() < 0.5 ? "0.05 0.85" : "0.1 0.75";
+          turbulenceRef.current?.setAttribute("seed", String(seed));
+          turbulenceRef.current?.setAttribute("baseFrequency", freq);
+          displacementRef.current?.setAttribute("scale", String(scale));
+          setGlitching(true);
+        }, burstDelay));
+
+        // burst 종료
+        timers.push(window.setTimeout(() => {
+          displacementRef.current?.setAttribute("scale", "0");
+          setGlitching(false);
+        }, burstDelay + burstDuration));
+
+        offset = burstDelay + burstDuration + 30 + Math.random() * 80;
+      }
+    }
+
+    // 10초 heavy glitch: SVG displacement + 색상 효과 동시 적용
+    function triggerHeavyGlitch() {
+      cancelAnimationFrame(glitchRafRef.current);
+      setHeavyGlitching(true);
+      const start = performance.now();
+      const duration = 500;
+
+      function animate(now: number) {
+        const elapsed = now - start;
+        if (elapsed >= duration) {
+          displacementRef.current?.setAttribute("scale", "0");
+          setGlitching(false);
+          setHeavyGlitching(false);
+          return;
+        }
+        const scale = 20 + Math.random() * 35;
+        const seed  = Math.floor(Math.random() * 200);
+        const freq  = Math.random() < 0.5 ? "0.05 0.85" : "0.09 0.75";
+        turbulenceRef.current?.setAttribute("seed", String(seed));
+        turbulenceRef.current?.setAttribute("baseFrequency", freq);
+        displacementRef.current?.setAttribute("scale", String(scale));
+        setGlitching(true);
+        glitchRafRef.current = requestAnimationFrame(animate);
+      }
+      glitchRafRef.current = requestAnimationFrame(animate);
+    }
+
+    // 첫 발동: 2초 후
+    timers.push(window.setTimeout(triggerBurstCycle, 2000));
+
+    // 이후 3~5초 랜덤 간격으로 약한 burst 반복
+    const schedule = () => {
+      const next = 3000 + Math.random() * 2000;
+      const t = window.setTimeout(() => {
+        triggerBurstCycle();
+        schedule();
+      }, next);
+      timers.push(t);
+    };
+    timers.push(window.setTimeout(schedule, 2000));
+
+    // 10초마다 강한 glitch 1회
+    const heavyInterval = window.setInterval(triggerHeavyGlitch, 10000);
+
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      window.clearInterval(heavyInterval);
+      cancelAnimationFrame(glitchRafRef.current);
+      displacementRef.current?.setAttribute("scale", "0");
+      setGlitching(false);
+    };
+  }, [pinCompleted]);
 
   function queueTimer(callback: () => void, delay: number) {
     const timer = window.setTimeout(callback, delay);
@@ -414,12 +512,44 @@ export default function TerminalClient() {
   }
 
   return (
-    <main
-      className={cx(
-        "text-terminal-text min-h-screen overflow-x-hidden bg-[#080808] text-[13px]",
-        terminalTheme.page
+    <>
+      {/* SVG displacement 필터 — 항상 DOM에 존재, glitch 시 scale 변경 */}
+      <svg xmlns="http://www.w3.org/2000/svg" style={{ position: "absolute", width: 0, height: 0 }}>
+        <defs>
+          <filter id="terminal-glitch-svg" x="-5%" y="-5%" width="110%" height="110%" colorInterpolationFilters="sRGB">
+            <feTurbulence
+              ref={turbulenceRef}
+              type="fractalNoise"
+              baseFrequency="0.08 0.8"
+              numOctaves="1"
+              seed="1"
+              result="noise"
+            />
+            <feDisplacementMap
+              ref={displacementRef}
+              in="SourceGraphic"
+              in2="noise"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+
+      <main
+        className={cx(
+          "text-terminal-text min-h-screen overflow-x-hidden bg-[#080808] text-[13px]",
+          terminalTheme.page
+        )}
+        style={glitching ? { filter: "url(#terminal-glitch-svg)" } : undefined}
+      >
+      {heavyGlitching && (
+        <div
+          className="pointer-events-none fixed inset-0 z-40"
+          style={{ background: "rgba(180, 0, 0, 0.45)", mixBlendMode: "screen" }}
+        />
       )}
-    >
       <header className="border-terminal-border flex min-h-52px items-center justify-between border-b bg-[#151515] px-5">
         <h1 className="font-mono text-xl font-black tracking-[-0.03em] text-white">SECURITY_15</h1>
         <button
@@ -519,6 +649,7 @@ export default function TerminalClient() {
 
       {shouldShowCubeModal && <CubeChallengeModal onComplete={completeCubeChallenge} />}
     </main>
+    </>
   );
 }
 
