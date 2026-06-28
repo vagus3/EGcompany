@@ -3,63 +3,31 @@
 import { layoutWithLines, prepareWithSegments } from "@chenglou/pretext";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const COLS = 21;
-const ROWS = 13;
-
+// ── 상수 ────────────────────────────────────────────────────────────────────
 const GARBLED_POOL = Array.from(
-  "★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬"
+  "★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬뷁뭵뺑뽥뿡쀄쁭웳쀘뻥뻘뺙뼁뽁"
 );
 
 const PATH_TEXT =
-  "BREACH SIGNAL DETECTED IN SECTOR 7G THE PASSAGE IS NARROW DO NOT STOP MOVING THE ENTITY DOES NOT HAVE EYES IT NAVIGATES BY THE SOUND OF BREATHING EXIT PROTOCOL ENGAGED RETURN CHANNEL OPEN FOLLOW THE DISPLACEMENT 언어가 무너지고 있습니다 텍스트는 당신을 통해 흐릅니다 THE ARCHIVE CANNOT HOLD THIS FILE THE LETTERS KNOW YOU ARE HERE DO NOT LOOK BACK THE EXIT IS WATCHING YOU REACH IT BEFORE IT REACHES YOU SECTOR BREACH CONFIRMED OPERATOR FIELD DETECTED PROCEED TO RETURN CHANNEL ".repeat(
-    5
-  );
+  "BREACH SIGNAL DETECTED IN SECTOR 7G THE PASSAGE IS NARROW DO NOT STOP MOVING " +
+  "THE ENTITY DOES NOT HAVE EYES IT NAVIGATES BY THE SOUND OF BREATHING " +
+  "EXIT PROTOCOL ENGAGED RETURN CHANNEL OPEN FOLLOW THE DISPLACEMENT " +
+  "언어가 무너지고 있습니다 텍스트는 당신을 통해 흐릅니다 " +
+  "THE ARCHIVE CANNOT HOLD THIS FILE THE LETTERS KNOW YOU ARE HERE " +
+  "DO NOT LOOK BACK THE EXIT IS WATCHING YOU REACH IT BEFORE IT REACHES YOU " +
+  "SECTOR BREACH CONFIRMED OPERATOR FIELD DETECTED PROCEED TO RETURN CHANNEL ";
 
-function makeLCG(seed: number) {
-  let s = seed >>> 0;
-  return () => {
-    s = ((s * 1664525 + 1013904223) & 0xffffffff) >>> 0;
-    return s / 4294967296;
-  };
-}
+// 숨겨진 글자 위치 (화면 비율 기준)
+const HIDDEN = [
+  { letter: "S", top: "29%", left: "16%" },
+  { letter: "T", top: "54%", left: "71%" },
+  { letter: "O", top: "74%", left: "42%" },
+  { letter: "P", top: "21%", left: "82%" },
+] as const;
 
-function buildMaze(): number[][] {
-  const rng = makeLCG(42);
-  const grid: number[][] = Array.from({ length: ROWS }, () => Array(COLS).fill(1));
-  function carve(c: number, r: number) {
-    const dirs = [
-      [0, -2],
-      [0, 2],
-      [-2, 0],
-      [2, 0],
-    ];
-    for (let i = dirs.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
-    }
-    for (const [dc, dr] of dirs) {
-      const nc = c + dc,
-        nr = r + dr;
-      if (nr > 0 && nr < ROWS - 1 && nc > 0 && nc < COLS - 1 && grid[nr][nc] === 1) {
-        grid[r + dr / 2][c + dc / 2] = 0;
-        grid[nr][nc] = 0;
-        carve(nc, nr);
-      }
-    }
-  }
-  grid[1][1] = 0;
-  carve(1, 1);
-  grid[1][0] = 0;
-  grid[ROWS - 2][COLS - 1] = 0;
-  return grid;
-}
-
-const MAZE = buildMaze();
-const EXIT_COL = COLS - 1;
-const EXIT_ROW = ROWS - 2;
-
+// ── 텍스트 어보이던스 drawLine ───────────────────────────────────────────────
 type TextLine = { text: string; x: number; y: number };
-type Field = { active: boolean; x: number; y: number; targetX: number; targetY: number };
+type Field    = { active: boolean; x: number; y: number; targetX: number; targetY: number };
 
 function getIndexForWidth(ctx: CanvasRenderingContext2D, text: string, width: number) {
   if (width <= 0) return 0;
@@ -82,52 +50,73 @@ function drawLine(
     ctx.fillText(line.text, line.x, line.y);
     return;
   }
-  const gap = radius * (0.28 + force * 0.82);
+  const gap      = radius * (0.28 + force * 0.82);
   const gapStart = field.x - gap;
-  const gapEnd = field.x + gap;
-  const leftIdx = getIndexForWidth(ctx, line.text, gapStart - line.x);
-  const rightIdx = getIndexForWidth(ctx, line.text, gapEnd - line.x);
-  const leftText = line.text.slice(0, leftIdx);
+  const gapEnd   = field.x + gap;
+  const leftIdx  = getIndexForWidth(ctx, line.text, gapStart - line.x);
+  const rightIdx = getIndexForWidth(ctx, line.text, gapEnd   - line.x);
+  const leftText  = line.text.slice(0, leftIdx);
   const rightText = line.text.slice(rightIdx);
   const wave = Math.sin(time * 0.004 + line.y * 0.05) * (force * 8);
   const skew = Math.cos(time * 0.003 + line.y * 0.03) * force * 0.06;
   ctx.save();
   ctx.globalAlpha = 0.55 + force * 0.3;
   ctx.transform(1, skew, 0, 1, 0, 0);
-  ctx.fillText(leftText, line.x - force * 38, line.y - wave);
-  ctx.fillText(rightText, gapEnd + force * 38, line.y + wave);
+  ctx.fillText(leftText,  line.x - force * 38, line.y - wave);
+  ctx.fillText(rightText, gapEnd  + force * 38, line.y + wave);
   ctx.restore();
 }
 
+// ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function PretextEndingChallenge({ onComplete }: { onComplete: () => void }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const fieldRef     = useRef<Field>({ active: false, x: 0, y: 0, targetX: 0, targetY: 0 });
+  const frameRef     = useRef(0);
   const completedRef = useRef(false);
-  const fieldRef = useRef<Field>({ active: false, x: 0, y: 0, targetX: 0, targetY: 0 });
-  const playerCellRef = useRef({ col: 0, row: 1 });
-  const prevCellRef = useRef<{ col: number; row: number } | null>(null);
-  const collisionRef = useRef(0);
-  const flashRef = useRef(0);
-  const charPhaseRef = useRef<number[][]>(
-    Array.from({ length: ROWS }, (_, r) =>
-      Array.from({ length: COLS }, (_, c) => (r * COLS + c) * 0.41)
-    )
-  );
-  const prevMousePixelRef = useRef<{ x: number; y: number } | null>(null);
-  const [collisions, setCollisions] = useState(0);
-  const [size, setSize] = useState({ width: 1280, height: 720 });
 
+  const [foundCount, setFoundCount] = useState(0);
+  const [size, setSize] = useState({ width: 1280, height: 720 });
+  // 각 숨겨진 글자 위에 표시될 깜빡이는 가짜 글자
+  const [fakeChars, setFakeChars] = useState<string[]>(() =>
+    HIDDEN.map(() => GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)])
+  );
+
+  // 화면 크기 감지
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new ResizeObserver(([e]) => {
+      if (!e) return;
+      setSize({ width: Math.max(360, e.contentRect.width), height: Math.max(300, e.contentRect.height) });
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // 가짜 글자 주기적 교체 (화면 텍스트와 어우러지도록)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setFakeChars(HIDDEN.map(() =>
+        GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)]
+      ));
+    }, 280);
+    return () => clearInterval(id);
+  }, []);
+
+  // @chenglou/pretext 텍스트 레이아웃
   const lines = useMemo<TextLine[]>(() => {
     if (typeof window === "undefined") return [];
-    const fontSize = size.width < 760 ? 13 : 16;
+    const fontSize   = size.width < 760 ? 13 : 16;
     const lineHeight = size.width < 760 ? 26 : 32;
-    const prepared = prepareWithSegments(
-      PATH_TEXT,
+    const repeated   = PATH_TEXT.repeat(20); // 화면 꽉 채우도록 반복
+    const prepared   = prepareWithSegments(
+      repeated,
       `500 ${fontSize}px "Geist Mono", monospace`,
       { wordBreak: "keep-all" }
     );
     const layout = layoutWithLines(prepared, size.width, lineHeight);
-    const total = Math.ceil(size.height / lineHeight) + 2;
+    const total  = Math.ceil(size.height / lineHeight) + 2;
     return layout.lines.slice(0, total).map((line, i) => ({
       text: line.text.trimEnd(),
       x: 0,
@@ -135,90 +124,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     }));
   }, [size.width, size.height]);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const obs = new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      setSize({
-        width: Math.max(360, entry.contentRect.width),
-        height: Math.max(300, entry.contentRect.height),
-      });
-    });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    fieldRef.current.active = true;
-    fieldRef.current.targetX = mx;
-    fieldRef.current.targetY = my;
-
-    if (completedRef.current) {
-      prevMousePixelRef.current = { x: mx, y: my };
-      return;
-    }
-
-    const cellSize = Math.min(Math.floor(size.width / COLS), Math.floor(size.height / ROWS));
-    const ox = (size.width - cellSize * COLS) / 2;
-    const oy = (size.height - cellSize * ROWS) / 2;
-
-    const prevPixel = prevMousePixelRef.current;
-    prevMousePixelRef.current = { x: mx, y: my };
-
-    // 이전 위치가 없으면 현재 위치만 체크
-    const fromX = prevPixel?.x ?? mx;
-    const fromY = prevPixel?.y ?? my;
-
-    // 이전→현재 픽셀 사이를 세밀하게 보간하여 건너뛴 셀을 모두 감지
-    const dx = mx - fromX;
-    const dy = my - fromY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const stepSize = Math.max(4, cellSize * 0.3);
-    const steps = Math.max(1, Math.ceil(dist / stepSize));
-
-    for (let i = 1; i <= steps; i++) {
-      const t = i / steps;
-      const ix = fromX + dx * t;
-      const iy = fromY + dy * t;
-
-      const col = Math.floor((ix - ox) / cellSize);
-      const row = Math.floor((iy - oy) / cellSize);
-
-      if (row < 0 || row >= ROWS || col < 0 || col >= COLS) continue;
-
-      const prevCell = prevCellRef.current;
-      if (prevCell && prevCell.col === col && prevCell.row === row) continue;
-
-      const oldCell = prevCellRef.current;
-      prevCellRef.current = { col, row };
-
-      if (MAZE[row][col] === 1) {
-        const wasInPath = oldCell !== null && MAZE[oldCell.row][oldCell.col] === 0;
-        if (wasInPath) {
-          const next = collisionRef.current + 1;
-          collisionRef.current = next;
-          flashRef.current = 1.0;
-          setCollisions(next);
-          if (next >= 3) {
-            window.location.reload();
-          }
-          return;
-        }
-      } else {
-        playerCellRef.current = { col, row };
-        if (col === EXIT_COL && row === EXIT_ROW && !completedRef.current) {
-          completedRef.current = true;
-          onComplete();
-          return;
-        }
-      }
-    }
-  }
-
+  // 캔버스 렌더링
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -232,176 +138,113 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       const dt = Math.min(0.05, (now - prevTime) / 1000);
       prevTime = now;
 
-      const W = size.width;
-      const H = size.height;
+      const W   = size.width;
+      const H   = size.height;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      if (canvas!.width !== Math.floor(W * dpr)) canvas!.width = Math.floor(W * dpr);
+      if (canvas!.width  !== Math.floor(W * dpr)) canvas!.width  = Math.floor(W * dpr);
       if (canvas!.height !== Math.floor(H * dpr)) canvas!.height = Math.floor(H * dpr);
-      canvas!.style.width = `${W}px`;
+      canvas!.style.width  = `${W}px`;
       canvas!.style.height = `${H}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const cellSize = Math.min(Math.floor(W / COLS), Math.floor(H / ROWS));
-      const ox = (W - cellSize * COLS) / 2;
-      const oy = (H - cellSize * ROWS) / 2;
 
       const field = fieldRef.current;
       field.x += (field.targetX - field.x) * Math.min(1, dt * 10);
       field.y += (field.targetY - field.y) * Math.min(1, dt * 10);
-      if (flashRef.current > 0) flashRef.current = Math.max(0, flashRef.current - dt * 2.5);
 
-      // Background
+      // 배경
       ctx!.fillStyle = "#030303";
       ctx!.fillRect(0, 0, W, H);
 
-      if (field.active) {
-        const glow = ctx!.createRadialGradient(field.x, field.y, 0, field.x, field.y, W * 0.45);
-        glow.addColorStop(0, "rgba(110,0,0,0.22)");
-        glow.addColorStop(0.5, "rgba(50,0,0,0.08)");
-        glow.addColorStop(1, "rgba(0,0,0,0)");
-        ctx!.fillStyle = glow;
-        ctx!.fillRect(0, 0, W, H);
-      }
+      const fontSize   = W < 760 ? 13 : 16;
+      const radius     = Math.max(90, Math.min(180, W * 0.12));
 
-      // Scanlines
-      ctx!.save();
-      ctx!.globalAlpha = 0.06;
-      ctx!.strokeStyle = "#ffffff";
-      ctx!.lineWidth = 0.5;
-      for (let y = 0; y < H; y += 4) {
-        ctx!.beginPath();
-        ctx!.moveTo(0, y);
-        ctx!.lineTo(W, y);
-        ctx!.stroke();
-      }
-      ctx!.restore();
-
-      // PATH cells — clip to path cells, draw pretext avoidance text inside
-      const radius = Math.max(90, Math.min(180, W * 0.12));
-      const fontSize = size.width < 760 ? 13 : 16;
-
-      ctx!.save();
-      ctx!.beginPath();
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (MAZE[r][c] === 0) {
-            ctx!.rect(
-              Math.floor(ox + c * cellSize),
-              Math.floor(oy + r * cellSize),
-              cellSize,
-              cellSize
-            );
-          }
-        }
-      }
-      ctx!.clip();
-      ctx!.font = `500 ${fontSize}px "Geist Mono", monospace`;
-      ctx!.textAlign = "left";
+      // PATH_TEXT — pretext 어보이던스
+      ctx!.font         = `500 ${fontSize}px "Geist Mono", monospace`;
+      ctx!.textAlign    = "left";
       ctx!.textBaseline = "middle";
-      ctx!.fillStyle = "rgba(210,192,188,0.72)";
+      ctx!.fillStyle    = "rgba(210,192,188,0.72)";
       lines.forEach((line) => drawLine(ctx!, line, field, radius, now));
-      ctx!.restore();
-
-      // WALL cells — dense garbled chars, no avoidance
-      const wallFontSize = Math.max(10, cellSize - 4);
-      const phases = charPhaseRef.current;
-      ctx!.textAlign = "center";
-      ctx!.textBaseline = "middle";
-
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (MAZE[r][c] !== 1) continue;
-          const cx = ox + c * cellSize + cellSize / 2;
-          const cy = oy + r * cellSize + cellSize / 2;
-          phases[r][c] =
-            (phases[r][c] +
-              dt * (1.7 + Math.sin(now * 0.001 + c * 0.9 + r * 1.3) * 1.0)) %
-            GARBLED_POOL.length;
-          const char = GARBLED_POOL[Math.floor(phases[r][c])];
-          const distM = Math.hypot(field.x - cx, field.y - cy);
-          const prox = Math.max(0, 1 - distM / (cellSize * 5));
-          const flicker = 0.55 + 0.2 * Math.sin(now * 0.005 + c * 0.7 + r * 1.1);
-          ctx!.globalAlpha = 0.7 + prox * 0.25 + flicker * 0.04;
-          ctx!.fillStyle = `rgb(${Math.floor(85 + prox * 105)},${Math.floor(22 + prox * 18)},${Math.floor(28 + prox * 14)})`;
-          ctx!.font = `bold ${wallFontSize}px "Geist Mono", monospace`;
-          ctx!.fillText(char, cx, cy);
-          ctx!.globalAlpha = 1;
-        }
-      }
-
-      // Exit marker
-      const exitX = ox + EXIT_COL * cellSize + cellSize / 2;
-      const exitY = oy + EXIT_ROW * cellSize + cellSize / 2;
-      ctx!.save();
-      ctx!.globalAlpha = 0.65 + 0.35 * Math.sin(now * 0.005);
-      ctx!.fillStyle = "#00ff88";
-      ctx!.shadowColor = "#00ff88";
-      ctx!.shadowBlur = 18;
-      ctx!.font = `bold ${wallFontSize}px "Geist Mono", monospace`;
-      ctx!.textAlign = "center";
-      ctx!.textBaseline = "middle";
-      ctx!.fillText("▶", exitX, exitY);
-      ctx!.restore();
-
-      // Player last-valid-cell indicator
-      const player = playerCellRef.current;
-      const plrX = ox + player.col * cellSize + cellSize / 2;
-      const plrY = oy + player.row * cellSize + cellSize / 2;
-      ctx!.save();
-      ctx!.globalAlpha = 0.28 + 0.12 * Math.sin(now * 0.006);
-      ctx!.strokeStyle = "#ff6644";
-      ctx!.lineWidth = 1.5;
-      ctx!.shadowColor = "#ff4422";
-      ctx!.shadowBlur = 8;
-      const hs = cellSize * 0.38;
-      ctx!.strokeRect(plrX - hs, plrY - hs, hs * 2, hs * 2);
-      ctx!.restore();
-
-      // Collision flash
-      if (flashRef.current > 0) {
-        ctx!.save();
-        ctx!.globalAlpha = flashRef.current * 0.38;
-        ctx!.fillStyle = "#cc0000";
-        ctx!.fillRect(0, 0, W, H);
-        ctx!.restore();
-      }
-
-      // Random glitch line
-      if (Math.random() < 0.01) {
-        ctx!.save();
-        ctx!.globalAlpha = 0.16;
-        ctx!.fillStyle = "#ff0000";
-        ctx!.fillRect(0, Math.random() * H, W, 1 + Math.random() * 2);
-        ctx!.restore();
-      }
 
       frameId = requestAnimationFrame(draw);
+      frameRef.current = frameId;
     }
 
     frameId = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frameId);
   }, [lines, size]);
 
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    fieldRef.current.active  = true;
+    fieldRef.current.targetX = e.clientX - rect.left;
+    fieldRef.current.targetY = e.clientY - rect.top;
+  }
+
+  function handlePointerLeave() {
+    fieldRef.current.active = false;
+  }
+
+  function handleLetterHover(idx: number) {
+    if (completedRef.current) return;
+    setFoundCount((prev) => {
+      if (idx !== prev) return prev; // 순서 아니면 무시
+      const next = prev + 1;
+      if (next >= 4) {
+        completedRef.current = true;
+        setTimeout(() => onComplete(), 800);
+      }
+      return next;
+    });
+  }
+
   return (
     <main
       ref={containerRef}
       onPointerMove={handlePointerMove}
-      onPointerEnter={handlePointerMove}
-      onPointerLeave={() => {
-        fieldRef.current.active = false;
-        prevMousePixelRef.current = null;
-      }}
+      onPointerLeave={handlePointerLeave}
       className="relative min-h-screen cursor-crosshair overflow-hidden bg-black text-white"
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-4 px-5 py-4 font-mono text-[10px] font-black tracking-[0.24em] text-white/40">
-        <span>PRETEXT INCIDENT FILE / MAZE PROTOCOL</span>
-        <span className={collisions >= 2 ? "text-red-400/90" : "text-white/30"}>
-          {collisions > 0 ? `⚠ WALL COLLISION ${collisions}/3` : "NAVIGATE THE MAZE"}
-        </span>
-      </div>
+
+      {/* 숨겨진 글자 — 직접 호버 시에만 실제 글자 표시 */}
+      {HIDDEN.map((h, i) => {
+        const isFound = i < foundCount;
+        return (
+          <span
+            key={h.letter}
+            onPointerEnter={() => handleLetterHover(i)}
+            style={{
+              position: "absolute",
+              top:       h.top,
+              left:      h.left,
+              fontSize:  size.width < 760 ? "13px" : "16px",
+              fontFamily: '"Geist Mono", monospace',
+              fontWeight: 500,
+              lineHeight: 1,
+              cursor:     "crosshair",
+              userSelect: "none",
+              color:      isFound
+                ? "rgba(100,0,0,0.6)"   // 찾은 것: 어둡게
+                : "rgba(210,192,188,0.72)", // 기본: 캔버스 텍스트와 동일
+              transition: "color 0.1s",
+            }}
+            className="group"
+          >
+            {/* 호버 전: 가짜 글자 / 호버 중: 실제 글자 */}
+            <span className="group-hover:hidden">{isFound ? h.letter : fakeChars[i]}</span>
+            <span
+              className="hidden group-hover:inline"
+              style={{ color: "#ff2020", fontWeight: 900 }}
+            >
+              {h.letter}
+            </span>
+          </span>
+        );
+      })}
+
+      {/* 하단 가이드 */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center pb-4 font-mono text-[10px] font-black tracking-[0.18em] text-white/20">
-        <span>MOVE THROUGH THE PATH — 3 COLLISIONS RESETS POSITION</span>
+        <span>FIND THE HIDDEN SEQUENCE — HOVER TO REVEAL</span>
       </div>
     </main>
   );

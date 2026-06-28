@@ -300,25 +300,20 @@ export default function TerminalClient() {
       glitchRafRef.current = requestAnimationFrame(animate);
     }
 
-    // 첫 발동: 2초 후
-    timers.push(window.setTimeout(triggerBurstCycle, 2000));
+    // 첫 발동: 5초 후 micro-burst
+    timers.push(window.setTimeout(triggerBurstCycle, 5000));
 
-    // 이후 3~5초 랜덤 간격으로 약한 burst 반복
-    const schedule = () => {
-      const next = 3000 + Math.random() * 2000;
-      const t = window.setTimeout(() => {
-        triggerBurstCycle();
-        schedule();
-      }, next);
-      timers.push(t);
-    };
-    timers.push(window.setTimeout(schedule, 2000));
+    // 이후 30초마다 micro-burst 반복
+    const burstInterval = window.setInterval(triggerBurstCycle, 30000);
+    timers.push(burstInterval as unknown as number);
 
-    // 10초마다 강한 glitch 1회
-    const heavyInterval = window.setInterval(triggerHeavyGlitch, 10000);
+    // 20초 후 첫 heavy glitch, 이후 40초마다 반복
+    timers.push(window.setTimeout(triggerHeavyGlitch, 20000));
+    const heavyInterval = window.setInterval(triggerHeavyGlitch, 40000);
 
     return () => {
       timers.forEach((t) => window.clearTimeout(t));
+      window.clearInterval(burstInterval);
       window.clearInterval(heavyInterval);
       cancelAnimationFrame(glitchRafRef.current);
       displacementRef.current?.setAttribute("scale", "0");
@@ -393,7 +388,18 @@ export default function TerminalClient() {
     queueTimer(() => {
       setOverlay(null);
       setCommand("");
-      unlockStage("pretext-ending", challengeIds.corrupted);
+      // corrupted-command 완료 상태를 localStorage에 직접 저장 후 pretext 이동
+      const nextMail = getMailForStage("pretext-ending");
+      const updatedProgress: TerminalProgress = {
+        currentStage: "pretext-ending",
+        unlockedMailIds: mergeUnlocked(progress, nextMail.id),
+        selectedMailId: nextMail.id,
+        completedChallengeIds: progress.completedChallengeIds.includes(challengeIds.corrupted)
+          ? progress.completedChallengeIds
+          : [...progress.completedChallengeIds, challengeIds.corrupted],
+      };
+      window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(updatedProgress));
+      window.location.href = "/portals/security/terminal/pretext";
     }, 1750);
   }
 
