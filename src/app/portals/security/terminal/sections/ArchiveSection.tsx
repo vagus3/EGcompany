@@ -5,7 +5,6 @@ import {
   Archive,
   Camera,
   Eye,
-  FileBox,
   KeyRound,
   Lock,
   Shield,
@@ -21,13 +20,13 @@ export function ObjectSymbolIcon({ symbol, className }: { symbol: string; classN
     case "OBSERVE":
       return <Eye className={className} />;
     case "TRACE":
-      return <Camera className={className} />;
+      return <Shield className={className} />;
     case "KEY":
       return <KeyRound className={className} />;
     case "LOCK":
       return <Lock className={className} />;
     case "OPEN":
-      return <FileBox className={className} />;
+      return <Camera className={className} />;
     case "FALSE":
       return <Skull className={className} />;
     case "ARCHIVE":
