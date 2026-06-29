@@ -182,7 +182,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
     ],
     status: [
       "현재 EG Log 03-27 창고에 보관 중 필요 시 담당자에게 권한 요청 바람.",
-      "(하급 사원이 해당 개체를 이용해서 부적절한 상급 부서 접촉 적발 시, 징계 처리함."
+      "(하급 사원이 해당 개체를 이용해서 부적절한 상급 부서 접촉 적발 시, 징계 처리함.)"
     ],
     description_en: [
       "WESEN-1744 is a metal-made classical key-shaped entity. Though simple in appearance, it has the characteristic of responding to locks that do not physically exist.",
