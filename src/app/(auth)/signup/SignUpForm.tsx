@@ -50,7 +50,7 @@ export default function SignUpForm() {
           autoComplete="name"
           required
           placeholder="ALEXANDER VANCE"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 
@@ -68,7 +68,7 @@ export default function SignUpForm() {
           autoComplete="email"
           required
           placeholder="VANCE.A@EG.COM"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 
@@ -87,7 +87,7 @@ export default function SignUpForm() {
           required
           minLength={8}
           placeholder="********"
-          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black uppercase outline-none placeholder:text-neutral-200 focus:border-black"
+          className="mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
         />
       </div>
 

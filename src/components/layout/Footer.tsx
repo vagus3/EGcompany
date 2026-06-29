@@ -24,7 +24,7 @@ export default function Footer() {
             {t("footer_company_info", lang)}
           </Link>
           <Link
-            href="/contact"
+            href="/contact/report"
             className={cx("text-[11px] tracking-widest uppercase", theme.linkMuted)}
           >
             {t("footer_contact", lang)}

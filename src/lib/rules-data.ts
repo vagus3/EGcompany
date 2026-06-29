@@ -1,11 +1,11 @@
 export const rules = [
   {
     num: "01",
-    title: "보안 규정 및 SCP 개체 접근 제한",
-    title_en: "Security Regulations and SCP Entity Access Restrictions",
-    body: "본 시설에서 근무하는 모든 인원은 SCP 개체에 대한 사적인 탐색 행위를 금지합니다. 업무상 필요한 경우에도 반드시 보안팀의 승인 절차를 거쳐야 합니다.",
+    title: "보안 규정 및 WESEN 개체 접근 제한",
+    title_en: "Security Regulations and WESEN Entity Access Restrictions",
+    body: "본 시설에서 근무하는 모든 인원은 WESEN 개체에 대한 사적인 탐색 행위를 금지합니다. 업무상 필요한 경우에도 반드시 보안팀의 승인 절차를 거쳐야 합니다.",
     body_en:
-      "All personnel working at this facility are prohibited from engaging in unauthorized exploration of SCP entities. Even when operationally necessary, approval from the security team must be obtained.",
+      "All personnel working at this facility are prohibited from engaging in unauthorized exploration of WESEN entities. Even when operationally necessary, approval from the security team must be obtained.",
   },
   {
     num: "02",
@@ -49,11 +49,11 @@ export const rules = [
   },
   {
     num: "07",
-    title: "SCP 작업 절차 및 보고 의무",
-    title_en: "SCP Work Procedures and Reporting Obligations",
-    body: "SCP 작업 시에는 정보 파일의 특징과 취급 주의 사항을 따르고, 만약 이행하지 못했다면 즉시 보안팀에 보고 하십시오.",
+    title: "WESEN 작업 절차 및 보고 의무",
+    title_en: "WESEN Work Procedures and Reporting Obligations",
+    body: "WESEN 작업 시에는 정보 파일의 특징과 취급 주의 사항을 따르고, 만약 이행하지 못했다면 즉시 보안팀에 보고 하십시오.",
     body_en:
-      "During SCP operations, follow the characteristics and handling precautions outlined in the information file. If unable to comply, immediately report to the security team.",
+      "During WESEN operations, follow the characteristics and handling precautions outlined in the information file. If unable to comply, immediately report to the security team.",
   },
   {
     num: "08",

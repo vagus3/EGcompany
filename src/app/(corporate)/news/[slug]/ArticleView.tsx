@@ -10,7 +10,7 @@ function renderBlock(block: Block, idx: number, workDetailsLabel: string) {
     case "image":
       return (
         <figure key={idx} className="my-12">
-          <div className="relative h-470px w-full overflow-hidden bg-gray-300">
+          <div className="relative aspect-16/7 w-full overflow-hidden bg-gray-300">
             {block.imageSrc && (
               <Image
                 src={block.imageSrc}
