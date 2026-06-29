@@ -17,7 +17,7 @@ const PATH_TEXT =
   "DO NOT LOOK BACK THE EXIT IS WATCHING YOU REACH IT BEFORE IT REACHES YOU " +
   "SECTOR BREACH CONFIRMED OPERATOR FIELD DETECTED PROCEED TO RETURN CHANNEL ";
 
-// 숨겨진 글자 위치 (화면 비율 기준)
+// 숨겨진 글자 위치
 const HIDDEN = [
   { letter: "S", top: "29%", left: "16%" },
   { letter: "T", top: "54%", left: "71%" },
@@ -25,7 +25,7 @@ const HIDDEN = [
   { letter: "P", top: "21%", left: "82%" },
 ] as const;
 
-// ── 텍스트 어보이던스 drawLine ───────────────────────────────────────────────
+// ── pretext drawLine ─────────────────────────────────────────────────────────
 type TextLine = { text: string; x: number; y: number };
 type Field    = { active: boolean; x: number; y: number; targetX: number; targetY: number };
 
@@ -46,10 +46,7 @@ function drawLine(
 ) {
   const distY = Math.abs(field.y - line.y);
   const force = field.active ? Math.max(0, 1 - distY / radius) : 0;
-  if (force <= 0.03) {
-    ctx.fillText(line.text, line.x, line.y);
-    return;
-  }
+  if (force <= 0.03) { ctx.fillText(line.text, line.x, line.y); return; }
   const gap      = radius * (0.28 + force * 0.82);
   const gapStart = field.x - gap;
   const gapEnd   = field.x + gap;
@@ -74,13 +71,12 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const fieldRef     = useRef<Field>({ active: false, x: 0, y: 0, targetX: 0, targetY: 0 });
   const frameRef     = useRef(0);
   const completedRef = useRef(false);
+  // 미로 벽 문자 페이즈 애니메이션 상태
+  const charPhaseRef = useRef<number[]>([]);
 
   const [foundCount, setFoundCount] = useState(0);
   const [size, setSize] = useState({ width: 1280, height: 720 });
-  // 각 숨겨진 글자 위에 표시될 깜빡이는 가짜 글자
-  const [fakeChars, setFakeChars] = useState<string[]>(() =>
-    HIDDEN.map(() => GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)])
-  );
+  const [fakeChars, setFakeChars] = useState<string[]>(HIDDEN.map(() => "★"));
 
   // 화면 크기 감지
   useEffect(() => {
@@ -94,22 +90,20 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     return () => obs.disconnect();
   }, []);
 
-  // 가짜 글자 주기적 교체 (화면 텍스트와 어우러지도록)
+  // 가짜 글자 교체 (숨겨진 스팬용)
   useEffect(() => {
     const id = setInterval(() => {
-      setFakeChars(HIDDEN.map(() =>
-        GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)]
-      ));
-    }, 280);
+      setFakeChars(HIDDEN.map(() => GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)]));
+    }, 200);
     return () => clearInterval(id);
   }, []);
 
-  // @chenglou/pretext 텍스트 레이아웃
+  // pretext 텍스트 레이아웃
   const lines = useMemo<TextLine[]>(() => {
     if (typeof window === "undefined") return [];
     const fontSize   = size.width < 760 ? 13 : 16;
     const lineHeight = size.width < 760 ? 26 : 32;
-    const repeated   = PATH_TEXT.repeat(20); // 화면 꽉 채우도록 반복
+    const repeated   = PATH_TEXT.repeat(20);
     const prepared   = prepareWithSegments(
       repeated,
       `500 ${fontSize}px "Geist Mono", monospace`,
@@ -134,6 +128,9 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     let frameId = 0;
     let prevTime = performance.now();
 
+    // 미로 벽 문자 셀 그리드 초기화
+    const CELL_SIZE = 18;
+
     function draw(now: number) {
       const dt = Math.min(0.05, (now - prevTime) / 1000);
       prevTime = now;
@@ -151,18 +148,50 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       field.x += (field.targetX - field.x) * Math.min(1, dt * 10);
       field.y += (field.targetY - field.y) * Math.min(1, dt * 10);
 
-      // 배경
+      // ── 배경 ──
       ctx!.fillStyle = "#030303";
       ctx!.fillRect(0, 0, W, H);
 
-      const fontSize   = W < 760 ? 13 : 16;
-      const radius     = Math.max(90, Math.min(180, W * 0.12));
+      // ── 레이어 1: 미로 벽 스타일 dense 특수문자 그리드 ──
+      const cols = Math.ceil(W / CELL_SIZE) + 1;
+      const rows = Math.ceil(H / CELL_SIZE) + 1;
+      const totalCells = rows * cols;
+      if (charPhaseRef.current.length !== totalCells) {
+        charPhaseRef.current = Array.from({ length: totalCells }, (_, i) => i * 0.41 % GARBLED_POOL.length);
+      }
+      const phases = charPhaseRef.current;
 
-      // PATH_TEXT — pretext 어보이던스
+      ctx!.textAlign    = "center";
+      ctx!.textBaseline = "middle";
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cx = c * CELL_SIZE + CELL_SIZE / 2;
+          const cy = r * CELL_SIZE + CELL_SIZE / 2;
+          const idx = r * cols + c;
+
+          phases[idx] = (phases[idx] + dt * (1.7 + Math.sin(now * 0.001 + c * 0.9 + r * 1.3) * 1.0)) % GARBLED_POOL.length;
+          const char  = GARBLED_POOL[Math.floor(phases[idx])];
+
+          const distM = Math.hypot(field.x - cx, field.y - cy);
+          const prox  = Math.max(0, 1 - distM / (CELL_SIZE * 6));
+          const flicker = 0.55 + 0.2 * Math.sin(now * 0.005 + c * 0.7 + r * 1.1);
+
+          ctx!.globalAlpha = 0.65 + prox * 0.3 + flicker * 0.04;
+          ctx!.fillStyle   = `rgb(${Math.floor(85 + prox * 105)},${Math.floor(18 + prox * 14)},${Math.floor(22 + prox * 12)})`;
+          ctx!.font        = `bold ${CELL_SIZE - 4}px "Geist Mono", monospace`;
+          ctx!.fillText(char, cx, cy);
+          ctx!.globalAlpha = 1;
+        }
+      }
+
+      // ── 레이어 2: PATH_TEXT pretext 어보이던스 (위에 겹쳐서) ──
+      const fontSize = W < 760 ? 13 : 16;
+      const radius   = Math.max(90, Math.min(180, W * 0.12));
       ctx!.font         = `500 ${fontSize}px "Geist Mono", monospace`;
       ctx!.textAlign    = "left";
       ctx!.textBaseline = "middle";
-      ctx!.fillStyle    = "rgba(210,192,188,0.72)";
+      ctx!.fillStyle    = "rgba(210,192,188,0.18)";
       lines.forEach((line) => drawLine(ctx!, line, field, radius, now));
 
       frameId = requestAnimationFrame(draw);
@@ -187,11 +216,11 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   function handleLetterHover(idx: number) {
     if (completedRef.current) return;
     setFoundCount((prev) => {
-      if (idx !== prev) return prev; // 순서 아니면 무시
+      if (idx !== prev) return prev;
       const next = prev + 1;
       if (next >= 4) {
         completedRef.current = true;
-        setTimeout(() => onComplete(), 800);
+        setTimeout(() => onComplete(), 900);
       }
       return next;
     });
@@ -206,7 +235,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* 숨겨진 글자 — 직접 호버 시에만 실제 글자 표시 */}
+      {/* 숨겨진 글자 스팬 */}
       {HIDDEN.map((h, i) => {
         const isFound = i < foundCount;
         return (
@@ -214,27 +243,24 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
             key={h.letter}
             onPointerEnter={() => handleLetterHover(i)}
             style={{
-              position: "absolute",
-              top:       h.top,
-              left:      h.left,
-              fontSize:  size.width < 760 ? "13px" : "16px",
+              position:   "absolute",
+              top:        h.top,
+              left:       h.left,
+              fontSize:   `${Math.max(14, Math.min(18, 16))}px`,
               fontFamily: '"Geist Mono", monospace',
-              fontWeight: 500,
+              fontWeight: "bold",
               lineHeight: 1,
               cursor:     "crosshair",
               userSelect: "none",
-              color:      isFound
-                ? "rgba(100,0,0,0.6)"   // 찾은 것: 어둡게
-                : "rgba(210,192,188,0.72)", // 기본: 캔버스 텍스트와 동일
+              color: isFound ? "rgba(60,0,0,0.5)" : "rgba(130,20,20,0.8)",
               transition: "color 0.1s",
             }}
             className="group"
           >
-            {/* 호버 전: 가짜 글자 / 호버 중: 실제 글자 */}
             <span className="group-hover:hidden">{isFound ? h.letter : fakeChars[i]}</span>
             <span
               className="hidden group-hover:inline"
-              style={{ color: "#ff2020", fontWeight: 900 }}
+              style={{ color: "#ff2020", fontWeight: 900, fontSize: "20px" }}
             >
               {h.letter}
             </span>
