@@ -136,7 +136,7 @@ export function ArchiveDetail({ entry }: { entry: TerminalObjectEntry }) {
             ))}
           </ArchiveCard>
 
-          <ArchiveCard title="Containment Status">
+          <ArchiveCard title="Containment Records">
             {status.map((line, index) => (
               <p key={index} className="mt-4 first:mt-0">
                 {line}

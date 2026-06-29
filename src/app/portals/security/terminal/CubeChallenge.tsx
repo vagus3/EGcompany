@@ -15,7 +15,7 @@ type CubeFace = {
 const HOLD_DURATION_MS = 4000;
 
 const cubeFaces: CubeFace[] = [
-  { label: "OBSERVE", position: [0, 0, 1.01], rotation: [0, 0, 0], color: "#181818" },
+  { label: "OBSERVATION", position: [0, 0, 1.01], rotation: [0, 0, 0], color: "#181818" },
   { label: "TRACE", position: [0, 0, -1.01], rotation: [0, Math.PI, 0], color: "#3b0b0b" },
   { label: "KEY", position: [0, 1.01, 0], rotation: [-Math.PI / 2, 0, 0], color: "#151515" },
   { label: "LOCK", position: [0, -1.01, 0], rotation: [Math.PI / 2, 0, 0], color: "#151515" },
@@ -210,12 +210,7 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
             </p>
             <div className="text-terminal-text-muted mt-5 space-y-4 text-sm leading-6">
               <p>
-                격리 실패 직후 회수된 기록 장치에서 정육면체 형태의 시각 신호가 반복적으로 출력되고
-                있습니다.
-              </p>
-              <p>
-                각 면은 서로 다른 접근 로그를 보관하고 있으며, 하나의 면이 활성화되는 동안 시스템
-                추적 신호가 안정화됩니다.
+                DIRECTOR E.G.
               </p>
             </div>
           </div>
