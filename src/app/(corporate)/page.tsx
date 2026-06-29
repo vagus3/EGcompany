@@ -425,13 +425,13 @@ function InsightsSection() {
         <div data-anim className="mt-4 sm:mt-8 grid gap-3 md:grid-cols-2">
           <InsightCard
             href="/news/q3-strategy-report"
-            title="TQ3 Strategy Report: Strategic Growth Exceeds Expectations"
+            title="The Architecture of Market Consolidation"
             category="White Paper"
             style={visualStyles.insightA}
           />
           <InsightCard
             href="/news/unauthorized-language-pattern"
-            title="Unauthorized Language Pattern Detection Report"
+            title="Engineered Resilience in Global Supply Chains"
             category="Research"
             style={visualStyles.insightB}
           />

@@ -7,13 +7,16 @@ import { useLanguage } from "@/hooks/useLanguage";
 
 // ── 계좌 정보 ────────────────────────────────────────────────────────────────
 const ACCOUNT_INFO = {
-  bank:    "카카오뱅크",
+  bank_ko: "카카오뱅크",
+  bank_en: "Kakaobank",
   number:  "3333-XX-XXXXXXX",  // 실제 계좌번호로 교체하세요
   holder:  "예금주명",          // 실제 예금주명으로 교체하세요
 };
 
 // ── 계좌 모달 ────────────────────────────────────────────────────────────────
 function AccountModal({ onClose }: { onClose: () => void }) {
+  const lang = useLanguage();
+  const isEn = lang === "en";
   const [copied, setCopied] = useState(false);
 
   function copyAccount() {
@@ -39,7 +42,7 @@ function AccountModal({ onClose }: { onClose: () => void }) {
               Developer Support
             </p>
             <h2 className="mt-1 text-xl font-black tracking-tight text-black">
-              개발자 후원 계좌
+              {isEn ? "Developer Account Info" : "개발자 후원 계좌"}
             </h2>
           </div>
           <button
@@ -54,18 +57,24 @@ function AccountModal({ onClose }: { onClose: () => void }) {
         {/* 계좌 정보 */}
         <div className="space-y-4 border-y border-gray-100 py-6">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] tracking-widest text-gray-400 uppercase">은행</span>
-            <span className="text-sm font-black text-black">{ACCOUNT_INFO.bank}</span>
+            <span className="text-[11px] tracking-widest text-gray-400 uppercase">
+              {isEn ? "Bank" : "은행"}
+            </span>
+            <span className="text-sm font-black text-black">
+              {isEn ? ACCOUNT_INFO.bank_en : ACCOUNT_INFO.bank_ko}
+            </span>
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[11px] tracking-widest text-gray-400 uppercase">계좌번호</span>
+            <span className="text-[11px] tracking-widest text-gray-400 uppercase">
+              {isEn ? "Account No." : "계좌번호"}
+            </span>
             <div className="flex items-center gap-2">
               <span className="font-mono text-sm font-black text-black">{ACCOUNT_INFO.number}</span>
               <button
                 onClick={copyAccount}
                 className="flex h-7 w-7 items-center justify-center border border-gray-200 text-gray-400 transition-all hover:border-black hover:text-black"
-                aria-label="계좌번호 복사"
+                aria-label={isEn ? "Copy account number" : "계좌번호 복사"}
               >
                 {copied
                   ? <Check className="h-3.5 w-3.5 text-black" />
@@ -75,14 +84,16 @@ function AccountModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-[11px] tracking-widest text-gray-400 uppercase">예금주</span>
+            <span className="text-[11px] tracking-widest text-gray-400 uppercase">
+              {isEn ? "Holder" : "예금주"}
+            </span>
             <span className="text-sm font-black text-black">{ACCOUNT_INFO.holder}</span>
           </div>
         </div>
 
         {copied && (
           <p className="mt-4 text-center text-[11px] font-black tracking-widest text-black uppercase">
-            계좌번호가 복사되었습니다
+            {isEn ? "Account number copied" : "계좌번호가 복사되었습니다"}
           </p>
         )}
       </div>
@@ -93,6 +104,7 @@ function AccountModal({ onClose }: { onClose: () => void }) {
 // ── 메인 페이지 ──────────────────────────────────────────────────────────────
 export default function Page() {
   const lang = useLanguage();
+  const isEn = lang === "en";
   const [showModal, setShowModal] = useState(false);
   const [report,    setReport]    = useState("");
   const [sent,      setSent]      = useState(false);
@@ -111,23 +123,24 @@ export default function Page() {
         Contact Us.
       </h1>
 
-      {/* 개발자에게 껌사주기 */}
+      {/* 개발자에게 사탕사주기 */}
       <div className="mb-14 border-b border-gray-100 pb-14">
         <p className="mb-2 text-[10px] font-black tracking-[0.28em] text-gray-400 uppercase">
           Optional
         </p>
         <h2 className="mb-4 text-2xl font-black tracking-tight text-black">
-          개발자에게 껌사주기 🍬
+          {isEn ? "Buy the Developer a Candy 🍬" : "개발자에게 사탕사주기 🍬"}
         </h2>
         <p className="mb-6 max-w-md text-sm leading-relaxed text-gray-500">
-          이 서비스가 마음에 드셨다면 개발자에게 작은 응원을 보내주세요.
-          껌 한 통 값이면 충분합니다.
+          {isEn
+            ? "If you enjoyed this service, send the developer a small token of appreciation. The price of a candy is more than enough."
+            : "이 서비스가 마음에 드셨다면 개발자에게 작은 응원을 보내주세요. 사탕 한 봉지 값이면 충분합니다."}
         </p>
         <button
           onClick={() => setShowModal(true)}
           className="border border-black px-8 py-3 text-[12px] font-black tracking-[0.22em] text-black uppercase transition-colors hover:bg-black hover:text-white"
         >
-          계좌 확인하기
+          {isEn ? "View Account" : "계좌 확인하기"}
         </button>
       </div>
 
