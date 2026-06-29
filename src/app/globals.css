@@ -47,6 +47,15 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+/* 스크롤바 완전 숨김 — Chrome/Safari webkit scrollbar space 제거 */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 /* ── Analog TV static (person modal) ────────────────────────────────────── */
 @keyframes tv-flicker {
   0%, 100%  { opacity: 1; filter: brightness(1); }

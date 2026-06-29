@@ -11,6 +11,8 @@ import {
   adminTestRequiredKey,
   adminTestStorageEvent,
 } from "@/lib/admin-test";
+import { articles } from "@/lib/news-data";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const visualStyles = {
   hero: {
@@ -172,8 +174,7 @@ export default function Page() {
   return (
     <div
       ref={scrollRef}
-      className="bg-black text-corporate-text h-[calc(100vh-3.5rem)] overflow-y-scroll snap-y snap-mandatory"
-      style={{ scrollbarWidth: "none" }}
+      className="hide-scrollbar bg-black text-corporate-text h-[calc(100vh-3.5rem)] overflow-y-auto snap-y snap-mandatory"
     >
       <HeroSection />
       <StatementSection />
@@ -410,9 +411,19 @@ function EcosystemSection() {
 }
 
 function InsightsSection() {
+  const lang = useLanguage();
+
+  const articleA = articles.find((a) => a.slug === "q3-strategy-report");
+  const articleB = articles.find((a) => a.slug === "unauthorized-language-pattern");
+
+  const titleA = articleA ? (lang === "en" ? (articleA.title_en ?? articleA.title) : articleA.title) : "";
+  const titleB = articleB ? (lang === "en" ? (articleB.title_en ?? articleB.title) : articleB.title) : "";
+  const catA   = articleA?.category ?? "White Paper";
+  const catB   = articleB?.category ?? "Research";
+
   return (
     <section data-snap className="snap-start snap-always bg-corporate-bg px-4 py-6 sm:px-6 sm:py-10 lg:py-14 min-h-[calc(100vh-3.5rem)] flex flex-col justify-center overflow-y-auto">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl">
         <div data-anim className="flex items-end justify-between gap-6">
           <SectionHeading title="Insights" compact />
           <Link
@@ -422,17 +433,17 @@ function InsightsSection() {
             View All Report
           </Link>
         </div>
-        <div data-anim className="mt-4 sm:mt-8 grid gap-3 md:grid-cols-2">
+        <div data-anim className="mt-4 sm:mt-8 grid items-stretch gap-3 md:grid-cols-2">
           <InsightCard
             href="/news/q3-strategy-report"
-            title="The Architecture of Market Consolidation"
-            category="White Paper"
+            title={titleA}
+            category={catA}
             style={visualStyles.insightA}
           />
           <InsightCard
             href="/news/unauthorized-language-pattern"
-            title="Engineered Resilience in Global Supply Chains"
-            category="Research"
+            title={titleB}
+            category={catB}
             style={visualStyles.insightB}
           />
         </div>
@@ -453,19 +464,19 @@ function InsightCard({
   style: CSSProperties;
 }) {
   return (
-    <div className="group relative">
+    <div className="group relative h-full">
       {/* 카드 오른쪽 아래에 고정 위치한 블러 그림자 — 호버 시 나타남 */}
       <div className="pointer-events-none absolute inset-0 translate-x-3 translate-y-3 bg-black/40 blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <Link
         href={href}
-        className="relative block border border-corporate-border bg-corporate-surface transition-transform duration-300 ease-out group-hover:-translate-x-2 group-hover:-translate-y-2"
+        className="relative flex h-full flex-col border border-corporate-border bg-corporate-surface transition-transform duration-300 ease-out group-hover:-translate-x-2 group-hover:-translate-y-2"
       >
-        <div className="aspect-[1.65] overflow-hidden grayscale" style={style} />
-        <div className="p-5">
+        <div className="aspect-[1.65] w-full flex-shrink-0 overflow-hidden grayscale" style={style} />
+        <div className="flex flex-1 flex-col p-5">
           <p className="font-mono text-[9px] tracking-[0.2em] text-corporate-text-muted uppercase">
             {category}
           </p>
-          <h3 className="mt-2 text-xl leading-tight font-semibold">{title}</h3>
+          <h3 className="mt-2 text-xl leading-tight font-semibold line-clamp-2 min-h-[3.2rem]">{title}</h3>
           <p className="mt-5 font-mono text-xs text-corporate-text-muted">Read</p>
         </div>
       </Link>
