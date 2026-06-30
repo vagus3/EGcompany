@@ -1,3 +1,5 @@
+export const TERMINAL_PROGRESS_STORAGE_KEY = "terminal-progress-v1";
+
 export type TerminalStage =
   | "intro"
   | "pin-select"

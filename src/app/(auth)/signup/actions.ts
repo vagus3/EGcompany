@@ -1,12 +1,14 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
+import { cookies } from "next/headers";
 import { randomBytes } from "node:crypto";
 import { z } from "zod";
 
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
+import { HINT_PROMPT_COUNT_COOKIE_NAME } from "@/lib/employee-card";
 
 export type SignUpState = {
   ok: boolean;
@@ -106,6 +108,7 @@ export async function signUpAction(
 
     const user = await createUserWithEmployeeCode({ email, language, name, password, theme });
     await createSession(user.id);
+    (await cookies()).delete(HINT_PROMPT_COUNT_COOKIE_NAME);
 
     return { ok: true, message: "Registration complete. User information was saved." };
   } catch (error) {
