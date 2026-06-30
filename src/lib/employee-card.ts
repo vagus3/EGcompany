@@ -35,9 +35,10 @@ const RANK_TEMPLATE_FILE: Record<EmployeeCardRank, string> = {
 
 const CARD_WIDTH = 638;
 const CARD_HEIGHT = 1016;
-const NAME_AREA_X = 343;
-const NAME_AREA_MAX_WIDTH = 200;
-const NAME_BASELINE_Y = 445;
+const NAME_AREA_X = 330;
+const NAME_AREA_MAX_WIDTH = 260;
+const NAME_BASELINE_Y = 455;
+const CODE_AREA_X = 335;
 const CODE_BASELINE_Y = 615;
 
 let cachedFontBase64: string | null = null;
@@ -70,7 +71,7 @@ export async function createEmployeeCardImage(payload: EmployeeCardPayload): Pro
   const templatePath = path.join(process.cwd(), "public", "employee_card", templateFile);
 
   const rawName = payload.name?.trim() || "UNKNOWN";
-  const nameFontSize = fitFontSize(rawName, NAME_AREA_MAX_WIDTH, 30, 14);
+  const nameFontSize = fitFontSize(rawName, NAME_AREA_MAX_WIDTH, 55, 28);
   const safeName = escapeSvgText(rawName);
   const safeCode = escapeSvgText(payload.employeeCode);
   const fontBase64 = getFontBase64();
@@ -86,7 +87,7 @@ export async function createEmployeeCardImage(payload: EmployeeCardPayload): Pro
         </style>
       </defs>
       <text x="${NAME_AREA_X}" y="${NAME_BASELINE_Y}" font-family="NotoKR" font-size="${nameFontSize}" font-weight="700" fill="#1a1a1a">${safeName}</text>
-      <text x="${NAME_AREA_X}" y="${CODE_BASELINE_Y}" font-family="NotoKR" font-size="22" font-weight="700" letter-spacing="1" fill="#1a1a1a">${safeCode}</text>
+      <text x="${CODE_AREA_X}" y="${CODE_BASELINE_Y}" font-family="NotoKR" font-size="22" font-weight="700" letter-spacing="1" fill="#1a1a1a">${safeCode}</text>
     </svg>`;
 
   return sharp(templatePath)
