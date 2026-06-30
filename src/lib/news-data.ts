@@ -443,7 +443,7 @@ export const articles: Article[] = [
       },
       {
         type: "hidden-note",
-        text: "Some records appear to be errors. However, repeated errors are no longer simply ERROR III. The SIGNAL V is occurring without a specific SOURCE II, and the same PATTERN IV is being repeatedly detected in some SYSTEM VI. As a result of internal NETWORK I analysis, some ARCHIVE V records have also been confirmed to be abnormally modified.",
+        text: "Some records appear to be errors. However, repeated errors are no longer simply ERROR III. The SIGNAL V is occurring without a specific SOURCE II, and in some SYSTEM VI, the same PATTERN IV is being repeatedly detected. As a result of internal NETWORK I analysis, some ARCHIVE V records have also been confirmed to be abnormally modified.",
       },
     ],
   },
