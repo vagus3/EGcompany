@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
   initialTerminalProgress,
@@ -145,7 +146,6 @@ export default function TerminalClient() {
   const glitchRafRef = useRef<number>(0);
   const progressHydratedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
-  const cubeModalTimerRef = useRef<number | null>(null);
   const deliveryRequestedRef = useRef(false);
 
   const visibleMails = useMemo(() => getVisibleMails(progress), [progress]);
@@ -196,42 +196,8 @@ export default function TerminalClient() {
     const timers = timersRef.current;
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
-      if (cubeModalTimerRef.current) window.clearTimeout(cubeModalTimerRef.current);
     };
   }, []);
-
-  useEffect(() => {
-    if (cubeModalTimerRef.current) {
-      window.clearTimeout(cubeModalTimerRef.current);
-      cubeModalTimerRef.current = null;
-    }
-
-    const shouldArmCubeModal =
-      activeSection === "messenger" &&
-      selectedMail.challengeType === "cube-hold" &&
-      progress.currentStage === "cube-hold" &&
-      !completed.has(challengeIds.cube);
-
-    if (!shouldArmCubeModal) return;
-
-    cubeModalTimerRef.current = window.setTimeout(() => {
-      setCubeModalOpen(true);
-      cubeModalTimerRef.current = null;
-    }, 10000);
-
-    return () => {
-      if (cubeModalTimerRef.current) {
-        window.clearTimeout(cubeModalTimerRef.current);
-        cubeModalTimerRef.current = null;
-      }
-    };
-  }, [
-    activeSection,
-    completed,
-    progress.currentStage,
-    selectedMail.challengeType,
-    selectedMail.id,
-  ]);
 
   // pin-select 클리어 후 → 불규칙 micro-burst 글리치
   const pinCompleted = completed.has(challengeIds.pin);
@@ -477,12 +443,7 @@ export default function TerminalClient() {
     completed.has(challengeIds.pretext)
       ? "survey-qr"
       : endFlow;
-  const shouldShowCubeModal =
-    cubeModalOpen &&
-    activeSection === "messenger" &&
-    selectedMail.challengeType === "cube-hold" &&
-    progress.currentStage === "cube-hold" &&
-    !completed.has(challengeIds.cube);
+  const shouldShowCubeModal = cubeModalOpen && !completed.has(challengeIds.cube);
 
   if (visibleEndFlow === "ending-video") {
     return (
@@ -611,6 +572,7 @@ export default function TerminalClient() {
               onSubmitPin={submitPinChallenge}
               onCommandChange={setCommand}
               onSubmitCommand={submitCommand}
+              onOpenCubeModal={() => setCubeModalOpen(true)}
             />
           </>
         )}
@@ -653,13 +615,24 @@ export default function TerminalClient() {
         </div>
       )}
 
-      {shouldShowCubeModal && <CubeChallengeModal onComplete={completeCubeChallenge} />}
+      {shouldShowCubeModal && (
+        <CubeChallengeModal
+          onComplete={completeCubeChallenge}
+          onClose={() => setCubeModalOpen(false)}
+        />
+      )}
     </main>
     </>
   );
 }
 
-function CubeChallengeModal({ onComplete }: { onComplete: () => void }) {
+function CubeChallengeModal({
+  onComplete,
+  onClose,
+}: {
+  onComplete: () => void;
+  onClose: () => void;
+}) {
   return (
     <div
       className="fixed inset-0 z-50 grid place-items-center bg-black/82 px-4 py-8 backdrop-blur-sm"
@@ -669,6 +642,14 @@ function CubeChallengeModal({ onComplete }: { onComplete: () => void }) {
     >
       <div className="terminal-noise absolute inset-0 opacity-25" />
       <section className="border-terminal-accent relative w-full max-w-5xl border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/0.32)]">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 z-10 grid h-8 w-8 place-items-center border border-white/20 text-white/60 transition hover:border-white hover:text-white"
+        >
+          <X className="h-4 w-4" />
+        </button>
         <div className="border-terminal-accent/50 border-b bg-[#190303] px-5 py-4 font-mono">
           <p className="text-terminal-accent-text text-xs font-black tracking-[0.34em]">
             SYSTEM ALERT: ACTIVE

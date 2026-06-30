@@ -1,66 +1,46 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 import { createEmployeeCardHtml, type EmployeeCardPayload } from "@/lib/employee-card";
 
 type EmployeeCardEmailResult =
   | { html: string; id: string; mode: "mock" }
-  | { html: string; id: string; mode: "resend" };
+  | { html: string; id: string; mode: "gmail" };
 
-let resendClient: Resend | null = null;
+function getTransporter() {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
 
-function getResendClient() {
-  if (!process.env.RESEND_API_KEY) return null;
+  if (!user || !pass) return null;
 
-  if (!resendClient) {
-    resendClient = new Resend(process.env.RESEND_API_KEY);
-  }
-
-  return resendClient;
-}
-
-function getFromAddress() {
-  return (
-    process.env.RESEND_FROM_EMAIL ?? process.env.EMAIL_FROM ?? "EG Company <onboarding@resend.dev>"
-  );
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 }
 
 export async function sendEmployeeCardEmail(payload: EmployeeCardPayload) {
-  const html = createEmployeeCardHtml(payload);
-  const resend = getResendClient();
+  const html       = createEmployeeCardHtml(payload);
+  const transporter = getTransporter();
 
-  if (!resend) {
-    console.info("[mock-email] employee card queued", {
+  if (!transporter) {
+    console.info("[mock-email] employee card queued (no GMAIL_USER/GMAIL_APP_PASSWORD)", {
       to: payload.email,
-      employeeCode: payload.employeeCode,
-      hintPromptCount: payload.hintPromptCount,
       rank: payload.rank,
     });
-
-    return {
-      id: `mock-${Date.now()}`,
-      mode: "mock" as const,
-      html,
-    } satisfies EmployeeCardEmailResult;
+    return { id: `mock-${Date.now()}`, mode: "mock" as const, html };
   }
 
-  const { data, error } = await resend.emails.send({
-    from: getFromAddress(),
-    to: [payload.email],
+  const gmailUser = process.env.GMAIL_USER!;
+  const info = await transporter.sendMail({
+    from:    `"EG Company" <${gmailUser}>`,
+    to:      payload.email,
     subject: `[EG COMPANY] ${payload.rank} 등급 클리어 사원증이 발급되었습니다`,
     html,
   });
 
-  if (error) {
-    const message =
-      typeof error === "object" && error && "message" in error
-        ? String(error.message)
-        : "Employee card email delivery failed.";
-    throw new Error(message);
-  }
-
   return {
-    id: data?.id ?? `resend-${Date.now()}`,
-    mode: "resend" as const,
+    id:   info.messageId ?? `gmail-${Date.now()}`,
+    mode: "gmail" as const,
     html,
   } satisfies EmployeeCardEmailResult;
 }

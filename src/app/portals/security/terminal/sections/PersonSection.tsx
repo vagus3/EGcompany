@@ -356,17 +356,19 @@ function PersonModal({
 }
 
 function useNow() {
-  const [now, setNow] = useState("");
+  function fmt() {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}_${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  const [now, setNow] = useState(() => fmt());
+
   useEffect(() => {
-    function fmt() {
-      const d = new Date();
-      const pad = (n: number) => String(n).padStart(2, "0");
-      return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}_${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-    }
-    setNow(fmt());
     const id = setInterval(() => setNow(fmt()), 1000);
     return () => clearInterval(id);
   }, []);
+
   return now;
 }
 

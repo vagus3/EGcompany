@@ -9,8 +9,8 @@ import { useLanguage } from "@/hooks/useLanguage";
 const ACCOUNT_INFO = {
   bank_ko: "카카오뱅크",
   bank_en: "Kakaobank",
-  number:  "3333-XX-XXXXXXX",  // 실제 계좌번호로 교체하세요
-  holder:  "예금주명",          // 실제 예금주명으로 교체하세요
+  number:  "3333-16-8630081",
+  holder:  "김예진",
 };
 
 // ── 계좌 모달 ────────────────────────────────────────────────────────────────

@@ -70,7 +70,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
     id: "WESEN-096",
     label: "WESEN-096",
     symbol: "FALSE",
-    title: "The Unseen Witness",
+    title: "The Hollow Breath",
     safetyLevel: 4,
     classCode: "VISUAL-02",
     note: "관찰 대상. 직접 응시 기록이 반복됩니다.",
@@ -88,7 +88,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
       "보호 장비 제거는 지정된 소독실 내부에서만 허용된다",
     ],
     status: [
-      "시각 접촉 기록 3건 보류 중",
+      "현재 EG Bio Sector-09 내부 특수 밀폐 캐비닛에 보관 중.",
       "3차 누출 사고 이후 관련 연구 자료 대부분 폐기 처리되었으며, 현재 연구 접근 권한은 SENIOR 이상 인원으로 제한된다.",
     ],
     description_en: [
@@ -105,7 +105,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
       "Removal of protective equipment is permitted only inside designated decontamination rooms.",
     ],
     status_en: [
-      "3 visual contact records pending review.",
+      "Currently stored in a specialized sealed cabinet inside EG Bio Sector-09.",
       "Following the third containment breach, most related research materials were destroyed. Current research access is restricted to SENIOR-level personnel and above.",
     ],
     imageLabel: "WES_096.JPG",
@@ -125,10 +125,10 @@ export const terminalObjects: TerminalObjectEntry[] = [
     classCode: "OBSERVE-04",
     note: "고정 카메라와 관찰 로그에만 반응합니다.",
     description: [
-      "WESEN-783은 인간의 안구아 유사한 형태의 감시성 개체다.",
-      "표면은 유릴처럼 매끄럽지만 실제 촉감은 생체 조직과 유사하며, 빛을 받지 않아도 내부 동공이 미세하게 움직이는 현상이 보고된다.",
+      "WESEN-783은 인간의 안구와 유사한 형태의 감시성 개체다.",
+      "표면은 유리처럼 매끄럽지만 실제 촉감은 생체 조직과 유사하며, 빛을 받지 않아도 내부 동공이 미세하게 움직이는 현상이 보고된다.",
       " ",
-      "해당 개체는 \"관측\" 자체에 반응한다. 누군가 WESEN-783을 일정 시간 이상 바라볼 경우, 이후 주변 전자기기 거울 CCTV 화면 등에서 동일한 눈 형태가 반복적으로 출현하기 시작한다.",
+      "해당 개체는 &quot;관측&quot; 자체에 반응한다. 누군가 WESEN-783을 일정 시간 이상 바라볼 경우, 이후 주변 &quot;전자기기&quot; &quot;거울&quot; &quot;CCTV&quot; 화면 등에서 동일한 눈 형태가 반복적으로 출현하기 시작한다.",
       " ",
       "현재까지 직접적인 물리 피해는 확인되지 않았으나, 장기 노출자 다수가 심각한 수면 장애와 피해망상 증세를 보였다."
     ],
@@ -216,12 +216,12 @@ export const terminalObjects: TerminalObjectEntry[] = [
       "WESEN-0491은 오래된 산업용 자물쇠 형태의 개체다.",
       "표면에는 제조사 정보나 열쇠 구멍 구조가 존재하지 않으며, 강한 부식 흔적에도 불구하고 물리적 손상이 발생하지 않는다.",
       " ",
-      "해당 개체는 단순 문 금고뿐 아니라 파일, 기억, 공간, 통신 기록 등 사용자가 \"숨기고 싶다\"고 인식한 대상에도 영향을 미친다.",
+      "해당 개체는 단순 문이나 금고뿐 아니라 파일, 기억, 공간, 통신 기록 등 사용자가 \"숨기고 싶다\"고 인식한 대상에도 영향을 미친다.",
       "일부 실험에서는 특정 데이터 자체가 완전히 소실되는 현상이 확인되었다.",
     ],
     containment: [
-      "승인된 관리자 카드 없이 접근 금지",
-      "시험 시 봉인 대상 지정 오류 발생 가능성 존재. 사용 전 대상 명칭을 반복 확인할 것.",
+      "개체 사용 기록은 반드시 아날로그 문서로 별도 보관할 것",
+      "실험 시 봉인 대상 지정 오류 발생 가능성 존재. 사용 전 대상 명칭을 반복 확인할 것.",
     ],
     status: [
       "직전 실험 도중 방탈출 경험이 다수한 연구원 앞에서 자동으로 봉인이 해제된 사례가 있음.",
@@ -260,7 +260,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
     note: "개방 상태가 감지되면 즉시 보고해야 합니다.",
     description: [
       "WESEN-106은 구형 필름 카메라 형태의 기록형 개체다.",
-      "이형은 손상된 80년대 휴대용 카메라와 유사하지만, 내부 필름 배터리 저장 장치는 존재하지 않는다.",
+      "이형은 손상된 80년대 휴대용 카메라와 유사하지만, &quot;내부 필름&quot; &quot;배터리&quot; &quot;저장 장치&quot;는 존재하지 않는다.",
       " ",
       "해당 개체로 촬영된 대상은 단순 이미지가 아닌 \"정보 자체\"가 기록된다. 사진을 열람한 인원은 대상의 이름, 구조, 상태, 일부 기억 등을 직관적으로 인지하게 되며, 경우에 따라 대상이 숨기고 있던 정보까지 노출되는 사례가 보고되었다."
     ],
@@ -312,7 +312,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
       "WESEN-392는 방패 형태의 대형 금속 개체다.",
       "표면은 정체 불명의 흑색 합금으로 구성되어 있으며, 충격·화염·고열·폭발 등 대부분의 물리적 손상에 영향을 받지 않는다.",
       " ",
-      "해당 개체는 사용자가 \"지켜야 한다\"고 인식한 대상을 중심으로 주변 공간 자체를 방어구조로 재구성한다. 실험 과정에서 출입문이 봉쇄되거나, 복도가 변형되며, 감시 시스템 접근이 차단되는 현상이 반복 보고되었다.",
+      "해당 개체는 사용자가 &quot;지켜야 한다&quot; 고 인식한 대상을 중심으로 주변 공간 자체를 방어구조로 재구성한다. 실험 과정에서 출입문이 봉쇄되거나, 복도가 변형되며, 감시 시스템 접근이 차단되는 현상이 반복 보고되었다.",
     ],
     containment: [
       "개체 활성화 이후 비정상적인 방법으로 내부 진입 시도 금지. 자동 적대 판정 가능성 존재",
@@ -419,6 +419,7 @@ export const terminalObjects: TerminalObjectEntry[] = [
     containment: [
       "관련된 데이터에 접근하는 모든 인원은 SENIOR 이상의 승인을 필요로 하며, 접속 로그는 실시간으로 모니터링 되어야한다.",
       "모든 관련 기록은 오프라인 서버로만 전달되어야 한다.",
+      "또한 연구팀의 도움 없이 열람을 금지한다"
     ],
     status: ["접근 단계",
       "1단계: 로그 이상 발생",

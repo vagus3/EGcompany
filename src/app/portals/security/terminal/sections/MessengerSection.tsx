@@ -237,6 +237,7 @@ export function MessengerDetail({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
+  onOpenCubeModal,
 }: {
   mail: TerminalMail;
   currentStage: TerminalStage;
@@ -250,6 +251,7 @@ export function MessengerDetail({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
+  onOpenCubeModal: () => void;
 }) {
   const lang = useLanguage();
   const isCurrentChallenge = mail.unlockedStage === currentStage;
@@ -323,6 +325,7 @@ export function MessengerDetail({
           onSubmitPin,
           onCommandChange,
           onSubmitCommand,
+          onOpenCubeModal,
         })}
       </div>
 
@@ -348,6 +351,7 @@ function renderChallenge({
   onSubmitPin,
   onCommandChange,
   onSubmitCommand,
+  onOpenCubeModal,
 }: {
   mail: TerminalMail;
   isCurrentChallenge: boolean;
@@ -361,6 +365,7 @@ function renderChallenge({
   onSubmitPin: () => void;
   onCommandChange: (value: string) => void;
   onSubmitCommand: (event: React.FormEvent<HTMLFormElement>) => void;
+  onOpenCubeModal: () => void;
 }) {
   if (mail.challengeType === "none") return null;
   if (!isCurrentChallenge && !isCompletedChallenge) return <QueuedPanel label="NEXT_SECTION_LOCKED" />;
@@ -377,7 +382,22 @@ function renderChallenge({
         />
       );
     case "cube-hold":
-      return completed.has("cube-hold") ? <CompletedPanel label="CUBE_PROTOCOL_RESOLVED" /> : null;
+      return completed.has("cube-hold") ? (
+        <CompletedPanel label="CUBE_PROTOCOL_RESOLVED" />
+      ) : (
+        <section className="border-terminal-border border bg-[#101010] p-6">
+          <p className="text-terminal-text-muted mb-4 text-sm leading-6">
+            보안 프로토콜이 활성화되었습니다. 아래 버튼을 눌러 큐브 인터럽트 절차를 시작하십시오.
+          </p>
+          <button
+            type="button"
+            onClick={onOpenCubeModal}
+            className="bg-blue-600 px-6 py-3 font-mono text-xs font-black tracking-[0.22em] text-white uppercase transition hover:bg-blue-700"
+          >
+            OPEN CUBE_PROTOCOL
+          </button>
+        </section>
+      );
     case "corrupted-command":
       return (
         <CorruptedCommandChallenge
