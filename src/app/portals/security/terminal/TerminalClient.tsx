@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
+  TERMINAL_PROGRESS_STORAGE_KEY,
   initialTerminalProgress,
   pinChallengeAnswer,
   terminalMails,
@@ -20,8 +21,6 @@ import { ContainmentLogsPage } from "./sections/ContainmentSection";
 import { PersonSection } from "./sections/PersonSection";
 import { ArchiveList, ArchiveDetail } from "./sections/ArchiveSection";
 import { MessengerList, MessengerDetail } from "./sections/MessengerSection";
-
-const TERMINAL_PROGRESS_STORAGE_KEY = "terminal-progress-v1";
 
 type OverlayState = "found" | "command-warning" | null;
 type TerminalEndFlow = "idle" | "ending-video" | "monster-video" | "survey-qr";

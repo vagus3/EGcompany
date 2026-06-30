@@ -1,10 +1,12 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { verifyPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
+import { HINT_PROMPT_COUNT_COOKIE_NAME } from "@/lib/employee-card";
 
 export type LoginState = {
   ok: boolean;
@@ -47,6 +49,9 @@ export async function loginAction(
   }
 
   await createSession(user.id);
+
+  // 로그인할 때마다 힌트 사용 횟수도 초기화 (게임 진행 상태와 함께 항상 새로 시작)
+  (await cookies()).delete(HINT_PROMPT_COUNT_COOKIE_NAME);
 
   return { ok: true, message: "Signed in." };
 }
