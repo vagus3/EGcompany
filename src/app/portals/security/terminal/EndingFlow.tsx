@@ -49,11 +49,9 @@ export function FullscreenEndingVideo({
 export function SurveyQrPage({
   delivery,
   surveyUrl,
-  onReset,
 }: {
   delivery: EmployeeCardDelivery;
   surveyUrl: string;
-  onReset: () => void;
 }) {
   const deliveryMessage =
     delivery.status === "failed"
@@ -101,14 +99,6 @@ export function SurveyQrPage({
             {surveyUrl}
           </p>
         </section>
-
-        <button
-          type="button"
-          onClick={onReset}
-          className="hover:border-terminal-accent mt-10 border border-white/15 px-5 py-3 font-mono text-[10px] font-black tracking-[0.22em] text-white/35 transition hover:text-white"
-        >
-          RESET TERMINAL
-        </button>
       </div>
     </main>
   );

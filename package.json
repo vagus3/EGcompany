@@ -16,6 +16,7 @@
     "@prisma/client": "^7.7.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/nodemailer": "^8.0.1",
     "@types/qrcode": "^1.5.6",
     "@types/three": "^0.184.0",

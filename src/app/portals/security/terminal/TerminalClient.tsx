@@ -472,7 +472,6 @@ export default function TerminalClient() {
       <SurveyQrPage
         delivery={employeeCardDelivery}
         surveyUrl={endingFlowMock.surveyUrl}
-        onReset={resetProgress}
       />
     );
   }
