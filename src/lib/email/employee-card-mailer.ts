@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 
-import { createEmployeeCardImage, type EmployeeCardPayload } from "@/lib/employee-card";
+import type { EmployeeCardPayload } from "@/lib/employee-card";
+import { createEmployeeCardImage } from "@/lib/employee-card-image";
 
 type EmployeeCardEmailResult =
   | { id: string; mode: "mock" }
