@@ -17,13 +17,36 @@ const PATH_TEXT =
   "DO NOT LOOK BACK THE EXIT IS WATCHING YOU REACH IT BEFORE IT REACHES YOU " +
   "SECTOR BREACH CONFIRMED OPERATOR FIELD DETECTED PROCEED TO RETURN CHANNEL ";
 
-// 숨겨진 글자 위치
-const HIDDEN = [
+const STORAGE_KEY = "pretext-letter-positions";
+
+const DEFAULT_POSITIONS = [
   { letter: "S", top: "29%", left: "16%" },
   { letter: "T", top: "54%", left: "71%" },
   { letter: "O", top: "74%", left: "42%" },
   { letter: "P", top: "21%", left: "82%" },
-] as const;
+];
+
+type LetterPos = { letter: string; top: string; left: string };
+
+function generateRandomPositions(): LetterPos[] {
+  return DEFAULT_POSITIONS.map((h) => ({
+    letter: h.letter,
+    top:  `${15 + Math.random() * 65}%`,
+    left: `${5  + Math.random() * 82}%`,
+  }));
+}
+
+function loadPositions(): LetterPos[] {
+  if (typeof window === "undefined") return DEFAULT_POSITIONS;
+  try {
+    const stored = window.sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      window.sessionStorage.removeItem(STORAGE_KEY);
+      return JSON.parse(stored) as LetterPos[];
+    }
+  } catch {}
+  return DEFAULT_POSITIONS;
+}
 
 // ── pretext drawLine ─────────────────────────────────────────────────────────
 type TextLine = { text: string; x: number; y: number };
@@ -71,12 +94,13 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const fieldRef     = useRef<Field>({ active: false, x: 0, y: 0, targetX: 0, targetY: 0 });
   const frameRef     = useRef(0);
   const completedRef = useRef(false);
-  // 미로 벽 문자 페이즈 애니메이션 상태
   const charPhaseRef = useRef<number[]>([]);
 
+  // 컴포넌트 마운트 시 sessionStorage에서 위치 로드 (새로고침 후 랜덤 위치 적용)
+  const [positions] = useState<LetterPos[]>(() => loadPositions());
   const [foundCount, setFoundCount] = useState(0);
   const [size, setSize] = useState({ width: 1280, height: 720 });
-  const [fakeChars, setFakeChars] = useState<string[]>(HIDDEN.map(() => "★"));
+  const [fakeChars, setFakeChars] = useState<string[]>(positions.map(() => "★"));
 
   // 화면 크기 감지
   useEffect(() => {
@@ -90,13 +114,13 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     return () => obs.disconnect();
   }, []);
 
-  // 가짜 글자 교체 (숨겨진 스팬용)
+  // 가짜 글자 교체
   useEffect(() => {
     const id = setInterval(() => {
-      setFakeChars(HIDDEN.map(() => GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)]));
+      setFakeChars(positions.map(() => GARBLED_POOL[Math.floor(Math.random() * GARBLED_POOL.length)]));
     }, 200);
     return () => clearInterval(id);
-  }, []);
+  }, [positions]);
 
   // pretext 텍스트 레이아웃
   const lines = useMemo<TextLine[]>(() => {
@@ -127,8 +151,6 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
 
     let frameId = 0;
     let prevTime = performance.now();
-
-    // 미로 벽 문자 셀 그리드 초기화
     const CELL_SIZE = 18;
 
     function draw(now: number) {
@@ -148,11 +170,10 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       field.x += (field.targetX - field.x) * Math.min(1, dt * 10);
       field.y += (field.targetY - field.y) * Math.min(1, dt * 10);
 
-      // ── 배경 ──
       ctx!.fillStyle = "#030303";
       ctx!.fillRect(0, 0, W, H);
 
-      // ── 레이어 1: 미로 벽 스타일 dense 특수문자 그리드 ──
+      // 레이어 1: 특수문자 그리드
       const cols = Math.ceil(W / CELL_SIZE) + 1;
       const rows = Math.ceil(H / CELL_SIZE) + 1;
       const totalCells = rows * cols;
@@ -185,7 +206,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
         }
       }
 
-      // ── 레이어 2: PATH_TEXT pretext 어보이던스 (위에 겹쳐서) ──
+      // 레이어 2: PATH_TEXT pretext 어보이던스
       const fontSize = W < 760 ? 13 : 16;
       const radius   = Math.max(90, Math.min(180, W * 0.12));
       ctx!.font         = `500 ${fontSize}px "Geist Mono", monospace`;
@@ -213,10 +234,20 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     fieldRef.current.active = false;
   }
 
-  function handleLetterHover(idx: number) {
+  function handleLetterClick(idx: number) {
     if (completedRef.current) return;
+
+    // 올바른 순서가 아닌 글자를 클릭하면 위치를 랜덤으로 바꾸고 새로고침
+    if (idx !== foundCount) {
+      const newPositions = generateRandomPositions();
+      try {
+        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(newPositions));
+      } catch {}
+      window.location.reload();
+      return;
+    }
+
     setFoundCount((prev) => {
-      if (idx !== prev) return prev;
       const next = prev + 1;
       if (next >= 4) {
         completedRef.current = true;
@@ -235,18 +266,18 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* 숨겨진 글자 스팬 */}
-      {HIDDEN.map((h, i) => {
+      {/* 숨겨진 글자 스팬 — 호버 시 실제 글자 표시, 클릭으로 순서 확인 */}
+      {positions.map((h, i) => {
         const isFound = i < foundCount;
         return (
           <span
             key={h.letter}
-            onPointerEnter={() => handleLetterHover(i)}
+            onClick={() => handleLetterClick(i)}
             style={{
               position:   "absolute",
               top:        h.top,
               left:       h.left,
-              fontSize:   `${Math.max(14, Math.min(18, 16))}px`,
+              fontSize:   "32px",
               fontFamily: '"Geist Mono", monospace',
               fontWeight: "bold",
               lineHeight: 1,
@@ -260,7 +291,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
             <span className="group-hover:hidden">{isFound ? h.letter : fakeChars[i]}</span>
             <span
               className="hidden group-hover:inline"
-              style={{ color: "#ff2020", fontWeight: 900, fontSize: "20px" }}
+              style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}
             >
               {h.letter}
             </span>
@@ -270,7 +301,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
 
       {/* 하단 가이드 */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center pb-4 font-mono text-[10px] font-black tracking-[0.18em] text-white/20">
-        <span>FIND THE HIDDEN SEQUENCE — HOVER TO REVEAL</span>
+        <span>FIND THE HIDDEN SEQUENCE — CLICK TO CONFIRM</span>
       </div>
     </main>
   );
