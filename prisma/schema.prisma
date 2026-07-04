@@ -83,6 +83,20 @@ model Progress {
   puzzle Puzzle? @relation(fields: [puzzleId], references: [id])
 }
 
+// 외부 AI 힌트 시스템이 기록하는 hint_logs 테이블을 읽기 전용으로 매핑.
+// user_email 컬럼에는 플레이어의 웹 로그인 이메일이 기록되며, 웹앱은 이 값으로
+// 유저별 힌트 사용 횟수를 집계해 사원증 등급(S/A/B)을 결정한다.
+model HintLog {
+  id          Int      @id @default(autoincrement())
+  gameId      String   @map("game_id")
+  userEmail   String?  @map("user_email")
+  stageNumber Int?     @map("stage_number")
+  hintLevel   Int?     @map("hint_level")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("hint_logs")
+}
+
 enum PuzzleType {
   SLIDER
   PATTERN

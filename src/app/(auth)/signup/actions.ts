@@ -108,6 +108,12 @@ export async function signUpAction(
 
     const user = await createUserWithEmployeeCode({ email, language, name, password, theme });
     await createSession(user.id);
+    // 외부 소유 테이블이라 실패해도 가입 자체는 막지 않는다.
+    try {
+      await prisma.hintLog.deleteMany({ where: { userEmail: email } });
+    } catch (error) {
+      console.error("[signup] hint_logs 초기화 실패 (무시하고 진행)", error);
+    }
     (await cookies()).delete(HINT_PROMPT_COUNT_COOKIE_NAME);
 
     return { ok: true, message: "Registration complete. User information was saved." };
