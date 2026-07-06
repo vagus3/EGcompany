@@ -1,23 +1,10 @@
-import nodemailer from "nodemailer";
-
 import type { EmployeeCardPayload } from "@/lib/employee-card";
 import { createEmployeeCardImage } from "@/lib/employee-card-image";
+import { getGmailTransporter } from "@/lib/email/transporter";
 
 type EmployeeCardEmailResult =
   | { id: string; mode: "mock" }
   | { id: string; mode: "gmail" };
-
-function getTransporter() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
-
-  if (!user || !pass) return null;
-
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: { user, pass },
-  });
-}
 
 function buildMailHtml(payload: EmployeeCardPayload) {
   return `
@@ -38,7 +25,7 @@ function buildMailHtml(payload: EmployeeCardPayload) {
 }
 
 export async function sendEmployeeCardEmail(payload: EmployeeCardPayload) {
-  const transporter = getTransporter();
+  const transporter = getGmailTransporter();
 
   if (!transporter) {
     console.info("[mock-email] employee card queued (no GMAIL_USER/GMAIL_APP_PASSWORD)", {

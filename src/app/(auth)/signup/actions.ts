@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
 import { HINT_PROMPT_COUNT_COOKIE_NAME } from "@/lib/employee-card";
+import { sendHintPhoneEmail } from "@/lib/email/hint-phone-mailer";
 
 export type SignUpState = {
   ok: boolean;
@@ -115,6 +116,13 @@ export async function signUpAction(
       console.error("[signup] hint_logs 초기화 실패 (무시하고 진행)", error);
     }
     (await cookies()).delete(HINT_PROMPT_COUNT_COOKIE_NAME);
+
+    // AI 힌트폰 PWA 링크 발송. 메일 발송 실패가 가입 자체를 막지 않도록 방어적으로 처리.
+    try {
+      await sendHintPhoneEmail({ email, name });
+    } catch (error) {
+      console.error("[signup] 힌트폰 안내 메일 발송 실패 (무시하고 진행)", error);
+    }
 
     return { ok: true, message: "Registration complete. User information was saved." };
   } catch (error) {
