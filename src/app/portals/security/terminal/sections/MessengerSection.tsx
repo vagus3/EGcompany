@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Printer, Send, TriangleAlert } from "lucide-react";
+import { FileText, Printer, Send, TriangleAlert } from "lucide-react";
 import { type TerminalMail, type TerminalObjectEntry, type TerminalProgress, type TerminalStage } from "@/lib/terminal-data";
 import { useLanguage } from "@/hooks/useLanguage";
 import { PinSelectChallenge } from "../challenges/PinSelectChallenge";
@@ -58,6 +58,61 @@ function MailBody({ mail }: { mail: TerminalMail }) {
         </p>
       ))}
     </article>
+  );
+}
+
+function ResearchReportBody() {
+  const lang = useLanguage();
+  const isEn = lang === "en";
+  const bullets = isEn
+    ? [
+        "Logistics and transport division revenue +18% growth",
+        "Improved transport stability with the introduction of biometric response analysis systems",
+        "Abnormal data patterns detected in some transport segments",
+        'The phenomenon is currently assessed as a "controllable level"',
+      ]
+    : [
+        "물류 및 운송 부문 매출 +18% 성장",
+        "생체 반응 분석 시스템 도입으로 운송 안정성 향상",
+        "일부 운송 구간에서 비정상적인 데이터 패턴 감지",
+        "해당 현상은 현재 “통제 가능한 수준”으로 평가됨",
+      ];
+
+  return (
+    <>
+      <article className="text-terminal-copy border border-[#211414] bg-[#171111] p-7 text-sm leading-7 lg:p-9">
+        <p>
+          {isEn
+            ? "Attaching the Q2 performance report PDF. Please review it and attend the upcoming all-hands meeting fully briefed."
+            : "2분기 실적 보고서 pdf 첨부 드립니다. 확인하시고 추후 사내 전체 회의에 숙지 하셔서 참석 부탁드립니다."}
+        </p>
+
+        <p className="mt-7">{isEn ? "Key Points" : "주요 내용"}</p>
+        <ul className="mt-4 space-y-2">
+          {bullets.map((item) => (
+            <li key={item} className="before:text-terminal-accent before:mr-3 before:content-['▪']">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </article>
+
+      <aside className="border-terminal-accent mt-5 border-l-4 bg-[#1d1d1d] p-6">
+        <p className="text-terminal-accent-text text-base">
+          {isEn
+            ? "This document has been reviewed by WESEN-783."
+            : "해당 문서는 WESEN-783 에 의해 검토 되었습니다."}
+        </p>
+        <div className="mt-5 flex items-center justify-between gap-4 bg-[#101010] px-5 py-4">
+          <span className="flex items-center gap-3 text-sm text-white">
+            <FileText className="text-terminal-text-muted h-4 w-4 shrink-0" />
+            Q2_EG COMPANY Operational Report.pdf
+          </span>
+          <span className="text-terminal-text-dim shrink-0 font-mono text-xs">1.2MB</span>
+        </div>
+      </aside>
+      <div className="bg-terminal-border my-6 h-px" />
+    </>
   );
 }
 
@@ -304,6 +359,8 @@ export function MessengerDetail({
       <div className="mx-auto max-w-920px px-6 py-7 lg:px-8">
         {isUrgentCubeMail ? (
           <UrgentAlertBody />
+        ) : mail.id === "cube-warning" ? (
+          <ResearchReportBody />
         ) : !isCorruptedCommandMail ? (
           <>
             <MailBody mail={mail} />
