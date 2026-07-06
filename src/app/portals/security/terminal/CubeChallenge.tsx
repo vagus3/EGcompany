@@ -180,8 +180,8 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
 
   return (
     <section className="border-terminal-border border bg-black/40">
-      <div className="grid gap-5 p-5 lg:grid-cols-[1fr_230px]">
-        <div className="border-terminal-border h-360px min-h-320px border bg-[#020202] sm:h-430x]">
+      <div className="grid gap-5 p-5">
+        <div className="border-terminal-border h-100 border bg-[#020202]">
           <Canvas camera={{ position: [3.2, 2.7, 4.2], fov: 43 }} gl={{ antialias: true }}>
             <color attach="background" args={["#020202"]} />
             <ambientLight intensity={1.2} />
@@ -203,12 +203,12 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
           </Canvas>
         </div>
 
-        <aside className="border-terminal-border bg-terminal-panel-deep flex flex-col justify-between gap-6 border p-5">
+        <aside className="border-terminal-border bg-terminal-panel-deep grid gap-5 border p-5 sm:grid-cols-[1fr_220px] sm:items-center">
           <div>
             <p className="text-terminal-accent-muted font-mono text-xs font-black tracking-[0.32em]">
               INCIDENT_ECHO
             </p>
-            <div className="text-terminal-text-muted mt-5 space-y-4 text-sm leading-6">
+            <div className="text-terminal-text-muted mt-3 space-y-4 text-sm leading-6">
               <p>
                 DIRECTOR E.G.
               </p>

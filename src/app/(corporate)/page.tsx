@@ -4,13 +4,9 @@ import type { CSSProperties } from "react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 
-import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
+import { AdminAccessGrantedModal } from "@/components/layout/AdminAccessGrantedModal";
 import Footer from "@/components/layout/Footer";
-import {
-  adminTestPassedKey,
-  adminTestRequiredKey,
-  adminTestStorageEvent,
-} from "@/lib/admin-test";
+import { adminTestRequiredKey, adminTestStorageEvent } from "@/lib/admin-test";
 import { articles } from "@/lib/news-data";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -149,13 +145,6 @@ export default function Page() {
       .catch(() => setIsLoggedIn(false));
   }, []);
 
-  function handleAdminTestPassed() {
-    window.localStorage.removeItem(adminTestRequiredKey);
-    window.localStorage.setItem(adminTestPassedKey, "true");
-    window.dispatchEvent(new Event(adminTestStorageEvent));
-    setTestDismissed(false);
-  }
-
   const modalOpen = isLoggedIn && adminTestRequired && !testDismissed;
 
   const impactMetrics = [
@@ -188,12 +177,7 @@ export default function Page() {
         <Footer />
       </div>
 
-      {modalOpen && (
-        <AdminAccessTestModal
-          onClose={() => setTestDismissed(true)}
-          onPassed={handleAdminTestPassed}
-        />
-      )}
+      {modalOpen && <AdminAccessGrantedModal onClose={() => setTestDismissed(true)} />}
     </div>
   );
 }

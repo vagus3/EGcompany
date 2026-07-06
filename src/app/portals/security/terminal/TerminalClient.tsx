@@ -639,7 +639,7 @@ function CubeChallengeModal({
       aria-label="Cube protocol challenge"
     >
       <div className="terminal-noise absolute inset-0 opacity-25" />
-      <section className="border-terminal-accent relative w-full max-w-5xl border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/0.32)]">
+      <section className="border-terminal-accent relative max-h-[92vh] w-full max-w-[680px] overflow-y-auto border bg-[#090909] shadow-[0_0_80px_rgb(170_0_0_/0.32)]">
         <button
           type="button"
           onClick={onClose}
