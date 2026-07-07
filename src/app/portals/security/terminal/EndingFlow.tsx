@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect } from "react";
 import { cx } from "@/theme/classes";
+import { playSound } from "@/lib/sound";
 
 export type EmployeeCardDelivery =
   | { status: "idle" }
@@ -12,12 +14,22 @@ export type EmployeeCardDelivery =
 export function FullscreenEndingVideo({
   posterSrc,
   videoSrc,
+  soundSrc,
   onEnded,
 }: {
   posterSrc?: string;
   videoSrc: string;
+  soundSrc?: string;
   onEnded: () => void;
 }) {
+  useEffect(() => {
+    if (!soundSrc) return;
+    const audio = playSound(soundSrc);
+    return () => {
+      audio?.pause();
+    };
+  }, [soundSrc]);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
       <video

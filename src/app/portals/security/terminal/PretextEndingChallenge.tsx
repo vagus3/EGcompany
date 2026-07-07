@@ -3,6 +3,7 @@
 import { layoutWithLines, prepareWithSegments } from "@chenglou/pretext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PRETEXT_LETTER_POSITIONS_STORAGE_KEY } from "@/lib/terminal-data";
+import { playSound } from "@/lib/sound";
 
 // ── 상수 ────────────────────────────────────────────────────────────────────
 const GARBLED_POOL = Array.from(
@@ -101,6 +102,14 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const [foundCount, setFoundCount] = useState(0);
   const [size, setSize] = useState({ width: 1280, height: 720 });
   const [fakeChars, setFakeChars] = useState<string[]>(positions.map(() => "★"));
+
+  // 화면 표시되는 동안 배경음 무한 재생
+  useEffect(() => {
+    const audio = playSound("/pretext_sound.mp3", { loop: true });
+    return () => {
+      audio?.pause();
+    };
+  }, []);
 
   // 화면 크기 감지
   useEffect(() => {

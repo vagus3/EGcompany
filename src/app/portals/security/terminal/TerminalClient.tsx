@@ -14,6 +14,7 @@ import {
   type TerminalStage,
 } from "@/lib/terminal-data";
 import { cx, terminalTheme } from "@/theme/classes";
+import { playSound } from "@/lib/sound";
 import CubeChallenge from "./CubeChallenge";
 import TerminalSidebar, { type Section } from "./TerminalSidebar";
 import { FullscreenEndingVideo, SurveyQrPage, type EmployeeCardDelivery } from "./EndingFlow";
@@ -333,6 +334,7 @@ export default function TerminalClient() {
     }
 
     setOverlay("found");
+    playSound("/2phase_sount.mp3");
     queueTimer(() => {
       unlockStage("cube-hold", challengeIds.pin);
       setSelectedObjectIds([]);
@@ -449,6 +451,7 @@ export default function TerminalClient() {
       <FullscreenEndingVideo
         posterSrc={endingFlowMock.posterSrc}
         videoSrc={endingFlowMock.videoSrc}
+        soundSrc="/ending_sound.mp3"
         onEnded={() => {
           void finishEndingVideo();
         }}
@@ -460,6 +463,7 @@ export default function TerminalClient() {
     return (
       <FullscreenEndingVideo
         videoSrc={endingFlowMock.monsterVideoSrc}
+        soundSrc="/ending_sound.mp3"
         onEnded={() => {
           void finishMonsterVideo();
         }}

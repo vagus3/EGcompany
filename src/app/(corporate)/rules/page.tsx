@@ -8,6 +8,7 @@ import { adminTestPassedKey, adminTestRequiredKey } from "@/lib/admin-test";
 import { rules } from "@/lib/rules-data";
 import { t } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
+import { playSound } from "@/lib/sound";
 
 const ADMIN_TERMINAL_PATH = "/portals/security/terminal";
 
@@ -131,6 +132,13 @@ function AccessTerminal({ onComplete }: { onComplete: () => void }) {
   const onCompleteRef = useRef(onComplete);
 
   useEffect(() => { onCompleteRef.current = onComplete; });
+
+  useEffect(() => {
+    const audio = playSound("/terminal_login.mp3");
+    return () => {
+      audio?.pause();
+    };
+  }, []);
 
   useEffect(() => {
     const timers: number[] = [];
