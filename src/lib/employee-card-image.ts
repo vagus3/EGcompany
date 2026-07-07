@@ -20,6 +20,8 @@ const NAME_BASELINE_Y = 455;
 const CODE_AREA_X = 335;
 const CODE_BASELINE_Y = 615;
 const FONT_FAMILY = "NotoKR";
+const TEXT_FONT_WEIGHT = 900;
+const TEXT_STROKE_WIDTH = 0.7;
 
 function getFontPath() {
   return path.join(process.cwd(), "src", "lib", "fonts", "NotoSansKR-Bold.ttf");
@@ -71,8 +73,8 @@ export async function createEmployeeCardImage(payload: EmployeeCardPayload): Pro
 
   const svg = `
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-      <text x="${NAME_AREA_X}" y="${NAME_BASELINE_Y}" font-family="${FONT_FAMILY}" font-size="${nameFontSize}" font-weight="700" fill="#1a1a1a">${safeName}</text>
-      <text x="${CODE_AREA_X}" y="${CODE_BASELINE_Y}" font-family="${FONT_FAMILY}" font-size="22" font-weight="700" letter-spacing="1" fill="#1a1a1a">${safeCode}</text>
+      <text x="${NAME_AREA_X}" y="${NAME_BASELINE_Y}" font-family="${FONT_FAMILY}" font-size="${nameFontSize}" font-weight="${TEXT_FONT_WEIGHT}" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="${TEXT_STROKE_WIDTH}" paint-order="stroke fill">${safeName}</text>
+      <text x="${CODE_AREA_X}" y="${CODE_BASELINE_Y}" font-family="${FONT_FAMILY}" font-size="22" font-weight="${TEXT_FONT_WEIGHT}" letter-spacing="1" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="${TEXT_STROKE_WIDTH}" paint-order="stroke fill">${safeCode}</text>
     </svg>`;
 
   const textLayer = renderTextLayer(svg);

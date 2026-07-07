@@ -9,8 +9,15 @@ import { prisma } from "@/lib/db/prisma";
 import { sendEmployeeCardEmail } from "@/lib/email/employee-card-mailer";
 
 function getEmployeeCode(user: { employeeCode: string | null; id: string }) {
-  if (user.employeeCode) return user.employeeCode.replace(/^EG-/i, "").slice(-6);
-  return user.id.replace(/\D/g, "").padStart(6, "0").slice(-6) || "020117";
+  const rawCode = user.employeeCode ?? user.id;
+  const code = rawCode
+    .replace(/^EG-/i, "")
+    .replace(/[^a-z0-9]/gi, "")
+    .toUpperCase()
+    .padEnd(8, "0")
+    .slice(0, 8);
+
+  return `EG-${code || "02011700"}`;
 }
 
 export async function POST() {
