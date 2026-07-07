@@ -2,6 +2,7 @@
 
 import { layoutWithLines, prepareWithSegments } from "@chenglou/pretext";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { PRETEXT_LETTER_POSITIONS_STORAGE_KEY } from "@/lib/terminal-data";
 
 // ── 상수 ────────────────────────────────────────────────────────────────────
 const GARBLED_POOL = Array.from(
@@ -17,7 +18,6 @@ const PATH_TEXT =
   "DO NOT LOOK BACK THE EXIT IS WATCHING YOU REACH IT BEFORE IT REACHES YOU " +
   "SECTOR BREACH CONFIRMED OPERATOR FIELD DETECTED PROCEED TO RETURN CHANNEL ";
 
-const STORAGE_KEY = "pretext-letter-positions";
 
 const DEFAULT_POSITIONS = [
   { letter: "S", top: "29%", left: "16%" },
@@ -39,9 +39,9 @@ function generateRandomPositions(): LetterPos[] {
 function loadPositions(): LetterPos[] {
   if (typeof window === "undefined") return DEFAULT_POSITIONS;
   try {
-    const stored = window.sessionStorage.getItem(STORAGE_KEY);
+    const stored = window.sessionStorage.getItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY);
     if (stored) {
-      window.sessionStorage.removeItem(STORAGE_KEY);
+      window.sessionStorage.removeItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY);
       return JSON.parse(stored) as LetterPos[];
     }
   } catch {}
@@ -241,7 +241,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     if (idx !== foundCount) {
       const newPositions = generateRandomPositions();
       try {
-        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(newPositions));
+        window.sessionStorage.setItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY, JSON.stringify(newPositions));
       } catch {}
       window.location.reload();
       return;

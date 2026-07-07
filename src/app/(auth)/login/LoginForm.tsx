@@ -6,7 +6,7 @@ import { useActionState, useEffect, useState, useSyncExternalStore } from "react
 
 import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
 import { adminTestPassedKey, adminTestRequiredKey } from "@/lib/admin-test";
-import { TERMINAL_PROGRESS_STORAGE_KEY } from "@/lib/terminal-data";
+import { clearClientGameProgress } from "@/lib/game-progress-reset";
 import { loginAction, type LoginState } from "./actions";
 import { t } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -46,9 +46,8 @@ export default function LoginForm() {
       return;
     }
 
-    // 로그인할 때마다 게임 진행 상태를 무조건 초기화한다 (브라우저 단위 저장이라
-    // 계정 구분이 안 되므로, 매 로그인 시점에 처음부터 다시 시작하도록 강제)
-    window.localStorage.removeItem(TERMINAL_PROGRESS_STORAGE_KEY);
+    // 브라우저 단위 저장값은 계정 구분이 안 되므로 로그인마다 새 플레이로 시작한다.
+    clearClientGameProgress();
 
     if (!adminTestRequired) {
       router.push("/portals/security/terminal");

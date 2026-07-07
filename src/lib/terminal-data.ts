@@ -1,4 +1,5 @@
 export const TERMINAL_PROGRESS_STORAGE_KEY = "terminal-progress-v1";
+export const PRETEXT_LETTER_POSITIONS_STORAGE_KEY = "pretext-letter-positions";
 
 export type TerminalStage =
   | "intro"

@@ -7,7 +7,7 @@ import { useActionState, useEffect, useState } from "react";
 import { signUpAction, type SignUpState } from "./actions";
 import { t } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
-import { TERMINAL_PROGRESS_STORAGE_KEY } from "@/lib/terminal-data";
+import { clearClientGameProgress } from "@/lib/game-progress-reset";
 
 const initialState: SignUpState = {
   ok: false,
@@ -26,7 +26,7 @@ export default function SignUpForm() {
     }
 
     // 같은 브라우저에 남아있던 이전 진행 상태를 지우고 항상 처음부터 시작하게 한다
-    window.localStorage.removeItem(TERMINAL_PROGRESS_STORAGE_KEY);
+    clearClientGameProgress();
     window.localStorage.setItem("eg-new-admin-test-required", "true");
     // 회원가입 완료 후 메인페이지로 이동 (모달 표시를 위해)
     setTimeout(() => {

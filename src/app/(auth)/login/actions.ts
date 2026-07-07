@@ -50,6 +50,9 @@ export async function loginAction(
     return { ok: false, message: "Invalid email or password." };
   }
 
+  // 동일 계정으로 다시 로그인하면 서버에 남아 있던 방/퍼즐 진행 상태도 새로 시작한다.
+  await prisma.progress.deleteMany({ where: { userId: user.id } });
+
   await createSession(user.id);
 
   // 로그인할 때마다 이전 게임의 힌트 기록과 쿠키를 모두 초기화
