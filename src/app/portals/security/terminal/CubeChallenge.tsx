@@ -153,14 +153,6 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
     if (completedRef.current) return;
     cancelHold();
 
-    if (label !== "TRACE") {
-      setHeldFace(label);
-      window.setTimeout(() => {
-        setHeldFace((current) => (current === label ? null : current));
-      }, 360);
-      return;
-    }
-
     startedAtRef.current = Date.now();
     setHeldFace(label);
     setHoldProgress(0);
@@ -170,10 +162,14 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
       setHoldProgress(nextProgress);
 
       if (nextProgress >= 1) {
-        completedRef.current = true;
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
-        onComplete();
+
+        // TRACE 면만 정답으로 인정한다. 다른 면은 100%까지 눌러도 완료되지 않는다.
+        if (label === "TRACE") {
+          completedRef.current = true;
+          onComplete();
+        }
       }
     }, 80);
   }
@@ -197,7 +193,7 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
                   onHoldCancel={cancelHold}
                 />
               ))}
-              <CubeWireframe active={heldFace === "TRACE"} />
+              <CubeWireframe active={heldFace !== null} />
             </group>
             <OrbitControls enablePan={false} minDistance={3.2} maxDistance={7} />
           </Canvas>

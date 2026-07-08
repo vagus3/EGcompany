@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { CheckCircle2, Clock3, Lock, Shield, ShieldCheck, UserRound } from "lucide-react";
+import { CheckCircle2, Clock3, Lock, Mail, Shield, ShieldCheck, UserRound } from "lucide-react";
 
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -143,6 +143,34 @@ export function AdminAccessGrantedModal({ onClose }: AdminAccessGrantedModalProp
                 {label}
               </p>
             ))}
+          </div>
+
+          {/* 메일 발송 안내 */}
+          <div className="mt-8 flex items-start gap-3 rounded border border-neutral-200 bg-neutral-50 p-5 text-left">
+            <Mail className="mt-0.5 h-5 w-5 shrink-0 text-neutral-500" strokeWidth={1.8} />
+            <p className="text-sm leading-6 font-semibold text-neutral-600">
+              {lang === "en" ? (
+                <>
+                  The company app has been sent to your registered email.
+                  <br />
+                  Please check your inbox.
+                  <br />
+                  <span className="text-neutral-400">
+                    (If you can&apos;t find it, please check your spam folder.)
+                  </span>
+                </>
+              ) : (
+                <>
+                  가입하신 이메일로 사내 어플을 전송하였습니다.
+                  <br />
+                  메일함을 확인하여 주세요.
+                  <br />
+                  <span className="text-neutral-400">
+                    (메일함에 확인되지 않을 경우 스팸메일함을 확인해주세요.)
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </div>
       </div>
