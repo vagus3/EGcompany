@@ -137,11 +137,11 @@ const translations = {
 
     // ── Puzzle ────────────────────────────────────────────────────────────
     puzzle_wrong: "틀렸습니다. 다시 시도해보세요.",
-    puzzle_solved: "퍼즐 해결! 🎉",
+    puzzle_solved: "퍼즐 해결! ",
     puzzle_placeholder: "정답을 입력하세요",
     puzzle_confirm: "확인",
     puzzle_hint: "힌트",
-    hint_label: "💡 힌트",
+    hint_label: " 힌트",
 
     // ── Admin Test Modal ──────────────────────────────────────────────────
     admin_test_heading: "신규 가입자 관리자 테스트",
@@ -300,11 +300,11 @@ const translations = {
 
     // ── Puzzle ────────────────────────────────────────────────────────────
     puzzle_wrong: "Incorrect. Please try again.",
-    puzzle_solved: "Puzzle Solved! 🎉",
+    puzzle_solved: "Puzzle Solved!",
     puzzle_placeholder: "Enter your answer",
     puzzle_confirm: "Confirm",
     puzzle_hint: "Hint",
-    hint_label: "💡 Hint",
+    hint_label: " Hint",
 
     // ── Admin Test Modal ──────────────────────────────────────────────────
     admin_test_heading: "New User Administrator Test",

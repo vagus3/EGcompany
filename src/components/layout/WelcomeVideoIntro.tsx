@@ -6,7 +6,6 @@ export function WelcomeVideoIntro({ onComplete }: { onComplete: () => void }) {
       <video
         src="/EGCompany_webVideo.mp4"
         autoPlay
-        muted
         playsInline
         onEnded={onComplete}
         onError={onComplete}

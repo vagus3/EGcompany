@@ -20,8 +20,10 @@ const NAME_BASELINE_Y = 455;
 const CODE_AREA_X = 335;
 const CODE_BASELINE_Y = 615;
 const FONT_FAMILY = "NotoKR";
-const TEXT_FONT_WEIGHT = 900;
-const TEXT_STROKE_WIDTH = 0.7;
+const TEXT_FONT_WEIGHT = 700;
+// resvg가 로드한 폰트 페이스 자체는 두께가 약하게 렌더링되어, 얇은 stroke를 덧그려
+// 시각적으로 bold하게 보정한다. 값이 크면 글자가 뭉개져 보이므로 과하지 않게 유지.
+const TEXT_STROKE_WIDTH = 0.35;
 
 function getFontPath() {
   return path.join(process.cwd(), "src", "lib", "fonts", "NotoSansKR-Bold.ttf");

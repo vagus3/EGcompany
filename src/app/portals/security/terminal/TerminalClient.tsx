@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
@@ -125,6 +126,7 @@ function getSelectedSymbols(selectedIds: string[]) {
 }
 
 export default function TerminalClient() {
+  const router = useRouter();
   const [progress, setProgress] = useState<TerminalProgress>(initialTerminalProgress);
   const [activeSection, setActiveSection] = useState<Section>("messenger");
   const [selectedArchiveId, setSelectedArchiveId] = useState("WESEN-1744");
@@ -366,7 +368,7 @@ export default function TerminalClient() {
           : [...progress.completedChallengeIds, challengeIds.corrupted],
       };
       window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(updatedProgress));
-      window.location.href = "/portals/security/terminal/pretext";
+      router.push("/portals/security/terminal/pretext");
     }, 1750);
   }
 

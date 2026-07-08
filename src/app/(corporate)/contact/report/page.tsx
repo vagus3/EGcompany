@@ -9,8 +9,8 @@ import { useLanguage } from "@/hooks/useLanguage";
 const ACCOUNT_INFO = {
   bank_ko: "카카오뱅크",
   bank_en: "Kakaobank",
-  number:  "3333-16-8630081",
-  holder:  "김예진",
+  number:  "3333-22-4926678",
+  holder:  "김*진",
 };
 
 // ── 계좌 모달 ────────────────────────────────────────────────────────────────
