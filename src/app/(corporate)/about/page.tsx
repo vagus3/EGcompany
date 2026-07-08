@@ -42,9 +42,9 @@ export default function Page() {
 
         {/* Quote & speech */}
         <div className="pt-4">
-          <span className="font-serif text-5xl leading-none text-gray-300 select-none">&#34;</span>
+          <span className="font-serif text-5xl leading-none text-gray-300 select-none">&quot;</span>
           <blockquote className="mt-2 text-[1.35rem] leading-snug font-semibold text-black">
-            &#34;{t("about_quote", lang)}&#34;
+            &quot;{t("about_quote", lang)}&quot;
           </blockquote>
           <div className="mt-8 space-y-4 text-sm leading-relaxed text-gray-600">
             <p>{t("about_speech_1", lang)}</p>
