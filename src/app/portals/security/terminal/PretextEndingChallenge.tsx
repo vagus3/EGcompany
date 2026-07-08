@@ -37,16 +37,21 @@ function generateRandomPositions(): LetterPos[] {
   }));
 }
 
-function loadPositions(): LetterPos[] {
-  if (typeof window === "undefined") return DEFAULT_POSITIONS;
+// sessionStorage 읽기 + 소비(삭제)는 부수효과가 있어 useState의 lazy initializer로 쓰면 안 된다.
+// initializer는 SSR(서버, window 없음 → 항상 DEFAULT_POSITIONS)과 클라이언트에서 반환값이
+// 달라 하이드레이션 불일치를 유발하고, React가 불일치를 복구하며 initializer를 다시 호출하면
+// 이미 삭제된 sessionStorage를 만나 항상 DEFAULT_POSITIONS로 되돌아가는 문제가 있었다.
+// 그래서 초기 렌더는 서버/클라이언트 동일하게 DEFAULT_POSITIONS로 시작하고, 마운트 후
+// useEffect에서 한 번만 sessionStorage를 읽어 실제 위치로 교체한다.
+function readStoredPositions(): LetterPos[] | null {
   try {
     const stored = window.sessionStorage.getItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY);
-    if (stored) {
-      window.sessionStorage.removeItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY);
-      return JSON.parse(stored) as LetterPos[];
-    }
-  } catch {}
-  return DEFAULT_POSITIONS;
+    if (!stored) return null;
+    window.sessionStorage.removeItem(PRETEXT_LETTER_POSITIONS_STORAGE_KEY);
+    return JSON.parse(stored) as LetterPos[];
+  } catch {
+    return null;
+  }
 }
 
 // ── pretext drawLine ─────────────────────────────────────────────────────────
@@ -96,12 +101,23 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const frameRef     = useRef(0);
   const completedRef = useRef(false);
   const charPhaseRef = useRef<number[]>([]);
+  const positionsHydratedRef = useRef(false);
 
-  // 컴포넌트 마운트 시 sessionStorage에서 위치 로드 (새로고침 후 랜덤 위치 적용)
-  const [positions] = useState<LetterPos[]>(() => loadPositions());
+  const [positions, setPositions] = useState<LetterPos[]>(DEFAULT_POSITIONS);
   const [foundCount, setFoundCount] = useState(0);
   const [size, setSize] = useState({ width: 1280, height: 720 });
   const [fakeChars, setFakeChars] = useState<string[]>(positions.map(() => "★"));
+
+  // 새로고침(오답 클릭) 이후 랜덤 위치가 sessionStorage에 있으면 마운트 후 1회만 적용
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (positionsHydratedRef.current) return;
+      positionsHydratedRef.current = true;
+      const stored = readStoredPositions();
+      if (stored) setPositions(stored);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   // 화면 표시되는 동안 배경음 무한 재생
   useEffect(() => {
