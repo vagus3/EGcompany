@@ -58,13 +58,7 @@ export function FullscreenEndingVideo({
   );
 }
 
-export function SurveyQrPage({
-  delivery,
-  surveyUrl,
-}: {
-  delivery: EmployeeCardDelivery;
-  surveyUrl: string;
-}) {
+export function SurveyQrPage({ delivery }: { delivery: EmployeeCardDelivery }) {
   const deliveryMessage =
     delivery.status === "failed"
       ? delivery.message
@@ -106,9 +100,6 @@ export function SurveyQrPage({
           />
           <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
             &gt;_ 플레이 후기 설문조사 폼
-          </p>
-          <p className="mt-5 font-mono text-[10px] font-bold tracking-[0.12em] break-all text-neutral-400">
-            {surveyUrl}
           </p>
         </section>
       </div>

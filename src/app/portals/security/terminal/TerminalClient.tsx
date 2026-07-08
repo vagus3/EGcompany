@@ -42,10 +42,9 @@ const stageOrder: TerminalStage[] = [
   "completed",
 ];
 
-const endingFlowMock = {
+const endingFlowAssets = {
   monsterVideoSrc: "/eg_png/egcompany_picture/P/ending/monsterending.mp4",
   posterSrc: "/eg_png/egcompany_picture/P/ending/ending.png",
-  surveyUrl: "https://forms.gle/eg-play-survey-mock",
   videoSrc: "/eg_png/egcompany_picture/P/ending/ending_v.mp4",
 };
 
@@ -451,8 +450,8 @@ export default function TerminalClient() {
   if (visibleEndFlow === "ending-video") {
     return (
       <FullscreenEndingVideo
-        posterSrc={endingFlowMock.posterSrc}
-        videoSrc={endingFlowMock.videoSrc}
+        posterSrc={endingFlowAssets.posterSrc}
+        videoSrc={endingFlowAssets.videoSrc}
         soundSrc="/ending_sound.mp3"
         onEnded={() => {
           void finishEndingVideo();
@@ -464,7 +463,7 @@ export default function TerminalClient() {
   if (visibleEndFlow === "monster-video") {
     return (
       <FullscreenEndingVideo
-        videoSrc={endingFlowMock.monsterVideoSrc}
+        videoSrc={endingFlowAssets.monsterVideoSrc}
         soundSrc="/ending_sound.mp3"
         onEnded={() => {
           void finishMonsterVideo();
@@ -475,10 +474,7 @@ export default function TerminalClient() {
 
   if (visibleEndFlow === "survey-qr") {
     return (
-      <SurveyQrPage
-        delivery={employeeCardDelivery}
-        surveyUrl={endingFlowMock.surveyUrl}
-      />
+      <SurveyQrPage delivery={employeeCardDelivery} />
     );
   }
 

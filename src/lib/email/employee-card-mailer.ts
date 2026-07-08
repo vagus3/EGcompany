@@ -28,6 +28,12 @@ export async function sendEmployeeCardEmail(payload: EmployeeCardPayload) {
   const transporter = getGmailTransporter();
 
   if (!transporter) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "GMAIL_USER/GMAIL_APP_PASSWORD가 설정되지 않아 사원증 메일을 발송할 수 없습니다."
+      );
+    }
+
     console.info("[mock-email] employee card queued (no GMAIL_USER/GMAIL_APP_PASSWORD)", {
       to: payload.email,
       rank: payload.rank,
