@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
@@ -157,19 +156,13 @@ export default function SignUpForm() {
           <p className="max-w-md text-[13px] leading-7 font-black tracking-[0.2em] text-neutral-400 uppercase">
             {lang === "ko" ? (
               <>
-                진행하면{" "}
-                <Link href="/rules" className="text-black underline underline-offset-4">
-                  EG 행동 강령
-                </Link>
-                에 동의하는 것입니다.
+                진행하면 <strong className="text-black">EG 행동 강령</strong>에 동의하는
+                것입니다.
               </>
             ) : (
               <>
                 By proceeding, you adhere to the{" "}
-                <Link href="/rules" className="text-black underline underline-offset-4">
-                  EG Code of Conduct
-                </Link>
-                .
+                <strong className="text-black">EG Code of Conduct</strong>.
               </>
             )}
           </p>
