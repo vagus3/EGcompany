@@ -188,6 +188,21 @@ export default function TerminalClient() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  // Next.js는 브라우저 뒤로/앞으로가기 시 이 페이지의 이전 컴포넌트 인스턴스를
+  // 재마운트 없이 재사용한다. 그 사이 다른 탭/경로에서 localStorage의 진행도가
+  // 바뀌었어도 이 인스턴스는 알 수 없으므로, popstate가 발생할 때마다 진행도를
+  // localStorage 기준으로 다시 동기화해 오래된 값이 화면에 남지 않게 한다.
+  useEffect(() => {
+    function handlePopState() {
+      if (window.location.pathname !== "/portals/security/terminal") return;
+      progressHydratedRef.current = true;
+      setProgress(getInitialProgress());
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => {
     if (!progressHydratedRef.current) return;
     window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(progress));
@@ -372,22 +387,6 @@ export default function TerminalClient() {
     }, 1750);
   }
 
-  function resetProgress() {
-    setProgress(initialTerminalProgress);
-    setActiveSection("messenger");
-    setSelectedArchiveId("WESEN-1744");
-    setSelectedObjectIds([]);
-    setPinError("");
-    setCommand("");
-    setCommandError("");
-    setOverlay(null);
-    setCubeModalOpen(false);
-    setEndFlow("idle");
-    setEmployeeCardDelivery({ status: "idle" });
-    deliveryRequestedRef.current = false;
-    window.localStorage.removeItem(TERMINAL_PROGRESS_STORAGE_KEY);
-  }
-
   function getHintPromptCount() {
     const storedCount = window.localStorage.getItem(HINT_PROMPT_COUNT_STORAGE_KEY);
     const count = Number(storedCount);
@@ -522,10 +521,10 @@ export default function TerminalClient() {
         <h1 className="font-mono text-xl font-black tracking-[-0.03em] text-white">SECURITY_15</h1>
         <button
           type="button"
-          onClick={resetProgress}
-          className="text-terminal-accent font-mono text-[10px] font-black tracking-[0.42em]"
+          onClick={() => router.push("/")}
+          className="text-terminal-accent font-mono text-[10px] font-black tracking-[0.42em] hover:underline"
         >
-          DIVISION ACCESS AUTHORIZED
+          Return to Homepage
         </button>
       </header>
 

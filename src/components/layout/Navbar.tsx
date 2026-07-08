@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { adminTestPassedKey, adminTestStorageEvent } from "@/lib/admin-test";
 import { cx } from "@/theme/classes";
 import { useCorporateTheme } from "@/theme/ThemeProvider";
 
@@ -81,6 +82,24 @@ function subscribeToTheme(onStoreChange: () => void) {
   };
 }
 
+function getAdminUnlockedSnapshot() {
+  return window.localStorage.getItem(adminTestPassedKey) === "true";
+}
+
+function getServerAdminUnlockedSnapshot() {
+  return false;
+}
+
+function subscribeToAdminUnlocked(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(adminTestStorageEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(adminTestStorageEvent, onStoreChange);
+  };
+}
+
 function applyThemeMode(mode: ThemeMode, persist = true) {
   document.documentElement.classList.remove("light-mode", "dark-mode", "system-mode");
   document.documentElement.classList.add(`${mode}-mode`);
@@ -98,6 +117,11 @@ export default function Navbar() {
     getServerLanguageSnapshot
   );
   const themeMode = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
+  const adminUnlocked = useSyncExternalStore(
+    subscribeToAdminUnlocked,
+    getAdminUnlockedSnapshot,
+    getServerAdminUnlockedSnapshot
+  );
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
@@ -209,6 +233,16 @@ export default function Navbar() {
               </li>
             );
           })}
+          {adminUnlocked && (
+            <li>
+              <Link
+                href="/portals/security/terminal"
+                className="text-sm font-black text-red-600 transition-colors hover:text-red-500"
+              >
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
 
         <div className="hidden items-center justify-end gap-2 lg:flex">
