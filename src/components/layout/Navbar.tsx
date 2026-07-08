@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
+import { ChevronDown, Languages, Menu, Monitor, Moon, Sun, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -123,6 +123,7 @@ export default function Navbar() {
     getServerAdminUnlockedSnapshot
   );
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -192,30 +193,19 @@ export default function Navbar() {
         theme.border
       )}
     >
-      <nav className="relative mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:py-0">
-        <div className="flex items-center justify-between gap-3">
-          <Link href="/" className={cx("flex items-center gap-2.5 font-black tracking-tight", theme.text)}>
-            <Image
-              src="/eg_png/egcompany_picture/EGCompanyLOGO.png"
-              alt="EG Company"
-              width={64}
-              height={64}
-              className="h-16 w-auto shrink-0 object-contain"
-            />
-            <span className="text-lg sm:text-xl">EG Company</span>
-          </Link>
+      <nav className="relative mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:py-0">
+        <Link href="/" className={cx("flex items-center gap-2.5 font-black tracking-tight", theme.text)}>
+          <Image
+            src="/eg_png/egcompany_picture/EGCompanyLOGO.png"
+            alt="EG Company"
+            width={64}
+            height={64}
+            className="h-16 w-auto shrink-0 object-contain"
+          />
+          <span className="text-lg sm:text-xl">EG Company</span>
+        </Link>
 
-          <div className="flex min-w-0 items-center justify-end gap-2 lg:hidden">
-            <HeaderControls
-              language={language}
-              themeMode={themeMode}
-              onLanguageChange={handleLanguageChange}
-              theme={theme}
-            />
-          </div>
-        </div>
-
-        <ul className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-2 lg:justify-center">
+        <ul className="hidden min-w-0 flex-wrap items-center gap-x-5 gap-y-2 lg:flex lg:justify-center">
           {navLinks.map((link) => {
             const active = pathname === link.href;
 
@@ -292,7 +282,109 @@ export default function Navbar() {
             </>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className={cx("grid h-10 w-10 shrink-0 place-items-center border lg:hidden", theme.border, theme.text)}
+          aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-nav-menu"
+        >
+          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </nav>
+
+      {mobileMenuOpen && (
+        <div id="mobile-nav-menu" className={cx("border-t px-4 py-5 lg:hidden", theme.border)}>
+          <ul className="flex flex-col gap-4">
+            {navLinks.map((link) => {
+              const active = pathname === link.href;
+
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cx(
+                      "block text-sm font-semibold transition-colors",
+                      active ? theme.text : theme.linkMuted
+                    )}
+                  >
+                    {language === "ko" ? link.ko : link.en}
+                  </Link>
+                </li>
+              );
+            })}
+            {adminUnlocked && (
+              <li>
+                <Link
+                  href="/portals/security/terminal"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-black text-red-600 transition-colors hover:text-red-500"
+                >
+                  Admin
+                </Link>
+              </li>
+            )}
+          </ul>
+
+          <div className={cx("mt-5 flex flex-wrap items-center gap-2 border-t pt-5", theme.border)}>
+            <HeaderControls
+              language={language}
+              themeMode={themeMode}
+              onLanguageChange={handleLanguageChange}
+              theme={theme}
+            />
+          </div>
+
+          <div className={cx("mt-5 flex items-center gap-2 border-t pt-5", theme.border)}>
+            {currentUserLabel ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    void handleLogout();
+                  }}
+                  className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
+                >
+                  Log Out
+                </button>
+
+                <span
+                  className={cx(
+                    "max-w-36 truncate border px-3 py-1.5 text-xs font-black",
+                    theme.border,
+                    theme.text
+                  )}
+                  title={currentUserLabel}
+                >
+                  {currentUserLabel}
+                </span>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
