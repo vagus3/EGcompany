@@ -117,7 +117,7 @@ export default function PortalClient({ portal }: { portal: PortalConfig }) {
               </form>
 
               <p className="text-xs tracking-[0.2em] text-[#b00000] uppercase flex items-center justify-center gap-2 font-mono">
-                🔒 {portal.sessionLabel}
+                {portal.sessionLabel}
               </p>
 
               {status === "denied" && (

@@ -91,13 +91,23 @@ export function SurveyQrPage({ delivery }: { delivery: EmployeeCardDelivery }) {
         </section>
 
         <section className="mt-20 w-full max-w-520px bg-white p-10 text-center text-black shadow-[0_0_60px_rgba(255,255,255,0.12)] sm:p-14">
-          <Image
-            src="/eg_png/egcompany_picture/P/ending/ending_qr.png"
-            alt="Survey QR code"
-            width={120}
-            height={120}
-            className="mx-auto"
-          />
+          <p className="mb-4 font-mono text-xs font-bold tracking-[0.12em] text-neutral-500">
+            해당 QR을 누르면 네이버폼으로 이동됩니다.
+          </p>
+          <a
+            href="https://form.naver.com/response/mq69e0B_YRgWe3ub3Ku2zg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mx-auto block w-fit"
+          >
+            <Image
+              src="/eg_png/egcompany_picture/P/ending/ending_qr.png"
+              alt="Survey QR code"
+              width={120}
+              height={120}
+              className="mx-auto"
+            />
+          </a>
           <p className="mt-9 text-[clamp(1.45rem,3vw,2.3rem)] font-black tracking-normal">
             &gt;_ 플레이 후기 설문조사 폼
           </p>
