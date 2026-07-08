@@ -7,7 +7,7 @@ import { playSound } from "@/lib/sound";
 
 // ── 상수 ────────────────────────────────────────────────────────────────────
 const GARBLED_POOL = Array.from(
-  "★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬뷁뭵뺑뽥뿡쀄쁭웳쀘뻥뻘뺙뼁뽁"
+  "★▲△▼◆◇□■│─┤┬├┴┼╔╗╚╝╠╣╦╩╬▓░▒＄＆％＃＠！Ψψ∂∫∑⌀⌂⌬¤†‡•※¬±×÷∞∆∇√≈≠"
 );
 
 const PATH_TEXT =
@@ -286,13 +286,13 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
               position:   "absolute",
               top:        h.top,
               left:       h.left,
-              fontSize:   "32px",
+              fontSize:   "24px",
               fontFamily: '"Geist Mono", monospace',
               fontWeight: "bold",
               lineHeight: 1,
               cursor:     "crosshair",
               userSelect: "none",
-              color: isFound ? "rgba(60,0,0,0.5)" : "rgba(130,20,20,0.8)",
+              color: isFound ? "rgba(60,0,0,0.5)" : "rgba(95,20,24,0.75)",
               transition: "color 0.1s",
             }}
             className="group"
