@@ -206,6 +206,7 @@ export default function TerminalClient() {
     if (!pinCompleted) return;
 
     const timers: number[] = [];
+    const displacement = displacementRef.current;
 
     function triggerBurstCycle() {
       cancelAnimationFrame(glitchRafRef.current);
@@ -283,7 +284,7 @@ export default function TerminalClient() {
       window.clearInterval(burstInterval);
       window.clearInterval(heavyInterval);
       cancelAnimationFrame(glitchRafRef.current);
-      displacementRef.current?.setAttribute("scale", "0");
+      displacement?.setAttribute("scale", "0");
       setGlitching(false);
     };
   }, [pinCompleted]);
