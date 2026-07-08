@@ -11,14 +11,42 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { playSound } from "@/lib/sound";
 
 const ADMIN_TERMINAL_PATH = "/portals/security/terminal";
+const LOGIN_TOAST_DURATION_MS = 3000;
 
 export default function Page() {
   const lang = useLanguage();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginToast, setShowLoginToast] = useState(false);
+  const loginToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { user: { email: string } | null } | null) => {
+        setIsLoggedIn(!!data?.user);
+      })
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (loginToastTimerRef.current) clearTimeout(loginToastTimerRef.current);
+    };
+  }, []);
 
   const handleSignatureClick = () => {
+    if (!isLoggedIn) {
+      if (loginToastTimerRef.current) clearTimeout(loginToastTimerRef.current);
+      setShowLoginToast(true);
+      loginToastTimerRef.current = setTimeout(() => {
+        setShowLoginToast(false);
+      }, LOGIN_TOAST_DURATION_MS);
+      return;
+    }
+
     setIsModalOpen(true);
   };
 
@@ -98,6 +126,17 @@ export default function Page() {
 
       {transitioning && (
         <AccessTerminal onComplete={() => router.replace(ADMIN_TERMINAL_PATH)} />
+      )}
+
+      {/* 로그인 필요 안내 토스트 */}
+      {showLoginToast && (
+        <div
+          role="status"
+          className="fixed right-6 bottom-6 z-100 flex items-center gap-3 border border-red-300 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-lg"
+        >
+          <span className="text-lg leading-none">!</span>
+          <span>로그인이 필요합니다.</span>
+        </div>
       )}
     </div>
   );
