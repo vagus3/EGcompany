@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AdminAccessTestModal } from "@/components/layout/AdminAccessTestModal";
-import { adminTestPassedKey, adminTestRequiredKey } from "@/lib/admin-test";
 import { rules } from "@/lib/rules-data";
 import { t } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -51,11 +50,18 @@ export default function Page() {
   };
 
   const handleAdminTestPassed = () => {
-    window.localStorage.removeItem(adminTestRequiredKey);
-    window.localStorage.setItem(adminTestPassedKey, "true");
     setIsModalOpen(false);
     setTransitioning(true);
-    // 리다이렉트는 AccessTerminal 컴포넌트의 onComplete에서 처리
+    // 리다이렉트는 AccessTerminal 컴포넌트의 onComplete에서 처리.
+    // 서버 기록 실패해도(네트워크 문제 등) 방금 통과한 연출 자체는 막지 않는다 —
+    // 실패 시 다음에 홈페이지 웰컴 모달이 한 번 더 뜨는 정도의 부작용만 있음.
+    void fetch("/api/terminal/state", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "passAdminTest" }),
+    }).catch((error) => {
+      console.error("[rules] admin test 통과 기록 실패 (무시하고 진행)", error);
+    });
   };
 
   const handleCloseModal = () => {

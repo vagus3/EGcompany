@@ -1,12 +1,11 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { AdminAccessGrantedModal } from "@/components/layout/AdminAccessGrantedModal";
 import Footer from "@/components/layout/Footer";
-import { adminTestRequiredKey, adminTestStorageEvent } from "@/lib/admin-test";
 import { articles } from "@/lib/news-data";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -68,33 +67,11 @@ const ecosystemItems = [
   "Stratos Alliance",
 ];
 
-function getAdminTestRequiredSnapshot() {
-  return window.localStorage.getItem(adminTestRequiredKey) === "true";
-}
-
-function getServerAdminTestRequiredSnapshot() {
-  return false;
-}
-
-function subscribeToAdminTest(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener(adminTestStorageEvent, onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener(adminTestStorageEvent, onStoreChange);
-  };
-}
-
 export default function Page() {
-  const adminTestRequired = useSyncExternalStore(
-    subscribeToAdminTest,
-    getAdminTestRequiredSnapshot,
-    getServerAdminTestRequiredSnapshot
-  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const [testDismissed, setTestDismissed] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [adminTestRequired, setAdminTestRequired] = useState(false);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -138,11 +115,19 @@ export default function Page() {
 
   useEffect(() => {
     fetch("/api/auth/me", { cache: "no-store" })
-      .then((res) => res.ok ? res.json() : null)
-      .then((data: { user: { email: string } | null } | null) => {
-        setIsLoggedIn(!!data?.user);
-      })
-      .catch(() => setIsLoggedIn(false));
+      .then((res) => (res.ok ? res.json() : null))
+      .then(
+        (
+          data: { user: { email: string } | null; adminTestRequired: boolean } | null
+        ) => {
+          setIsLoggedIn(!!data?.user);
+          setAdminTestRequired(!!data?.adminTestRequired);
+        }
+      )
+      .catch(() => {
+        setIsLoggedIn(false);
+        setAdminTestRequired(false);
+      });
   }, []);
 
   const modalOpen = isLoggedIn && adminTestRequired && !testDismissed;

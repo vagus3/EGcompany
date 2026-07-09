@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { adminTestPassedKey, adminTestStorageEvent } from "@/lib/admin-test";
 import { cx } from "@/theme/classes";
 import { useCorporateTheme } from "@/theme/ThemeProvider";
 
@@ -82,24 +81,6 @@ function subscribeToTheme(onStoreChange: () => void) {
   };
 }
 
-function getAdminUnlockedSnapshot() {
-  return window.localStorage.getItem(adminTestPassedKey) === "true";
-}
-
-function getServerAdminUnlockedSnapshot() {
-  return false;
-}
-
-function subscribeToAdminUnlocked(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener(adminTestStorageEvent, onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener(adminTestStorageEvent, onStoreChange);
-  };
-}
-
 function applyThemeMode(mode: ThemeMode, persist = true) {
   document.documentElement.classList.remove("light-mode", "dark-mode", "system-mode");
   document.documentElement.classList.add(`${mode}-mode`);
@@ -117,12 +98,8 @@ export default function Navbar() {
     getServerLanguageSnapshot
   );
   const themeMode = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
-  const adminUnlocked = useSyncExternalStore(
-    subscribeToAdminUnlocked,
-    getAdminUnlockedSnapshot,
-    getServerAdminUnlockedSnapshot
-  );
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -144,14 +121,19 @@ export default function Navbar() {
           throw new Error("Failed to load current user.");
         }
 
-        const data = (await response.json()) as { user: CurrentUser | null };
+        const data = (await response.json()) as {
+          user: CurrentUser | null;
+          adminTestPassed: boolean;
+        };
 
         if (!ignore) {
           setCurrentUser(data.user);
+          setAdminUnlocked(data.adminTestPassed);
         }
       } catch {
         if (!ignore) {
           setCurrentUser(null);
+          setAdminUnlocked(false);
         }
       }
     }
