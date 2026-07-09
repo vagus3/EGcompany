@@ -62,7 +62,7 @@ export default function Page() {
       {/* Company Evolution */}
       <section className="bg-gray-100 py-20">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="mb-14 text-xs tracking-[0.3em] text-gray-400 uppercase">
+          <h2 className="mb-14 text-xs tracking-widest text-gray-400 uppercase">
             {t("about_evolution", lang)}
           </h2>
           <div className="divide-y divide-gray-300">
