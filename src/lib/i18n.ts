@@ -2,6 +2,14 @@ import type { Language } from "@/hooks/useLanguage";
 
 const translations = {
   ko: {
+    // ── Home ──────────────────────────────────────────────────────────────
+    home_statement_line1: "우리는 구조를 믿습니다.",
+    home_statement_line2: "우리는 정밀함을 믿습니다.",
+    home_statement_line3: "소음이 가득한 세상 속에서, 우리는 침묵과 확실성을 설계합니다.",
+    home_statement_line4: "우리의 방법론은 브루탈리즘이며, 우리의 실행은 한 치의 오차도 없습니다.",
+    home_future_body:
+      "우리는 미래를 예측하지 않습니다. 우리는 미래를 건설합니다. 다음 10년을 위한 우리의 설계는 이미 진행 중입니다.",
+
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "글로벌 인프라.",
     about_subtitle_2: "고요한 탁월함.",
@@ -164,6 +172,14 @@ const translations = {
   },
 
   en: {
+    // ── Home ──────────────────────────────────────────────────────────────
+    home_statement_line1: "We believe in structure.",
+    home_statement_line2: "We believe in precision.",
+    home_statement_line3: "In a world of noise, we engineer silence and certainty.",
+    home_statement_line4: "Our methodology is brutalist; our execution is flawless.",
+    home_future_body:
+      "We do not predict the future. We construct it. Our architecture for the next decade is already in motion.",
+
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "Global Infrastructure.",
     about_subtitle_2: "Silent Excellence.",

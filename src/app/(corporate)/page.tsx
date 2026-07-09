@@ -7,6 +7,7 @@ import Link from "next/link";
 import { AdminAccessGrantedModal } from "@/components/layout/AdminAccessGrantedModal";
 import Footer from "@/components/layout/Footer";
 import { articles } from "@/lib/news-data";
+import { t } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
 
 const visualStyles = {
@@ -198,17 +199,19 @@ function HeroSection() {
 }
 
 function StatementSection() {
+  const lang = useLanguage();
+
   return (
     <section data-snap className="snap-start snap-always bg-corporate-bg border-b border-corporate-border px-6 py-10 min-h-[calc(100vh-3.5rem)] flex items-center overflow-y-auto">
       <div className="mx-auto max-w-4xl">
         <p data-anim className="mb-8 font-mono text-[9px] tracking-[0.24em] text-corporate-text-subtle uppercase">
           Manifesto
         </p>
-        <h2 data-anim className="text-center text-[clamp(1.6rem,4vw,3.2rem)] leading-[1.05] font-black tracking-normal uppercase">
-          We believe in structure.<br />
-          We believe in precision.<br />
-          In a world of noise, we engineer silence and certainty.<br />
-          Our methodology is brutalist; our execution is flawless.
+        <h2 data-anim className="text-center text-[clamp(1.3rem,3.2vw,2.6rem)] leading-[1.05] font-black tracking-normal uppercase">
+          {t("home_statement_line1", lang)}<br />
+          {t("home_statement_line2", lang)}<br />
+          {t("home_statement_line3", lang)}<br />
+          {t("home_statement_line4", lang)}
         </h2>
       </div>
     </section>
@@ -310,6 +313,8 @@ function FootprintSection({
 }
 
 function FutureSection() {
+  const lang = useLanguage();
+
   return (
     <section data-snap className="snap-start snap-always relative grid min-h-[calc(100vh-3.5rem)] place-items-center overflow-hidden bg-black px-6 py-12 text-white overflow-y-auto">
       <div className="absolute inset-0 opacity-75" style={visualStyles.horizon} />
@@ -318,9 +323,8 @@ function FutureSection() {
         <h2 data-anim className="text-[clamp(3rem,10vw,8rem)] leading-none font-black tracking-normal text-transparent uppercase [-webkit-text-stroke:1px_rgb(255_255_255_/0.65)]">
           Future Horizon
         </h2>
-        <p data-anim className="mx-auto mt-5 max-w-2xl text-[clamp(1.2rem,3vw,2.4rem)] leading-none font-black uppercase">
-          We do not predict the future. We construct it. Our architecture for the next decade is
-          already in motion.
+        <p data-anim className="mx-auto mt-5 max-w-2xl text-[clamp(0.9rem,2.25vw,1.8rem)] leading-none font-black uppercase">
+          {t("home_future_body", lang)}
         </p>
       </div>
     </section>
