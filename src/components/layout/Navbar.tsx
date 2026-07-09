@@ -539,7 +539,7 @@ function HeaderControls({
                 aria-checked={option.value === themeMode}
               >
                 <option.icon className="h-4 w-4" aria-hidden="true" />
-                {option.label}
+                <span className="hidden sm:inline">{option.label}</span>
               </button>
             ))}
           </div>
