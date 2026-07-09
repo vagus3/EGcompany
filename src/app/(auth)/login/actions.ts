@@ -8,6 +8,7 @@ import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
 import { HINT_PROMPT_COUNT_COOKIE_NAME } from "@/lib/employee-card";
 import { sendHintPhoneEmail } from "@/lib/email/hint-phone-mailer";
+import { resetTerminalState } from "@/lib/terminal-state";
 
 export type LoginState = {
   ok: boolean;
@@ -52,6 +53,7 @@ export async function loginAction(
 
   // 동일 계정으로 다시 로그인하면 서버에 남아 있던 방/퍼즐 진행 상태도 새로 시작한다.
   await prisma.progress.deleteMany({ where: { userId: user.id } });
+  await resetTerminalState(user.id);
 
   await createSession(user.id);
 

@@ -10,6 +10,7 @@ import { createSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
 import { HINT_PROMPT_COUNT_COOKIE_NAME } from "@/lib/employee-card";
 import { sendHintPhoneEmail } from "@/lib/email/hint-phone-mailer";
+import { resetTerminalState } from "@/lib/terminal-state";
 
 export type SignUpState = {
   ok: boolean;
@@ -108,6 +109,7 @@ export async function signUpAction(
     }
 
     const user = await createUserWithEmployeeCode({ email, language, name, password, theme });
+    await resetTerminalState(user.id);
     await createSession(user.id);
     // 외부 소유 테이블이라 실패해도 가입 자체는 막지 않는다.
     try {
