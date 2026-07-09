@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Languages, Menu, Monitor, Moon, Sun, X } from "lucide-react";
+import { ChevronDown, Languages, Monitor, Moon, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -268,12 +268,35 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className={cx("grid h-10 w-10 shrink-0 place-items-center border lg:hidden", theme.border, theme.text)}
+          className={cx(
+            "grid h-10 w-10 shrink-0 place-items-center border transition-colors lg:hidden",
+            theme.border,
+            theme.text
+          )}
           aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-nav-menu"
         >
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <span className="relative block h-4 w-5">
+            <span
+              className={cx(
+                "absolute left-0 block h-0.5 w-5 bg-current transition-[transform,top] duration-300 ease-in-out",
+                mobileMenuOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0 rotate-0"
+              )}
+            />
+            <span
+              className={cx(
+                "absolute top-1/2 left-0 block h-0.5 w-5 -translate-y-1/2 bg-current transition-[opacity,transform] duration-200 ease-in-out",
+                mobileMenuOpen ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100"
+              )}
+            />
+            <span
+              className={cx(
+                "absolute left-0 block h-0.5 w-5 bg-current transition-[transform,top] duration-300 ease-in-out",
+                mobileMenuOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "top-4 rotate-0"
+              )}
+            />
+          </span>
         </button>
       </nav>
 
