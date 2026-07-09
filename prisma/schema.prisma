@@ -23,8 +23,9 @@ model User {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  progresses Progress[]
-  sessions   Session[]
+  progresses    Progress[]
+  sessions      Session[]
+  terminalState TerminalState?
 }
 
 model Session {
@@ -33,6 +34,19 @@ model Session {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TerminalState {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  currentStage          String   @default("pin-select")
+  unlockedMailIds       Json
+  completedChallengeIds Json
+  adminTestRequired     Boolean  @default(true)
+  adminTestPassed       Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
