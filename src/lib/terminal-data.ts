@@ -1,4 +1,3 @@
-export const TERMINAL_PROGRESS_STORAGE_KEY = "terminal-progress-v1";
 export const PRETEXT_LETTER_POSITIONS_STORAGE_KEY = "pretext-letter-positions";
 
 export type TerminalStage =
@@ -38,7 +37,6 @@ export interface TerminalMail {
 export interface TerminalProgress {
   currentStage: TerminalStage;
   unlockedMailIds: string[];
-  selectedMailId: string;
   completedChallengeIds: string[];
 }
 
@@ -608,9 +606,27 @@ export const terminalMails: TerminalMail[] = [
   },
 ];
 
+export const challengeIds = {
+  pin: "pin-select",
+  cube: "cube-hold",
+  corrupted: "corrupted-command",
+  pretext: "pretext-ending",
+} as const;
+
+export const stageOrder: TerminalStage[] = [
+  "pin-select",
+  "cube-hold",
+  "corrupted-command",
+  "pretext-ending",
+  "completed",
+];
+
+export function getMailForStage(stage: TerminalStage): TerminalMail {
+  return terminalMails.find((mail) => mail.unlockedStage === stage) ?? terminalMails[0];
+}
+
 export const initialTerminalProgress: TerminalProgress = {
   currentStage: "pin-select",
   unlockedMailIds: ["transport-request"],
-  selectedMailId: "transport-request",
   completedChallengeIds: [],
 };

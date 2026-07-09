@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
 import {
-  TERMINAL_PROGRESS_STORAGE_KEY,
-  initialTerminalProgress,
+  challengeIds,
+  getMailForStage,
   pinChallengeAnswer,
+  stageOrder,
   terminalMails,
   terminalObjects,
   type TerminalObjectEntry,
   type TerminalProgress,
-  type TerminalStage,
 } from "@/lib/terminal-data";
 import { cx, terminalTheme } from "@/theme/classes";
 import { playSound } from "@/lib/sound";
@@ -27,30 +27,11 @@ import { MessengerList, MessengerDetail } from "./sections/MessengerSection";
 type OverlayState = "found" | "command-warning" | null;
 type TerminalEndFlow = "idle" | "ending-video" | "monster-video" | "survey-qr";
 
-const challengeIds = {
-  pin: "pin-select",
-  cube: "cube-hold",
-  corrupted: "corrupted-command",
-  pretext: "pretext-ending",
-} as const;
-
-const stageOrder: TerminalStage[] = [
-  "pin-select",
-  "cube-hold",
-  "corrupted-command",
-  "pretext-ending",
-  "completed",
-];
-
 const endingFlowAssets = {
   monsterVideoSrc: "/eg_png/egcompany_picture/P/ending/monsterending.mp4",
   posterSrc: "/eg_png/egcompany_picture/P/ending/ending.png",
   videoSrc: "/eg_png/egcompany_picture/P/ending/ending_v.mp4",
 };
-
-function getMailForStage(stage: TerminalStage) {
-  return terminalMails.find((mail) => mail.unlockedStage === stage) ?? terminalMails[0];
-}
 
 function getVisibleMails(progress: TerminalProgress) {
   const currentStageIndex = Math.max(stageOrder.indexOf(progress.currentStage), 0);
@@ -63,70 +44,19 @@ function getVisibleMails(progress: TerminalProgress) {
   return terminalMails.filter((mail) => visibleMailIds.has(mail.id));
 }
 
-function isProgress(value: unknown): value is TerminalProgress {
-  if (!value || typeof value !== "object") return false;
-  const progress = value as TerminalProgress;
-  return (
-    typeof progress.currentStage === "string" &&
-    Array.isArray(progress.unlockedMailIds) &&
-    typeof progress.selectedMailId === "string" &&
-    Array.isArray(progress.completedChallengeIds)
-  );
-}
-
-function hasPretextCompletionParam() {
-  if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).get("pretextComplete") === "1";
-}
-
-function mergeUnlocked(progress: TerminalProgress, mailId: string) {
-  return progress.unlockedMailIds.includes(mailId)
-    ? progress.unlockedMailIds
-    : [...progress.unlockedMailIds, mailId];
-}
-
-function withPretextCompletion(progress: TerminalProgress): TerminalProgress {
-  const nextMail = getMailForStage("completed");
-
-  return {
-    currentStage: "completed",
-    unlockedMailIds: mergeUnlocked(progress, nextMail.id),
-    selectedMailId: nextMail.id,
-    completedChallengeIds: progress.completedChallengeIds.includes(challengeIds.pretext)
-      ? progress.completedChallengeIds
-      : [...progress.completedChallengeIds, challengeIds.pretext],
-  };
-}
-
-function getInitialProgress() {
-  if (typeof window === "undefined") return initialTerminalProgress;
-  const raw = window.localStorage.getItem(TERMINAL_PROGRESS_STORAGE_KEY);
-  if (!raw) {
-    return hasPretextCompletionParam()
-      ? withPretextCompletion(initialTerminalProgress)
-      : initialTerminalProgress;
-  }
-
-  try {
-    const parsed = JSON.parse(raw);
-    const progress = isProgress(parsed) ? parsed : initialTerminalProgress;
-    return hasPretextCompletionParam() ? withPretextCompletion(progress) : progress;
-  } catch {
-    return hasPretextCompletionParam()
-      ? withPretextCompletion(initialTerminalProgress)
-      : initialTerminalProgress;
-  }
-}
-
 function getSelectedSymbols(selectedIds: string[]) {
   return selectedIds
     .map((id) => terminalObjects.find((entry) => entry.id === id)?.symbol)
     .filter(Boolean) as string[];
 }
 
+type LoadState = "loading" | "ready" | "error";
+
 export default function TerminalClient() {
   const router = useRouter();
-  const [progress, setProgress] = useState<TerminalProgress>(initialTerminalProgress);
+  const [progress, setProgress] = useState<TerminalProgress | null>(null);
+  const [selectedMailId, setSelectedMailId] = useState<string>(() => getMailForStage("pin-select").id);
+  const [loadState, setLoadState] = useState<LoadState>("loading");
   const [activeSection, setActiveSection] = useState<Section>("messenger");
   const [selectedArchiveId, setSelectedArchiveId] = useState("WESEN-1744");
   const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>([]);
@@ -145,23 +75,23 @@ export default function TerminalClient() {
   const turbulenceRef = useRef<SVGFETurbulenceElement>(null);
   const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
   const glitchRafRef = useRef<number>(0);
-  const progressHydratedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
   const deliveryRequestedRef = useRef(false);
+  const pretextCompletionHandledRef = useRef(false);
 
-  const visibleMails = useMemo(() => getVisibleMails(progress), [progress]);
+  const visibleMails = useMemo(() => (progress ? getVisibleMails(progress) : []), [progress]);
 
   const selectedMail = useMemo(
-    () => visibleMails.find((mail) => mail.id === progress.selectedMailId) ?? visibleMails[0],
-    [progress.selectedMailId, visibleMails]
+    () => visibleMails.find((mail) => mail.id === selectedMailId) ?? visibleMails[0],
+    [selectedMailId, visibleMails]
   );
 
   const selectedArchive =
     terminalObjects.find((entry) => entry.id === selectedArchiveId) ?? terminalObjects[2];
 
   const completed = useMemo(
-    () => new Set(progress.completedChallengeIds),
-    [progress.completedChallengeIds]
+    () => new Set(progress?.completedChallengeIds ?? []),
+    [progress]
   );
 
   useEffect(() => {
@@ -174,39 +104,68 @@ export default function TerminalClient() {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const hasCompletedPretext = hasPretextCompletionParam();
-      progressHydratedRef.current = true;
-      setProgress(getInitialProgress());
-      if (hasCompletedPretext) {
-        setEndFlow("ending-video");
-        window.history.replaceState(null, "", "/portals/security/terminal");
-      }
-    }, 0);
+  const loadTerminalState = useCallback(async () => {
+    setLoadState("loading");
+    try {
+      const response = await fetch("/api/terminal/state", { cache: "no-store" });
 
-    return () => window.clearTimeout(timer);
-  }, []);
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+      const data = (await response.json()) as TerminalProgress;
+      setProgress(data);
+      setSelectedMailId(getMailForStage(data.currentStage).id);
+      setLoadState("ready");
+    } catch {
+      setLoadState("error");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    queueMicrotask(() => void loadTerminalState());
+  }, [loadTerminalState]);
 
   // Next.js는 브라우저 뒤로/앞으로가기 시 이 페이지의 이전 컴포넌트 인스턴스를
-  // 재마운트 없이 재사용한다. 그 사이 다른 탭/경로에서 localStorage의 진행도가
-  // 바뀌었어도 이 인스턴스는 알 수 없으므로, popstate가 발생할 때마다 진행도를
-  // localStorage 기준으로 다시 동기화해 오래된 값이 화면에 남지 않게 한다.
+  // 재마운트 없이 재사용한다. mount effect가 다시 실행되지 않으므로, popstate가
+  // 발생할 때마다 서버 기준으로 진행도를 다시 불러와 오래된 값이 화면에 남지 않게 한다.
   useEffect(() => {
     function handlePopState() {
       if (window.location.pathname !== "/portals/security/terminal") return;
-      progressHydratedRef.current = true;
-      setProgress(getInitialProgress());
+      void loadTerminalState();
     }
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [loadTerminalState]);
 
+  // pretext 화면(별도 라우트)을 풀고 돌아오면 ?pretextComplete=1 이 붙는다.
+  // 계정 데이터가 아니라 "방금 막 pretext를 풀고 왔다"는 1회성 네비게이션 신호이므로
+  // 그대로 유지하되, 실제 완료 기록은 서버에 PATCH로 남긴다.
   useEffect(() => {
-    if (!progressHydratedRef.current) return;
-    window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(progress));
-  }, [progress]);
+    if (loadState !== "ready") return;
+    if (pretextCompletionHandledRef.current) return;
+    if (typeof window === "undefined") return;
+    if (new URLSearchParams(window.location.search).get("pretextComplete") !== "1") return;
+
+    pretextCompletionHandledRef.current = true;
+    window.history.replaceState(null, "", "/portals/security/terminal");
+
+    fetch("/api/terminal/state", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "completeChallenge", challengeId: challengeIds.pretext }),
+    })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("failed"))))
+      .then((data: TerminalProgress) => {
+        setProgress(data);
+        setSelectedMailId(getMailForStage(data.currentStage).id);
+        setEndFlow("ending-video");
+      })
+      .catch(() => setLoadState("error"));
+  }, [loadState]);
 
   useEffect(() => {
     const timers = timersRef.current;
@@ -309,17 +268,22 @@ export default function TerminalClient() {
     timersRef.current.push(timer);
   }
 
-  function unlockStage(nextStage: TerminalStage, challengeId: string) {
-    const nextMail = getMailForStage(nextStage);
+  async function completeChallengeOnServer(challengeId: string) {
     setActiveSection("messenger");
-    setProgress((current) => ({
-      currentStage: nextStage,
-      unlockedMailIds: mergeUnlocked(current, nextMail.id),
-      selectedMailId: nextMail.id,
-      completedChallengeIds: current.completedChallengeIds.includes(challengeId)
-        ? current.completedChallengeIds
-        : [...current.completedChallengeIds, challengeId],
-    }));
+    try {
+      const response = await fetch("/api/terminal/state", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "completeChallenge", challengeId }),
+      });
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+      const data = (await response.json()) as TerminalProgress;
+      setProgress(data);
+      setSelectedMailId(getMailForStage(data.currentStage).id);
+    } catch {
+      setLoadState("error");
+    }
   }
 
   function selectArchiveEntry(entry: TerminalObjectEntry) {
@@ -327,7 +291,7 @@ export default function TerminalClient() {
   }
 
   function toggleObjectSelection(entry: TerminalObjectEntry) {
-    if (progress.currentStage !== "pin-select" || completed.has(challengeIds.pin)) return;
+    if (!progress || progress.currentStage !== "pin-select" || completed.has(challengeIds.pin)) return;
 
     setPinError("");
     setSelectedObjectIds((current) => {
@@ -353,7 +317,7 @@ export default function TerminalClient() {
     setOverlay("found");
     playSound("/2phase_sount.mp3");
     queueTimer(() => {
-      unlockStage("cube-hold", challengeIds.pin);
+      void completeChallengeOnServer(challengeIds.pin);
       setSelectedObjectIds([]);
       setPinError("");
     }, 1250);
@@ -372,18 +336,10 @@ export default function TerminalClient() {
     queueTimer(() => {
       setOverlay(null);
       setCommand("");
-      // corrupted-command 완료 상태를 localStorage에 직접 저장 후 pretext 이동
-      const nextMail = getMailForStage("pretext-ending");
-      const updatedProgress: TerminalProgress = {
-        currentStage: "pretext-ending",
-        unlockedMailIds: mergeUnlocked(progress, nextMail.id),
-        selectedMailId: nextMail.id,
-        completedChallengeIds: progress.completedChallengeIds.includes(challengeIds.corrupted)
-          ? progress.completedChallengeIds
-          : [...progress.completedChallengeIds, challengeIds.corrupted],
-      };
-      window.localStorage.setItem(TERMINAL_PROGRESS_STORAGE_KEY, JSON.stringify(updatedProgress));
-      router.push("/portals/security/terminal/pretext");
+      void (async () => {
+        await completeChallengeOnServer(challengeIds.corrupted);
+        router.push("/portals/security/terminal/pretext");
+      })();
     }, 1750);
   }
 
@@ -436,7 +392,15 @@ export default function TerminalClient() {
 
   function completeCubeChallenge() {
     setCubeModalOpen(false);
-    unlockStage("corrupted-command", challengeIds.cube);
+    void completeChallengeOnServer(challengeIds.cube);
+  }
+
+  if (loadState === "loading" || !progress) {
+    return <TerminalLoadingScreen />;
+  }
+
+  if (loadState === "error") {
+    return <TerminalErrorScreen onRetry={() => void loadTerminalState()} />;
   }
 
   const visibleEndFlow =
@@ -555,9 +519,7 @@ export default function TerminalClient() {
               selectedMail={selectedMail}
               visibleMails={visibleMails}
               progress={progress}
-              onSelectMail={(mailId) =>
-                setProgress((current) => ({ ...current, selectedMailId: mailId }))
-              }
+              onSelectMail={setSelectedMailId}
             />
             <MessengerDetail
               mail={selectedMail}
@@ -663,5 +625,34 @@ function CubeChallengeModal({
         </div>
       </section>
     </div>
+  );
+}
+
+function TerminalLoadingScreen() {
+  return (
+    <main className="grid min-h-screen place-items-center bg-[#080808] text-terminal-text">
+      <p className="font-mono text-xs tracking-[0.32em] text-terminal-text-dim uppercase">
+        LOADING TERMINAL STATE...
+      </p>
+    </main>
+  );
+}
+
+function TerminalErrorScreen({ onRetry }: { onRetry: () => void }) {
+  return (
+    <main className="grid min-h-screen place-items-center bg-[#080808] px-4 text-center text-terminal-text">
+      <div>
+        <p className="font-mono text-xs tracking-[0.24em] text-terminal-accent-text uppercase">
+          진행도를 불러오지 못했습니다.
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-6 border border-terminal-border px-5 py-2 font-mono text-xs tracking-[0.18em] text-terminal-text uppercase hover:border-white"
+        >
+          다시 시도
+        </button>
+      </div>
+    </main>
   );
 }
