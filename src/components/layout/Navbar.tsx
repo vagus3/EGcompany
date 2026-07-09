@@ -446,7 +446,7 @@ function HeaderControls({
         {langMenuOpen && (
           <div
             className={cx(
-              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-full border shadow-lg",
+              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-max min-w-full border whitespace-nowrap shadow-lg",
               theme.border
             )}
             role="menu"
@@ -498,7 +498,7 @@ function HeaderControls({
         {themeMenuOpen && (
           <div
             className={cx(
-              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-full border shadow-lg",
+              "bg-corporate-surface absolute top-[calc(100%+4px)] right-0 z-20 w-max min-w-full border whitespace-nowrap shadow-lg",
               theme.border
             )}
             role="menu"
