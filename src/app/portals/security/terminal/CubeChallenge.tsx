@@ -13,6 +13,11 @@ type CubeFace = {
 };
 
 const HOLD_DURATION_MS = 4000;
+// 카메라를 회전시키려는 드래그 도중 큐브가 살짝만 돌아가도 레이가 면에서
+// 벗어나 홀드가 즉시 취소된다. 화면상에서 이 픽셀 수 이상 실제로 움직였을
+// 때만 "드래그로 이탈했다"고 보고 취소한다 — 그래야 홀드 중에도 자유롭게
+// 카메라를 돌려볼 수 있다.
+const DRAG_CANCEL_THRESHOLD_PX = 8;
 
 const cubeFaces: CubeFace[] = [
   { label: "OBSERVATION", position: [0, 0, 1.01], rotation: [0, 0, 0], color: "#181818" },
@@ -84,13 +89,32 @@ function CubeFacePanel({
   onHoldStart: (label: string) => void;
   onHoldCancel: () => void;
 }) {
+  const holdStartClientPosRef = useRef<{ x: number; y: number } | null>(null);
+
   function handlePointerDown(event: ThreeEvent<PointerEvent>) {
     event.stopPropagation();
+    holdStartClientPosRef.current = {
+      x: event.nativeEvent.clientX,
+      y: event.nativeEvent.clientY,
+    };
     onHoldStart(face.label);
   }
 
   function handlePointerUp(event: ThreeEvent<PointerEvent>) {
     event.stopPropagation();
+    holdStartClientPosRef.current = null;
+    onHoldCancel();
+  }
+
+  function handlePointerLeave(event: ThreeEvent<PointerEvent>) {
+    const start = holdStartClientPosRef.current;
+    const movedPx = start
+      ? Math.hypot(event.nativeEvent.clientX - start.x, event.nativeEvent.clientY - start.y)
+      : Infinity;
+
+    if (movedPx < DRAG_CANCEL_THRESHOLD_PX) return;
+
+    holdStartClientPosRef.current = null;
     onHoldCancel();
   }
 
@@ -99,7 +123,7 @@ function CubeFacePanel({
       <mesh
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerLeave={onHoldCancel}
+        onPointerLeave={handlePointerLeave}
       >
         <planeGeometry args={[1.92, 1.92]} />
         <meshStandardMaterial
