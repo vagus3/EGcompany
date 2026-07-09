@@ -27,7 +27,6 @@ export default function SignUpForm() {
 
     // 같은 브라우저에 남아있던 이전 진행 상태를 지우고 항상 처음부터 시작하게 한다
     clearClientGameProgress();
-    window.localStorage.setItem("eg-new-admin-test-required", "true");
   }, [state.ok]);
 
   return (

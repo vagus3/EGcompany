@@ -1,7 +1,3 @@
-export const adminTestStorageEvent = "eg-new-admin-test-change";
-export const adminTestRequiredKey = "eg-new-admin-test-required";
-export const adminTestPassedKey = "eg-new-admin-test-passed";
-
 export const adminTestQuestions = [
   {
     num: "01",
