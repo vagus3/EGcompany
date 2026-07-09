@@ -106,8 +106,8 @@ export default function Page() {
   const lang = useLanguage();
   const isEn = lang === "en";
   const [showModal, setShowModal] = useState(false);
-  const [report,    setReport]    = useState("");
-  const [sent,      setSent]      = useState(false);
+  const [report, setReport] = useState("");
+  const [sent, setSent] = useState(false);
 
   function handleSend() {
     if (!report.trim()) return;

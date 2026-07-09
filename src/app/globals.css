@@ -494,12 +494,16 @@ body {
   }
 }
 
-html.dark-mode .bg-white {
+html.dark-mode .bg-white,
+html.dark-mode .bg-gray-50,
+html.dark-mode .bg-zinc-50 {
   background-color: var(--background);
 }
 
 @media (prefers-color-scheme: dark) {
-  html.system-mode .bg-white {
+  html.system-mode .bg-white,
+  html.system-mode .bg-gray-50,
+  html.system-mode .bg-zinc-50 {
     background-color: var(--background);
   }
 }
@@ -514,30 +518,42 @@ html.dark-mode .bg-white\/95 {
   }
 }
 
-html.dark-mode .bg-neutral-50 {
+html.dark-mode .bg-neutral-50,
+html.dark-mode .bg-gray-100,
+html.dark-mode .bg-zinc-100 {
   background-color: #171717;
 }
 
-html.dark-mode .bg-neutral-100 {
+html.dark-mode .bg-neutral-100,
+html.dark-mode .bg-gray-200,
+html.dark-mode .bg-gray-300,
+html.dark-mode .bg-neutral-300 {
   background-color: #262626;
 }
 
 @media (prefers-color-scheme: dark) {
-  html.system-mode .bg-neutral-50 {
+  html.system-mode .bg-neutral-50,
+  html.system-mode .bg-gray-100,
+  html.system-mode .bg-zinc-100 {
     background-color: #171717;
   }
 
-  html.system-mode .bg-neutral-100 {
+  html.system-mode .bg-neutral-100,
+  html.system-mode .bg-gray-200,
+  html.system-mode .bg-gray-300,
+  html.system-mode .bg-neutral-300 {
     background-color: #262626;
   }
 }
 
-html.dark-mode .text-black {
+html.dark-mode .text-black,
+html.dark-mode .text-zinc-900 {
   color: #ededed;
 }
 
 @media (prefers-color-scheme: dark) {
-  html.system-mode .text-black {
+  html.system-mode .text-black,
+  html.system-mode .text-zinc-900 {
     color: #ededed;
   }
 }
@@ -545,7 +561,9 @@ html.dark-mode .text-black {
 html.dark-mode .text-neutral-500,
 html.dark-mode .text-gray-500,
 html.dark-mode .text-gray-600,
-html.dark-mode .text-neutral-600 {
+html.dark-mode .text-neutral-600,
+html.dark-mode .text-zinc-500,
+html.dark-mode .text-zinc-600 {
   color: #a3a3a3;
 }
 
@@ -553,21 +571,41 @@ html.dark-mode .text-neutral-600 {
   html.system-mode .text-neutral-500,
   html.system-mode .text-gray-500,
   html.system-mode .text-gray-600,
-  html.system-mode .text-neutral-600 {
+  html.system-mode .text-neutral-600,
+  html.system-mode .text-zinc-500,
+  html.system-mode .text-zinc-600 {
     color: #a3a3a3;
+  }
+}
+
+html.dark-mode .text-gray-400,
+html.dark-mode .text-neutral-400,
+html.dark-mode .text-zinc-400 {
+  color: #737373;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.system-mode .text-gray-400,
+  html.system-mode .text-neutral-400,
+  html.system-mode .text-zinc-400 {
+    color: #737373;
   }
 }
 
 html.dark-mode .border-neutral-200,
 html.dark-mode .border-gray-200,
-html.dark-mode .border-gray-300 {
+html.dark-mode .border-gray-300,
+html.dark-mode .border-neutral-300,
+html.dark-mode .border-zinc-200 {
   border-color: #262626;
 }
 
 @media (prefers-color-scheme: dark) {
   html.system-mode .border-neutral-200,
   html.system-mode .border-gray-200,
-  html.system-mode .border-gray-300 {
+  html.system-mode .border-gray-300,
+  html.system-mode .border-neutral-300,
+  html.system-mode .border-zinc-200 {
     border-color: #262626;
   }
 }
