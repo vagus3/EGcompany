@@ -90,7 +90,7 @@ export default function Page() {
             key={num}
             className="grid grid-cols-[48px_1fr] gap-4 sm:grid-cols-[72px_1fr] sm:gap-6"
           >
-            <span className="pt-1 text-3xl leading-none font-black text-gray-200 select-none sm:text-4xl">
+            <span className="pt-1 text-3xl leading-none font-black whitespace-nowrap text-gray-200 select-none sm:text-4xl">
               {num}
             </span>
             <div>
