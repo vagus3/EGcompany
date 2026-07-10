@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/theme/classes";
 import { useCorporateTheme } from "@/theme/ThemeProvider";
+import { t } from "@/lib/i18n";
 
 const navLinks = [
   { href: "/about", ko: "회사소개", en: "About Us" },
@@ -252,14 +253,14 @@ export default function Navbar() {
                 href="/login"
                 className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
               >
-                Sign In
+                {t("login_btn_signin", language)}
               </Link>
 
               <Link
                 href="/signup"
                 className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}
               >
-                Sign Up
+                {t("signup_btn_signup", language)}
               </Link>
             </>
           )}
@@ -375,7 +376,7 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={cx("px-2 py-1.5 text-sm font-semibold", theme.linkMuted)}
                 >
-                  Sign In
+                  {t("login_btn_signin", language)}
                 </Link>
 
                 <Link
@@ -383,7 +384,7 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={cx("px-4 py-2 text-sm font-black", theme.buttonPrimary)}
                 >
-                  Sign Up
+                  {t("signup_btn_signup", language)}
                 </Link>
               </>
             )}
