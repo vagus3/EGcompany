@@ -10,6 +10,9 @@ const translations = {
     home_future_body:
       "우리는 미래를 예측하지 않습니다. 우리는 미래를 건설합니다. 다음 10년을 위한 우리의 설계는 이미 진행 중입니다.",
 
+    // ── Terminal ──────────────────────────────────────────────────────────
+    terminal_return_home: "돌아가기",
+
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "글로벌 인프라.",
     about_subtitle_2: "고요한 탁월함.",
@@ -179,6 +182,9 @@ const translations = {
     home_statement_line4: "Our methodology is brutalist; our execution is flawless.",
     home_future_body:
       "We do not predict the future. We construct it. Our architecture for the next decade is already in motion.",
+
+    // ── Terminal ──────────────────────────────────────────────────────────
+    terminal_return_home: "Return to Homepage",
 
     // ── About ─────────────────────────────────────────────────────────────
     about_subtitle_1: "Global Infrastructure.",

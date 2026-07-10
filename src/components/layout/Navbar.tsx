@@ -211,7 +211,7 @@ export default function Navbar() {
                 href="/portals/security/terminal"
                 className="text-sm font-black text-red-600 transition-colors hover:text-red-500"
               >
-                Admin
+                {language === "ko" ? "관리자" : "Admin"}
               </Link>
             </li>
           )}
@@ -328,7 +328,7 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-black text-red-600 transition-colors hover:text-red-500"
                 >
-                  Admin
+                  {language === "ko" ? "관리자" : "Admin"}
                 </Link>
               </li>
             )}

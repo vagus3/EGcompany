@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { HINT_PROMPT_COUNT_STORAGE_KEY } from "@/lib/employee-card";
+import { t } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   challengeIds,
   getMailForStage,
@@ -54,6 +56,7 @@ type LoadState = "loading" | "ready" | "error";
 
 export default function TerminalClient() {
   const router = useRouter();
+  const lang = useLanguage();
   const [progress, setProgress] = useState<TerminalProgress | null>(null);
   const [selectedMailId, setSelectedMailId] = useState<string>(() => getMailForStage("pin-select").id);
   const [loadState, setLoadState] = useState<LoadState>("loading");
@@ -486,9 +489,12 @@ export default function TerminalClient() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="text-terminal-accent font-mono text-[10px] font-black tracking-[0.42em] hover:underline"
+          className={cx(
+            "bg-terminal-accent-strong hover:bg-terminal-accent-active border border-terminal-border-alert px-4 py-2 font-mono text-[10px] font-black text-white transition-colors",
+            lang === "ko" ? "tracking-[0.08em]" : "tracking-[0.42em]"
+          )}
         >
-          Return to Homepage
+          {t("terminal_return_home", lang)}
         </button>
       </header>
 
