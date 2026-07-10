@@ -1,5 +1,6 @@
 "use client";
 
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
@@ -19,6 +20,7 @@ export default function SignUpForm() {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(signUpAction, initialState);
   const [agreed, setAgreed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (!state.ok) {
@@ -78,16 +80,27 @@ export default function SignUpForm() {
           >
             {t("signup_password_label", lang)}
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            placeholder="********"
-            className="auth-input mt-4 w-full border-0 border-b border-black bg-transparent px-0 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
-          />
+          <div className="relative mt-4">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              placeholder="********"
+              className="auth-input w-full border-0 border-b border-black bg-transparent px-0 pr-12 pb-4 text-[clamp(2rem,11vw,4.1rem)] leading-none font-black tracking-normal text-black outline-none placeholder:text-neutral-200 focus:border-black"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+              aria-pressed={showPassword}
+              className="absolute top-1/2 right-2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-600"
+            >
+              {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         <div className="h-56 overflow-y-auto border border-black bg-neutral-50 p-5 text-left sm:p-8">
