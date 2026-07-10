@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EscapeWeb — 퍼즐 이스케이프",
-  description: "3D 인터랙티브 퍼즐을 순서대로 풀어나가는 이스케이프룸 웹사이트",
+  description: "이 웹사이트는 웹 기반 방탈출 게임 사이트 입니다.",
   verification: {
     google: "_ka7K3u96ptcwhTRzPDETboSR5yE68xzKIrBb4XCvNw",
   },

@@ -18,15 +18,10 @@ function buildMailHtml(name: string, hintPhoneUrl: string) {
       <div style="max-width:480px;margin:0 auto">
         <h2 style="color:#fff;margin:0 0 12px">EG COMPANY — AI 힌트폰 시스템</h2>
         <p style="line-height:1.8;color:#ccc">
-          ${name}님, 가입을 환영합니다.<br /><br />
-          본 링크는 EGCompany 방탈출 게임에 관한 힌트를 챗봇 형식으로 제공하는 웹앱입니다.<br />
-          스마트폰으로 보시는 것을 권장드립니다.<br />
-          힌트는 총 1~3단계로, 비슷한 질문을 할 경우 단계별로 좀 더 정답에 가까운 힌트를 제공하는 방식입니다.
-          가급적 어디서부터 해야하는지 모르겠다 시간이 늘어질 것 같을 때 사용해주시면 플레이 환경이 원활해집니다.
-          웹사이트 방탈출 게임 특성상 웹사이트 내부에 게임 진행에 관한 설명은 별도로 제공되지 않기에
-          플레이 시 웹사이트의 내용과 상호작용을 잘 파악해서 풀어나가시면 되겠습니다.
-          해당 방탈출 웹사이트는 공포 테마이며 중간중간 소리가 발생하기에 이어폰/헤드폰 착용을 권장드립니다.
-          감사합니다.<br /><br />
+          ${name}님의 입사를 환영합니다.<br /><br />
+          본 링크는 사내에서 사용하는 AI어플입니다. 업무 중 모르는 것이 있다면 활용하시길 바랍니다.<br />
+          스마트폰으로 보시는 것을 권장드리며, 타인에게 절대 공유하지 마십시오.<br />
+          공유 행적 적발 시 인사팀에 의해 징계가 진행될 수 있습니다.<br />
         </p>
         <p style="margin:28px 0">
           <a href="${hintPhoneUrl}" style="display:inline-block;background:#7b0712;color:#fff;padding:14px 28px;text-decoration:none;font-weight:700">
