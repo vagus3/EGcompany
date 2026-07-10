@@ -102,11 +102,35 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const completedRef = useRef(false);
   const charPhaseRef = useRef<number[]>([]);
   const positionsHydratedRef = useRef(false);
+  const failTimerRef = useRef<number | null>(null);
 
   const [positions, setPositions] = useState<LetterPos[]>(DEFAULT_POSITIONS);
   const [foundCount, setFoundCount] = useState(0);
   const [size, setSize] = useState({ width: 1280, height: 720 });
   const [fakeChars, setFakeChars] = useState<string[]>(positions.map(() => "★"));
+  const [showFailVideo, setShowFailVideo] = useState(false);
+
+  // 페이지 진입(혹은 오답 클릭으로 인한 새로고침) 후 20초 동안 못 풀면 fail 영상을
+  // 순간적으로 띄운다. 이후에는 30초마다 반복해서 다시 보여준다.
+  useEffect(() => {
+    failTimerRef.current = window.setTimeout(() => {
+      if (completedRef.current) return;
+      setShowFailVideo(true);
+    }, 20000);
+
+    return () => {
+      if (failTimerRef.current) window.clearTimeout(failTimerRef.current);
+    };
+  }, []);
+
+  function handleFailVideoEnded() {
+    setShowFailVideo(false);
+    if (completedRef.current) return;
+    failTimerRef.current = window.setTimeout(() => {
+      if (completedRef.current) return;
+      setShowFailVideo(true);
+    }, 30000);
+  }
 
   // 새로고침(오답 클릭) 이후 랜덤 위치가 sessionStorage에 있으면 마운트 후 1회만 적용
   useEffect(() => {
@@ -276,6 +300,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       const next = prev + 1;
       if (next >= 4) {
         completedRef.current = true;
+        if (failTimerRef.current) window.clearTimeout(failTimerRef.current);
         setTimeout(() => onComplete(), 900);
       }
       return next;
@@ -302,6 +327,11 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
               position:   "absolute",
               top:        h.top,
               left:       h.left,
+              width:      "32px",
+              height:     "32px",
+              display:    "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
               fontSize:   "24px",
               fontFamily: '"Geist Mono", monospace',
               fontWeight: "bold",
@@ -328,6 +358,18 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center pb-4 font-mono text-[10px] font-black tracking-[0.18em] text-white/20">
         <span>FIND THE HIDDEN SEQUENCE — CLICK TO CONFIRM</span>
       </div>
+
+      {/* 20초(이후 30초마다 반복) 미해결 시 화면을 꽉 채우는 fail 영상 */}
+      {showFailVideo && (
+        <video
+          src="/pretext_fail.mp4"
+          autoPlay
+          muted
+          playsInline
+          className="fixed inset-0 z-50 h-full w-full object-cover"
+          onEnded={handleFailVideoEnded}
+        />
+      )}
     </main>
   );
 }
