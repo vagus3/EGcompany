@@ -10,6 +10,8 @@ import { PretextChallenge } from "../challenges/PretextChallenge";
 import { CompletedPanel, QueuedPanel } from "../ui/TerminalPanels";
 import { cx } from "@/theme/classes";
 
+const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI"];
+
 function Redaction({ width }: { width: string }) {
   return <span className={cx("bg-terminal-text-dim mx-1 inline-block h-4 align-middle", width)} />;
 }
@@ -70,12 +72,16 @@ function ResearchReportBody() {
         "Improved transport stability with the introduction of biometric response analysis systems",
         "Abnormal data patterns detected in some transport segments",
         'The phenomenon is currently assessed as a "controllable level"',
+        "Need to review high risk entity classification criteria and strengthen management procedures",
+        "Proceed with further analysis of recurring abnormal behavior patterns for specific objects",
       ]
     : [
         "물류 및 운송 부문 매출 +18% 성장",
         "생체 반응 분석 시스템 도입으로 운송 안정성 향상",
         "일부 운송 구간에서 비정상적인 데이터 패턴 감지",
         "해당 현상은 현재 “통제 가능한 수준”으로 평가됨",
+        "고위험 개체 분류 기준 재검토 및 관리 절차 강화 필요",
+        "특정 개체의 반복적 이상 행동 패턴에 대한 추가 분석 진행"
       ];
 
   return (
@@ -89,9 +95,10 @@ function ResearchReportBody() {
 
         <p className="mt-7">{isEn ? "Key Points" : "주요 내용"}</p>
         <ul className="mt-4 space-y-2">
-          {bullets.map((item) => (
-            <li key={item} className="before:text-terminal-accent before:mr-3 before:content-['▪']">
-              {item}
+          {bullets.map((item, index) => (
+            <li key={item} className="flex gap-3">
+              <span className="text-terminal-accent shrink-0">{ROMAN_NUMERALS[index]}.</span>
+              <span>{item}</span>
             </li>
           ))}
         </ul>
