@@ -103,6 +103,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   const charPhaseRef = useRef<number[]>([]);
   const positionsHydratedRef = useRef(false);
   const failTimerRef = useRef<number | null>(null);
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const [positions, setPositions] = useState<LetterPos[]>(DEFAULT_POSITIONS);
   const [foundCount, setFoundCount] = useState(0);
@@ -283,8 +284,23 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     fieldRef.current.active = false;
   }
 
-  function handleLetterClick(idx: number) {
+  // 모바일은 호버가 없어 "글자를 찾으려 화면을 훑는 드래그"와 "글자를 선택하는 탭"이
+  // 물리적으로 같은 터치 동작이 된다. 누른 지점을 기록해뒀다가, 뗀 지점이 그로부터
+  // 이 값 이상 떨어져 있으면(=훑어보다가 우연히 글자 위에서 손을 뗀 것) 선택으로
+  // 치지 않는다. 거의 제자리에서 눌렀다 뗐을 때만 의도적 탭/클릭으로 인정한다.
+  const TAP_MOVE_THRESHOLD_PX = 14;
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+    handlePointerMove(e);
+  }
+
+  function handleLetterClick(idx: number, event: React.MouseEvent) {
     if (completedRef.current) return;
+
+    const start = pointerDownPosRef.current;
+    const movedPx = start ? Math.hypot(event.clientX - start.x, event.clientY - start.y) : 0;
+    if (movedPx > TAP_MOVE_THRESHOLD_PX) return;
 
     // 올바른 순서가 아닌 글자를 클릭하면 위치를 랜덤으로 바꾸고 새로고침
     if (idx !== foundCount) {
@@ -310,6 +326,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   return (
     <main
       ref={containerRef}
+      onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       className="relative min-h-screen cursor-crosshair overflow-hidden bg-black text-white"
@@ -322,7 +339,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
         return (
           <span
             key={h.letter}
-            onClick={() => handleLetterClick(i)}
+            onClick={(event) => handleLetterClick(i, event)}
             style={{
               position:   "absolute",
               top:        h.top,
