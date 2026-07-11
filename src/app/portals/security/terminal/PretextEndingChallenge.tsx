@@ -329,7 +329,7 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="relative min-h-screen cursor-crosshair overflow-hidden bg-black text-white"
+      className="touch-none relative min-h-screen cursor-crosshair overflow-hidden bg-black text-white"
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
