@@ -1,7 +1,7 @@
 "use client";
 
 import { layoutWithLines, prepareWithSegments } from "@chenglou/pretext";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PRETEXT_LETTER_POSITIONS_STORAGE_KEY } from "@/lib/terminal-data";
 import { playSound } from "@/lib/sound";
 
@@ -153,9 +153,20 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
   }, []);
 
   // 화면 크기 감지
-  useEffect(() => {
+  // useEffect(브라우저가 이미 한 번 그린 뒤 실행)를 쓰면, 초기값(1280x720, 데스크탑
+  // 기준)으로 그려진 화면이 실제 모바일 폭으로 보정되기 전까지 잠깐 그대로
+  // 페인트된다. 데스크탑은 1280이 실제 화면과 비슷해 눈에 안 띄지만, 모바일은
+  // 차이가 커서 글자가 화면 밖에 그려진 채로 순간 노출된다. useLayoutEffect로
+  // 브라우저 페인트 전에 크기를 먼저 측정해 보정한다.
+  useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      setSize({ width: Math.max(360, rect.width), height: Math.max(300, rect.height) });
+    }
+
     const obs = new ResizeObserver(([e]) => {
       if (!e) return;
       setSize({ width: Math.max(360, e.contentRect.width), height: Math.max(300, e.contentRect.height) });
@@ -302,6 +313,9 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
     const movedPx = start ? Math.hypot(event.clientX - start.x, event.clientY - start.y) : 0;
     if (movedPx > TAP_MOVE_THRESHOLD_PX) return;
 
+    // 이미 찾은 글자를 다시 클릭한 경우는 무시한다(오답으로 취급해 새로고침하면 안 됨)
+    if (idx < foundCount) return;
+
     // 올바른 순서가 아닌 글자를 클릭하면 위치를 랜덤으로 바꾸고 새로고침
     if (idx !== foundCount) {
       const newPositions = generateRandomPositions();
@@ -353,20 +367,27 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
               fontFamily: '"Geist Mono", monospace',
               fontWeight: "bold",
               lineHeight: 1,
-              cursor:     "crosshair",
+              cursor:     isFound ? "default" : "crosshair",
               userSelect: "none",
-              color: isFound ? "rgba(60,0,0,0.5)" : "rgba(95,20,24,0.75)",
+              color: "rgba(95,20,24,0.75)",
               transition: "color 0.1s",
             }}
             className="group"
           >
-            <span className="group-hover:hidden">{isFound ? h.letter : fakeChars[i]}</span>
-            <span
-              className="hidden group-hover:inline"
-              style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}
-            >
-              {h.letter}
-            </span>
+            {isFound ? (
+              // 찾은 글자는 hover 여부와 무관하게 계속 밝게 표시되어 진행 상황이 유지된다
+              <span style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}>{h.letter}</span>
+            ) : (
+              <>
+                <span className="group-hover:hidden">{fakeChars[i]}</span>
+                <span
+                  className="hidden group-hover:inline"
+                  style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}
+                >
+                  {h.letter}
+                </span>
+              </>
+            )}
           </span>
         );
       })}
