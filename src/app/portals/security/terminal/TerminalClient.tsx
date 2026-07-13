@@ -9,7 +9,8 @@ import { useLanguage } from "@/hooks/useLanguage";
 import {
   challengeIds,
   getMailForStage,
-  pinChallengeAnswer,
+  PIN_SELECT_REQUIRED_COUNT,
+  PRETEXT_FOUND_LETTERS_STORAGE_KEY,
   stageOrder,
   terminalMails,
   terminalObjects,
@@ -81,6 +82,10 @@ export default function TerminalClient() {
   const timersRef = useRef<number[]>([]);
   const deliveryRequestedRef = useRef(false);
   const pretextCompletionHandledRef = useRef(false);
+  // 정답 검증이 서버 왕복을 거치게 되면서, 응답이 오기 전에 같은 제출을 중복
+  // 발사하지 않도록 막아둔다(더블클릭/빠른 재제출 방지).
+  const pinSubmittingRef = useRef(false);
+  const commandSubmittingRef = useRef(false);
 
   const visibleMails = useMemo(() => (progress ? getVisibleMails(progress) : []), [progress]);
 
@@ -156,19 +161,41 @@ export default function TerminalClient() {
     pretextCompletionHandledRef.current = true;
     window.history.replaceState(null, "", "/portals/security/terminal");
 
+    let letters: string[] = [];
+    try {
+      const stored = window.sessionStorage.getItem(PRETEXT_FOUND_LETTERS_STORAGE_KEY);
+      window.sessionStorage.removeItem(PRETEXT_FOUND_LETTERS_STORAGE_KEY);
+      if (stored) letters = JSON.parse(stored) as string[];
+    } catch {}
+
     fetch("/api/terminal/state", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "completeChallenge", challengeId: challengeIds.pretext }),
+      body: JSON.stringify({ action: "completeChallenge", challengeId: challengeIds.pretext, letters }),
     })
-      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("failed"))))
+      .then((response) => {
+        if (response.ok) return response.json();
+
+        // 정상 플레이라면 letters는 항상 정답과 일치해 여기서 실패할 일이 없다
+        // (순서 검증은 이미 pretext 페이지에서 클라이언트가 강제했다). 유일한
+        // 예외는 세션스토리지 저장/전달이 실패해 letters가 비거나 어긋난 경우인데
+        // (422: 정답 불일치, 400: 빈 배열이라 스키마 자체를 통과 못함 등), 이건
+        // "오답"이 아니라 "이미 푼 걸 서버에 증명하는 데 실패한 것"이므로 전체
+        // 에러 화면 대신 pretext 페이지로 돌려보내 다시 확인시키는 게 맞다.
+        pretextCompletionHandledRef.current = false;
+        router.replace("/portals/security/terminal/pretext");
+        return Promise.reject(new Error("retry"));
+      })
       .then((data: TerminalProgress) => {
         setProgress(data);
         setSelectedMailId(getMailForStage(data.currentStage).id);
         setEndFlow("ending-video");
       })
-      .catch(() => setLoadState("error"));
-  }, [loadState]);
+      .catch((error) => {
+        if (error instanceof Error && error.message === "retry") return;
+        setLoadState("error");
+      });
+  }, [loadState, router]);
 
   useEffect(() => {
     const timers = timersRef.current;
@@ -271,21 +298,34 @@ export default function TerminalClient() {
     timersRef.current.push(timer);
   }
 
-  async function completeChallengeOnServer(challengeId: string) {
-    setActiveSection("messenger");
+  // 정답 자체는 서버(server-only 모듈)만 알고 있다. 클라이언트는 "이렇게 풀었다"는
+  // 제출값만 보내고, 서버가 직접 비교해 맞을 때만 다음 스테이지로 진행시킨다.
+  type ChallengeCompletionPayload =
+    | { challengeId: "pin-select"; symbols: string[] }
+    | { challengeId: "cube-hold"; faceLabel: string }
+    | { challengeId: "corrupted-command"; command: string };
+
+  async function completeChallengeOnServer(
+    payload: ChallengeCompletionPayload
+  ): Promise<{ ok: true } | { ok: false; incorrect: boolean }> {
     try {
       const response = await fetch("/api/terminal/state", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "completeChallenge", challengeId }),
+        body: JSON.stringify({ action: "completeChallenge", ...payload }),
       });
+
+      if (response.status === 422) return { ok: false, incorrect: true };
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
 
       const data = (await response.json()) as TerminalProgress;
+      setActiveSection("messenger");
       setProgress(data);
       setSelectedMailId(getMailForStage(data.currentStage).id);
+      return { ok: true };
     } catch {
       setLoadState("error");
+      return { ok: false, incorrect: false };
     }
   }
 
@@ -304,23 +344,27 @@ export default function TerminalClient() {
     });
   }
 
-  function submitPinChallenge() {
-    const answer = new Set(pinChallengeAnswer);
+  async function submitPinChallenge() {
+    if (pinSubmittingRef.current) return;
     const symbols = getSelectedSymbols(selectedObjectIds);
-    const isCorrect =
-      symbols.length === pinChallengeAnswer.length &&
-      symbols.every((symbol) => answer.has(symbol as (typeof pinChallengeAnswer)[number]));
+    if (symbols.length !== PIN_SELECT_REQUIRED_COUNT) return;
 
-    if (!isCorrect) {
-      setPinError("아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
-      setSelectedObjectIds([]);
+    pinSubmittingRef.current = true;
+    setPinError("");
+    const result = await completeChallengeOnServer({ challengeId: "pin-select", symbols });
+    pinSubmittingRef.current = false;
+
+    if (!result.ok) {
+      if (result.incorrect) {
+        setPinError("아이콘 모양에 맞는 4개 WESEN 개체를 다시 선택하십시오.");
+        setSelectedObjectIds([]);
+      }
       return;
     }
 
     setOverlay("found");
     playSound("/2phase_sount.mp3");
     queueTimer(() => {
-      void completeChallengeOnServer(challengeIds.pin);
       setSelectedObjectIds([]);
       setPinError("");
     }, 1250);
@@ -329,21 +373,31 @@ export default function TerminalClient() {
 
   function submitCommand(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (command.trim().toUpperCase() !== "RAOMTNI") {
-      setCommandError("명령어가 일치하지 않습니다.");
-      return;
-    }
+    if (commandSubmittingRef.current) return;
+    const trimmed = command.trim();
+    if (!trimmed) return;
 
+    commandSubmittingRef.current = true;
     setCommandError("");
-    setOverlay("command-warning");
-    queueTimer(() => {
-      setOverlay(null);
-      setCommand("");
-      void (async () => {
-        await completeChallengeOnServer(challengeIds.corrupted);
+    void (async () => {
+      const result = await completeChallengeOnServer({
+        challengeId: "corrupted-command",
+        command: trimmed,
+      });
+      commandSubmittingRef.current = false;
+
+      if (!result.ok) {
+        if (result.incorrect) setCommandError("명령어가 일치하지 않습니다.");
+        return;
+      }
+
+      setOverlay("command-warning");
+      queueTimer(() => {
+        setOverlay(null);
+        setCommand("");
         router.push("/portals/security/terminal/pretext");
-      })();
-    }, 1750);
+      }, 1750);
+    })();
   }
 
   function getHintPromptCount() {
@@ -393,9 +447,9 @@ export default function TerminalClient() {
     await sendEmployeeCard();
   }
 
-  function completeCubeChallenge() {
+  function completeCubeChallenge(faceLabel: string) {
     setCubeModalOpen(false);
-    void completeChallengeOnServer(challengeIds.cube);
+    void completeChallengeOnServer({ challengeId: "cube-hold", faceLabel });
   }
 
   if (loadState === "loading" || !progress) {
@@ -598,7 +652,7 @@ function CubeChallengeModal({
   onComplete,
   onClose,
 }: {
-  onComplete: () => void;
+  onComplete: (faceLabel: string) => void;
   onClose: () => void;
 }) {
   return (

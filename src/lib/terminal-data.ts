@@ -1,4 +1,8 @@
 export const PRETEXT_LETTER_POSITIONS_STORAGE_KEY = "pretext-letter-positions";
+// pretext 5번 문제를 다 풀고 나면 별도 라우트에서 메인 터미널 페이지로 돌아오면서
+// ?pretextComplete=1로 완료 사실만 알린다. 실제 정답(찾은 글자 순서)은 서버가
+// 검증해야 하므로, 페이지 이동 사이에 잃어버리지 않도록 세션스토리지에 잠깐 담아둔다.
+export const PRETEXT_FOUND_LETTERS_STORAGE_KEY = "pretext-found-letters";
 
 export type TerminalStage =
   | "intro"
@@ -64,7 +68,9 @@ export interface TerminalObjectEntry {
   securityReadout: SecurityReadoutRow[];
 }
 
-export const pinChallengeAnswer = ["OBSERVE", "OPEN", "ARCHIVE", "CHANNEL"] as const;
+// pin-select 챌린지에서 선택해야 하는 아이콘 개수(=4). 실제 정답 조합은 클라이언트
+// 번들에 노출되면 안 되므로 서버 전용 모듈(src/lib/terminal-answers.ts)에만 있다.
+export const PIN_SELECT_REQUIRED_COUNT = 4;
 
 export const terminalObjects: TerminalObjectEntry[] = [
   {

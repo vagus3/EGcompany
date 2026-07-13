@@ -151,7 +151,7 @@ function CubeFacePanel({
   );
 }
 
-export default function CubeChallenge({ onComplete }: { onComplete: () => void }) {
+export default function CubeChallenge({ onComplete }: { onComplete: (faceLabel: string) => void }) {
   const [heldFace, setHeldFace] = useState<string | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -190,9 +190,11 @@ export default function CubeChallenge({ onComplete }: { onComplete: () => void }
         timerRef.current = null;
 
         // TRACE 면만 정답으로 인정한다. 다른 면은 100%까지 눌러도 완료되지 않는다.
+        // (실제 정답 판정은 서버가 다시 하지만, 어느 면에서든 굳이 서버를 호출할
+        // 필요 없이 여기서 먼저 걸러 UX를 그대로 유지한다.)
         if (label === "TRACE") {
           completedRef.current = true;
-          onComplete();
+          onComplete(label);
         }
       }
     }, 80);

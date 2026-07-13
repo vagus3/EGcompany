@@ -94,7 +94,11 @@ function drawLine(
 }
 
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
-export default function PretextEndingChallenge({ onComplete }: { onComplete: () => void }) {
+export default function PretextEndingChallenge({
+  onComplete,
+}: {
+  onComplete: (letters: string[]) => void;
+}) {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fieldRef     = useRef<Field>({ active: false, x: 0, y: 0, targetX: 0, targetY: 0 });
@@ -331,7 +335,8 @@ export default function PretextEndingChallenge({ onComplete }: { onComplete: () 
       if (next >= 4) {
         completedRef.current = true;
         if (failTimerRef.current) window.clearTimeout(failTimerRef.current);
-        setTimeout(() => onComplete(), 900);
+        const letters = positions.map((p) => p.letter);
+        setTimeout(() => onComplete(letters), 900);
       }
       return next;
     });

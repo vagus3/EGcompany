@@ -1,6 +1,6 @@
 "use client";
 
-import { pinChallengeAnswer, terminalObjects, type TerminalObjectEntry } from "@/lib/terminal-data";
+import { PIN_SELECT_REQUIRED_COUNT, terminalObjects, type TerminalObjectEntry } from "@/lib/terminal-data";
 import { useLanguage } from "@/hooks/useLanguage";
 import { ObjectSymbolIcon } from "../sections/ArchiveSection";
 import { CompletedPanel } from "../ui/TerminalPanels";
@@ -60,7 +60,7 @@ export function PinSelectChallenge({
       <div className="grid grid-cols-4 gap-2">
         {getChallengeObjects().map((entry) => {
           const selected = selectedObjectIds.includes(entry.id);
-          const disabled = !selected && selectedObjectIds.length >= pinChallengeAnswer.length;
+          const disabled = !selected && selectedObjectIds.length >= PIN_SELECT_REQUIRED_COUNT;
 
           return (
             <button
