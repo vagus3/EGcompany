@@ -114,6 +114,11 @@ export default function PretextEndingChallenge({
   const [size, setSize] = useState({ width: 1280, height: 720 });
   const [fakeChars, setFakeChars] = useState<string[]>(positions.map(() => "★"));
   const [showFailVideo, setShowFailVideo] = useState(false);
+  // 포인터(마우스/손가락)가 지금 가까이 있어서 실체가 드러난 글자의 인덱스.
+  // CSS :hover 로는 안 되는 이유: 터치는 pointerdown한 요소에 암시적 포인터 캡처가
+  // 걸려 드래그 중 손가락 아래 요소의 hover 상태가 갱신되지 않는다. 그래서 모바일에서는
+  // 글자가 영영 드러나지 않았다. 포인터 좌표와 글자 중심의 거리를 직접 계산해 공개한다.
+  const [revealedIdx, setRevealedIdx] = useState<number | null>(null);
 
   // 페이지 진입(혹은 오답 클릭으로 인한 새로고침) 후 20초 동안 못 풀면 fail 영상을
   // 순간적으로 띄운다. 이후에는 30초마다 반복해서 다시 보여준다.
@@ -136,6 +141,21 @@ export default function PretextEndingChallenge({
       setShowFailVideo(true);
     }, 30000);
   }
+
+  // 워치독: autoplay 차단 등으로 영상이 ended도 error도 못 내는 경우, 영상 길이보다
+  // 넉넉한 시간이 지나면 강제로 닫고 다음 재생을 예약한다(위 onEnded와 동일 흐름).
+  useEffect(() => {
+    if (!showFailVideo) return;
+    const watchdog = window.setTimeout(() => {
+      setShowFailVideo(false);
+      if (completedRef.current) return;
+      failTimerRef.current = window.setTimeout(() => {
+        if (completedRef.current) return;
+        setShowFailVideo(true);
+      }, 30000);
+    }, 15000);
+    return () => window.clearTimeout(watchdog);
+  }, [showFailVideo]);
 
   // 새로고침(오답 클릭) 이후 랜덤 위치가 sessionStorage에 있으면 마운트 후 1회만 적용
   useEffect(() => {
@@ -288,15 +308,39 @@ export default function PretextEndingChallenge({
     return () => cancelAnimationFrame(frameId);
   }, [lines, size]);
 
+  // 이 거리(px) 안으로 포인터가 접근하면 가짜 문자 대신 실제 글자를 보여준다.
+  const REVEAL_RADIUS_PX = 48;
+  // 글자 스팬은 32x32px, style.top/left는 스팬의 좌상단 기준이므로 중심은 +16px.
+  const LETTER_HALF_PX = 16;
+
   function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
     fieldRef.current.active  = true;
-    fieldRef.current.targetX = e.clientX - rect.left;
-    fieldRef.current.targetY = e.clientY - rect.top;
+    fieldRef.current.targetX = px;
+    fieldRef.current.targetY = py;
+
+    let nearest: number | null = null;
+    let best = REVEAL_RADIUS_PX;
+    for (let i = 0; i < positions.length; i++) {
+      const cx = (parseFloat(positions[i].left) / 100) * rect.width + LETTER_HALF_PX;
+      const cy = (parseFloat(positions[i].top) / 100) * rect.height + LETTER_HALF_PX;
+      const d = Math.hypot(px - cx, py - cy);
+      if (d < best) {
+        best = d;
+        nearest = i;
+      }
+    }
+    setRevealedIdx(nearest);
   }
 
-  function handlePointerLeave() {
+  function handlePointerLeave(e: React.PointerEvent<HTMLDivElement>) {
     fieldRef.current.active = false;
+    // 터치는 손가락을 떼는 순간 pointerleave가 함께 오므로, 여기서 공개 상태를 지우면
+    // 방금 드래그로 찾은 글자가 탭하기도 전에 다시 숨어버린다. 마우스가 화면을
+    // 벗어난 경우에만 숨긴다.
+    if (e.pointerType !== "touch") setRevealedIdx(null);
   }
 
   // 모바일은 호버가 없어 "글자를 찾으려 화면을 훑는 드래그"와 "글자를 선택하는 탭"이
@@ -352,9 +396,11 @@ export default function PretextEndingChallenge({
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* 숨겨진 글자 스팬 — 호버 시 실제 글자 표시, 클릭으로 순서 확인 */}
+      {/* 숨겨진 글자 스팬 — 포인터가 가까이 오면 실제 글자 표시, 클릭/탭으로 순서 확인 */}
       {positions.map((h, i) => {
         const isFound = i < foundCount;
+        // 찾은 글자는 계속 밝게 유지, 못 찾은 글자는 포인터가 근접한 동안만 실체 공개
+        const isRevealed = isFound || revealedIdx === i;
         return (
           <span
             key={h.letter}
@@ -377,21 +423,11 @@ export default function PretextEndingChallenge({
               color: "rgba(95,20,24,0.75)",
               transition: "color 0.1s",
             }}
-            className="group"
           >
-            {isFound ? (
-              // 찾은 글자는 hover 여부와 무관하게 계속 밝게 표시되어 진행 상황이 유지된다
+            {isRevealed ? (
               <span style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}>{h.letter}</span>
             ) : (
-              <>
-                <span className="group-hover:hidden">{fakeChars[i]}</span>
-                <span
-                  className="hidden group-hover:inline"
-                  style={{ color: "#ff2020", fontWeight: 900, fontSize: "40px" }}
-                >
-                  {h.letter}
-                </span>
-              </>
+              <span>{fakeChars[i]}</span>
             )}
           </span>
         );
@@ -402,15 +438,20 @@ export default function PretextEndingChallenge({
         <span>FIND THE HIDDEN SEQUENCE — CLICK TO CONFIRM</span>
       </div>
 
-      {/* 20초(이후 30초마다 반복) 미해결 시 화면을 꽉 채우는 fail 영상 */}
+      {/* 20초(이후 30초마다 반복) 미해결 시 화면을 꽉 채우는 fail 영상.
+          pointer-events-none 필수: 모바일에서 autoplay가 차단되면(iOS 저전력 모드 등)
+          ended가 영영 오지 않는데, 이때 이 오버레이가 입력을 가로채면 보이지 않는
+          전면 차단막이 되어 게임 전체가 멈춘 것처럼 보인다. 시각 효과일 뿐이므로
+          입력은 항상 아래 게임 화면으로 통과시킨다. */}
       {showFailVideo && (
         <video
           src="/pretext_fail.mp4"
           autoPlay
           muted
           playsInline
-          className="fixed inset-0 z-50 h-full w-full object-cover"
+          className="pointer-events-none fixed inset-0 z-50 h-full w-full object-cover"
           onEnded={handleFailVideoEnded}
+          onError={handleFailVideoEnded}
         />
       )}
     </main>
